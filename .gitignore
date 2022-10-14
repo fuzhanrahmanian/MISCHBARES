@@ -104,3 +104,6 @@ ENV/
 # IDE settings
 .vscode/
 .idea/
+
+# autolab SDK card
+src/mischbares/config/autolab_configuration/*

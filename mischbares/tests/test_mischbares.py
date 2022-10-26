@@ -5,7 +5,7 @@
 import pytest
 
 
-# from mischbares import mischbares
+from mischbares import mischbares
 
 
 @pytest.fixture

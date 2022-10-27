@@ -1,0 +1,68 @@
+In this file, user can find out the instruction about various elechtrochemical test procedures and 
+how they can be called. 
+
+# example configuration for available procedures
+autolab_config['autolab']['procedures'] = {}
+
+# chrono amperometry
+
+autolab_config['autolab']['procedures']['ca'] = {'procedure': 'ca',
+                            'setpoints': {'applypotential': {'Setpoint value': 0.735},
+                                            'recordsignal': {'Duration': 1000}},
+                            'plot': 'tCV',
+                            'onoffafter': 'off',
+                            'safepath': None, # path to save the data
+                            'filename': 'ca.nox',
+                            'parseinstructions': ['recordsignal']}
+							
+			
+# open circuit potential
+
+autolab_config['autolab']['procedures']['ocp'] = {'procedure': 'ocp',
+			'setpoints': {'FHLevel': {'Duration': 20}},
+			'plot': 'tCV',
+			'onoffafter': 'off',
+			'safepath': None, # Path to save the data
+			'filename': 'ocp.nox',
+			'parseinstructions': ['recordsignal']}
+
+
+
+# chrono potensiometry
+
+autolab_config['autolab']['procedures']['cp'] = {'procedure': 'cp',
+                        'setpoints': {'applycurrent': {'Setpoint value': 7*(10**-6)},
+                                    'recordsignal': {'Duration': 600, "Interval time (s)": 0.01}}, #'Interval time in µs'
+                        'plot': 'tCV',
+                        'onoffafter': 'off',
+                        'safepath': None, # path to save the data
+                        'filename': 'cp.nox',
+                        'parseinstructions': ['recordsignal']}
+
+
+
+# chrono voltammetry analysis
+autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
+                        'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.4},
+                                        'FHWait': {'Time': 2},
+                                        'CVLinearScanAdc164': {'StartValue': 0.4,
+                                                                'UpperVertex': 1.5,
+                                                                'LowerVertex': 0.399,
+                                                                'NumberOfStopCrossings': 50,
+                                                                'ScanRate': 0.02}},
+                        'plot': 'tCV',
+                        'onoffafter': 'off',
+                        'safepath': None, # path to save the data
+                        'filename': 'cv.nox',
+                        'parseinstructions': ['CVLinearScanAdc164']}
+						
+						
+# electro impedance analysis
+
+autolab_config['autolab']['procedures']['eis'] = {'procedure': 'eis',
+                            'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.01}},
+                            'plot': 'impedance',
+                            'onoffafter': 'off',
+                            'safepath': None, # path to save the data
+                            'filename': 'eis.nox',
+                            'parseinstructions': ['FIAMeasPotentiostatic']}

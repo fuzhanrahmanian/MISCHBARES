@@ -107,7 +107,7 @@ ENV/
 
 # autolab SDK card
 mischbares/config/autolab_configuration/*
-mischbares/config/electrochemical_procedures/*
+#mischbares/config/electrochemical_procedures/*
 
 # ignore the history
 .history

@@ -26,6 +26,7 @@ class Autolab:
         self.hwsetupf = autolab_conf["hwsetupf"]
         self.micsetupf = autolab_conf["micsetupf"]
         self.proceduresd = autolab_conf["proceuduresd"]
+
         try:
             # pylint: disable=E1101, E0401, C0415
             clr.AddReference("EcoChemie.Autolab.Sdk")
@@ -36,6 +37,50 @@ class Autolab:
         self.inst = sdk.Instrument()
         self.connect()
         self.proc = None
+        self._save_dir = None
+        self._optional_name = None
+        self.finished_procedure = None
+        self.data = None
+
+
+    @property
+    def save_dir(self):
+        """get the save directory
+
+        Returns:
+            str: save directory
+        """
+        return self._save_dir
+
+
+    @property
+    def optional_name(self):
+        """get the optional name
+
+        Returns:
+            str: optional name
+        """
+        return self._optional_name
+
+
+    @save_dir.setter
+    def save_dir(self, save_dir):
+        """set the save directory
+
+        Args:
+            save_dir (str): save directory
+        """
+        self._save_dir = save_dir
+
+
+    @optional_name.setter
+    def optional_name(self, optional_name):
+        """set the optional name
+
+        Args:
+            optional_name (str): optional name
+        """
+        self._optional_name = optional_name
 
 
     def connect(self):
@@ -207,6 +252,7 @@ class Autolab:
             for param, value in params.items():
                 self.proc.Commands[comm].CommandParameters[param].Value = value
 
+
     # This function needs to be modified to work with the bokeh visualizer properly
     async def visualize_measurement(self, measurement_type):
         """an async function to run while the instrument is measuring used for the visualizer
@@ -254,39 +300,53 @@ class Autolab:
                 await asyncio.sleep(0.4)
 
 
-    def parse_nox(self, conf):
-        """parse the nox file to get the procedure's parameters as a json dictionary
+    def parse_nox(self, parse_instruction, save_dir = None, optional_name = None):
+        """parse the data from the saved nox file
 
         Args:
-            conf (dict): a dictionary of the procedure's parameters
+            parse_instruction (str): the instruction for parsing the data.
+            save_dir (str, optional): save directory. Defaults to None.
+            optional_name (str, optional): optional file name. Defaults to None.
 
         Returns:
-            data(dict): a dictionary of the data and procedure's parameters
+            data (dict): extracted data
         """
+        # get the saved procedure and parse it
+        if save_dir:
+            self.save_dir = save_dir
+        if optional_name:
+            self.optional_name = optional_name
 
-        path = os.path.join(conf['safepath'],conf['filename'])
-        self.finishedProc = self.inst.LoadProcedure(path)
+        # load the finished procedure
+        self.finished_procedure = self.inst.LoadProcedure(
+                                            os.path.join(self.save_dir, self.optional_name))
+
         self.data = {}
-        for comm in conf['parseinstructions']:
-            names = [str(n) for n in self.finishedProc.Commands[comm].Signals.Names]
-            self.data[comm] = {n: [float(f) for f in self.finishedProc.Commands[comm].Signals.get_Item(n).Value] for n in names}
-        with open(path.replace('.nox', '_data.json'), 'w') as f:
-            json.dump(self.data, f)
-
+        for comm in parse_instruction:
+            # get the procedure's parameters
+            names = [str(n) for n in self.finished_procedure.Commands[comm].Signals.Names]
+            # get the data for each parameter
+            self.data[comm] = {n: [float(f) for f in \
+                                self.finished_procedure.Commands[comm].Signals.get_Item(n).Value] \
+                               for n in names}
+        utils.save_data_as_json(directory = self.save_dir, data = self.data,
+                                name = self.optional_name.replace('.nox', '.json'))
         return self.data
+
+
 
     def parseFRA(self,conf):
         path = os.path.join(conf['safepath'],conf['filename'])
-        self.finishedProc = self.inst.LoadProcedure(path)
+        self.finished_procedure = self.inst.LoadProcedure(path)
 
-        self.data = {} 
-        comm = 'FHLevel'   
-        names = [str(n) for n in self.finishedProc.Commands[comm].Signals.Names]
-        self.data[comm] = {n: [float(f) for f in self.finishedProc.Commands[comm].Signals.get_Item(n).Value] for n in names}
-        
+        self.data = {}
+        comm = 'FHLevel'
+        names = [str(n) for n in self.finished_procedure.Commands[comm].Signals.Names]
+        self.data[comm] = {n: [float(f) for f in self.finished_procedure.Commands[comm].Signals.get_Item(n).Value] for n in names}
+
         self.fradata = {i:[] for i in range(578)} #2537 #7337
         for o in range(578):
-            myComm = self.finishedProc.FraCommands.get_Item(o)
+            myComm = self.finished_procedure.FraCommands.get_Item(o)
             sig_names = [n for n in myComm.Signals.Names]    
             for n in sig_names:
                 if not type(myComm.Signals.get_Item(n).Value) == None:
@@ -317,6 +377,9 @@ class Autolab:
     async def performMeasurement(self, procedure,setpoints,plot,onoffafter,safepath,filename, parseinstruction):
         conf = dict(procedure=procedure,setpoints=setpoints,
                      plot=plot,onoffafter=onoffafter,safepath=safepath,filename=filename,parseinstructions=parseinstruction)
+        save_dir = utils.create_dir(os.path.join(save_dir, "data"))
+        name = utils.assemble_file_name(self.__class__.__name__, optional_name, ".nox") if \
+        optional_name else utils.assemble_file_name(self.__class__.__name__, ".nox")
         #LOAD PROCEDURE
         self.load_procedure(conf['procedure'])
         #SET SETPOINTS
@@ -336,8 +399,10 @@ class Autolab:
         print("data is saved safety now")
         sleep(0.1)
         if conf['procedure'] == 'ms':
-            data = self.parseFRA(conf)    
+            path = os.path.join(conf['safepath'],conf['filename'])
+            data = self.parseFRA(conf)
         else: 
+            path = os.path.join(conf['safepath'],conf['filename'])
             data = self.parse_nox(conf)
         print("going out from measuring folder")
         sleep(0.1)

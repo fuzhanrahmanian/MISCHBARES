@@ -4,7 +4,6 @@ import sys
 import time
 from time import sleep
 from copy import copy
-import json
 import asyncio
 import clr
 
@@ -14,7 +13,7 @@ from mischbares.utils import utils
 log = logger.get_logger("autolab_driver")
 
 class Autolab:
-    """autolab class for defining the base functions of Metrohm instrument
+    """autolab class for defining the base functions of Metrohm instrument.
     """
 
     def __init__(self,autolab_conf):
@@ -45,46 +44,46 @@ class Autolab:
 
     @property
     def save_dir(self):
-        """get the save directory
+        """get the save directory.
 
         Returns:
-            str: save directory
+            str: save directory.
         """
         return self._save_dir
 
 
     @property
     def optional_name(self):
-        """get the optional name
+        """get the optional name.
 
         Returns:
-            str: optional name
+            str: optional name.
         """
         return self._optional_name
 
 
     @save_dir.setter
     def save_dir(self, save_dir):
-        """set the save directory
+        """set the save directory.
 
         Args:
-            save_dir (str): save directory
+            save_dir (str): save directory.
         """
         self._save_dir = save_dir
 
 
     @optional_name.setter
     def optional_name(self, optional_name):
-        """set the optional name
+        """set the optional name.
 
         Args:
-            optional_name (str): optional name
+            optional_name (str): optional name.
         """
         self._optional_name = optional_name
 
 
     def connect(self):
-        """connect to the instrument
+        """connect to the instrument.
         """
         self.inst.HardwareSetupFile = self.hwsetupf
         self.inst.AutolabConnection.EmbeddedExeFileToStart = self.micsetupf
@@ -93,10 +92,10 @@ class Autolab:
 
 
     def set_cell(self, onoff):
-        """turn the cell on or off
+        """turn the cell on or off.
 
         Args:
-            onoff (str): "on" or "off" for the cell
+            onoff (str): "on" or "off" for the cell.
         """
         if onoff == 'on':
             log.info("turning cell on")
@@ -111,7 +110,7 @@ class Autolab:
 
 
     def abort(self):
-        """abort the current procedure
+        """abort the current procedure.
         """
         try:
             self.proc.Abort()
@@ -121,7 +120,7 @@ class Autolab:
 
 
     def disconnect(self):
-        """ disconnect from the instrument
+        """ disconnect from the instrument.
         """
         self.proc.Abort()
         self.inst.Disconnect()
@@ -129,10 +128,10 @@ class Autolab:
 
 
     def set_stability(self, stability):
-        """set the stability of the instrument
+        """set the stability of the instrument.
 
         Args:
-            stability (str): "high", "low"
+            stability (str): "high", "low".
         """
 
         if stability=="high":
@@ -144,20 +143,20 @@ class Autolab:
 
 
     def load_procedure(self, name):
-        """load a procedure
+        """load a procedure.
 
         Args:
-            name (str): name of the procedure
+            name (str): name of the procedure.
         """
         self.proc = self.inst.LoadProcedure(self.proceduresd[name])
         log.info(f"procedure {name} loaded")
 
 
     def potential(self):
-        """get the current of the instrument vs. reference electrode
+        """get the current of the instrument vs. reference electrode.
 
         Returns:
-            float: current pottential
+            float: current pottential.
         """
         applied_potential = float(self.inst.Ei.get_Potential())
         log.info(f"current potential vs. reference electrode is {applied_potential}")
@@ -165,10 +164,10 @@ class Autolab:
 
 
     def applied_potential(self):
-        """get the applied potential of the instrument vs. reference electrode
+        """get the applied potential of the instrument vs. reference electrode.
 
         Returns:
-            flaot: applied potential
+            flaot: applied potential.
         """
         current_potential = float(self.inst.Ei.PotentialApplied)
         log.info(f"current applied potential vs. reference electrode is {current_potential}")
@@ -176,10 +175,10 @@ class Autolab:
 
 
     def current(self):
-        """get the current of the instrument vs. reference electrode
+        """get the current of the instrument vs. reference electrode.
 
         Returns:
-            _type_: float
+            current (float): current value.
         """
         current = float(self.inst.Ei.Current)
         log.info(f"applied current vs. reference electrode is {current}")
@@ -187,10 +186,10 @@ class Autolab:
 
 
     def measure_status(self):
-        """check if the instrument is measuring
+        """check if the instrument is measuring.
 
         Returns:
-            _type_: bool
+            bool: True if measuring, False if not.
         """
         try:
             return self.proc.IsMeasuring
@@ -203,7 +202,7 @@ class Autolab:
         """_summary_
 
         Args:
-            current_range (str): set the current range of the instrument
+            current_range (str): set the current range of the instrument.
         """
 
         if current_range == "10A":
@@ -238,10 +237,10 @@ class Autolab:
 
 
     def set_setpoints(self, setpoints):
-        """set the setpoints of the procedure
+        """set the setpoints of the procedure.
 
         Args:
-            setpoints (dict): a dictionary of the procedure's parameters
+            setpoints (dict): a dictionary of the procedure's parameters.
         """
         for comm, params in setpoints.items():
 
@@ -251,14 +250,16 @@ class Autolab:
 
             for param, value in params.items():
                 self.proc.Commands[comm].CommandParameters[param].Value = value
+                log.info(f"set {param} to {value}")
 
 
     # This function needs to be modified to work with the bokeh visualizer properly
+    # Todo
     async def visualize_measurement(self, measurement_type):
-        """an async function to run while the instrument is measuring used for the visualizer
+        """an async function to run while the instrument is measuring used for the visualizer.
 
         Args:
-            measurement_type (str): the type of measurement for plotting
+            measurement_type (str): the type of measurement for plotting.
         """
 
         start_time = copy(time.monotonic())
@@ -318,6 +319,7 @@ class Autolab:
             self.optional_name = optional_name
 
         # load the finished procedure
+        log.info(f"loading procedure from {self.save_dir}")
         self.finished_procedure = self.inst.LoadProcedure(
                                             os.path.join(self.save_dir, self.optional_name))
 
@@ -329,81 +331,73 @@ class Autolab:
             self.data[comm] = {n: [float(f) for f in \
                                 self.finished_procedure.Commands[comm].Signals.get_Item(n).Value] \
                                for n in names}
-        utils.save_data_as_json(directory = self.save_dir, data = self.data,
+        utils.save_data_as_json(directory = self.save_dir, data = self.data, \
                                 name = self.optional_name.replace('.nox', '.json'))
+
         return self.data
 
 
 
-    def parseFRA(self,conf):
-        path = os.path.join(conf['safepath'],conf['filename'])
-        self.finished_procedure = self.inst.LoadProcedure(path)
 
-        self.data = {}
-        comm = 'FHLevel'
-        names = [str(n) for n in self.finished_procedure.Commands[comm].Signals.Names]
-        self.data[comm] = {n: [float(f) for f in self.finished_procedure.Commands[comm].Signals.get_Item(n).Value] for n in names}
+    async def perform_measurement(self, procedure, setpoints, plot_type, on_off_status,
+                                    parse_instruction, save_dir, optional_name):
+        """perform the measurement
 
-        self.fradata = {i:[] for i in range(578)} #2537 #7337
-        for o in range(578):
-            myComm = self.finished_procedure.FraCommands.get_Item(o)
-            sig_names = [n for n in myComm.Signals.Names]    
-            for n in sig_names:
-                if not type(myComm.Signals.get_Item(n).Value) == None:
-                    try:
-                        if type(myComm.Signals.get_Item(n).Value)==float:
-                            self.fradata[o].append({n:myComm.Signals.get_Item(n).Value})
-                        else:
-                            self.fradata[o].append({n:[float(f) for f in myComm.Signals.get_Item(n).Value]})
-                    except:
-                        print('.')
-        self.analyse_data = {i: [] for i in range(220)}
-        j = 0
-        for i in range(578):
-            if len(self.fradata[i]) > 7:
-                #if len(data[i][1]['Frequency']) == 1: 
-                self.analyse_data[j].append(self.fradata[i])
-                j += 1
+        Args:
+            procedure (str): the procedure to be performed.
+            setpoints (dict): the setpoints of the procedure.
+            plot_type (str): the type of plot.
+            on_off_status (str): the status of the instrument.
+            parse_instruction (list[str]): the instruction for parsing the data.
+            save_dir (str): save directory.
+            optional_name (str): optional file name.
+        Returns:
+            data (dict): extracted data from the nox file of the procedure.
+        """
 
-        self.final_result = self.analyse_data.copy()
-        self.final_result.update(self.data)
-
-        with open(path.replace('.nox', '_data.json'), 'w') as f:
-            json.dump(self.final_result, f)
-
-        return self.final_result
-
-
-    async def performMeasurement(self, procedure,setpoints,plot,onoffafter,safepath,filename, parseinstruction):
-        conf = dict(procedure=procedure,setpoints=setpoints,
-                     plot=plot,onoffafter=onoffafter,safepath=safepath,filename=filename,parseinstructions=parseinstruction)
+        # define a save path for saving th nox files of the measurements
         save_dir = utils.create_dir(os.path.join(save_dir, "data"))
+        log.info(f"The procedure path is {save_dir}")
+
+        # create a file name for the nox file
         name = utils.assemble_file_name(self.__class__.__name__, optional_name, ".nox") if \
-        optional_name else utils.assemble_file_name(self.__class__.__name__, ".nox")
-        #LOAD PROCEDURE
-        self.load_procedure(conf['procedure'])
-        #SET SETPOINTS
-        self.set_setpoints(conf['setpoints'])
-        #MEASURE
+                optional_name else utils.assemble_file_name(self.__class__.__name__, ".nox")
+
+        # load the procedure
+        self.load_procedure(procedure)
+        log.info(f"loading the procedure {procedure}")
+
+        # set the setpoints
+        self.set_setpoints(setpoints)
+
+        # measure the procedure
         self.proc.Measure()
-        #PLOT LIVE
-        await self.visualize_measurement(conf['plot'])
-        #CELL ON/OFF
-        self.set_cell(conf['onoffafter'])
-        #SAVE
-        sleep(0.3) #give the potentiostat some time to stwich everything off and save the data
-        print("going to save some stuff")
-        self.proc.SaveAs(os.path.join(conf['safepath'],conf['filename']))
-        print("going to save in a selected folder")
-        json.dump(conf,open(os.path.join(conf['safepath'],conf['filename'].replace('.nox','_conf.json')),'w'))
-        print("data is saved safety now")
+        log.info("measuring the procedure")
+
+        # Todo
+        # visualize the measurement live while it is being measured
+        await self.visualize_measurement(plot_type)
+
+        # cell status after measurement
+        self.set_cell(on_off_status)
+
+        # time required for switching the cell off and save the data
+        sleep(0.25)
+        self.proc.SaveAs(os.path.join(save_dir, name))
+
+        # make a configuration of the procedure
+        procedure_configuration = dict(procedure = procedure, setpoints = setpoints,
+                                    plot_type = plot_type, on_off_status = on_off_status,
+                                    save_dir = save_dir, file_name= name,
+                                    parse_instructions = parse_instruction)
+
+        utils.save_data_as_json(directory = save_dir, data = procedure_configuration,
+                                name = name.replace('.nox', '_configuration.json'))
         sleep(0.1)
-        if conf['procedure'] == 'ms':
-            path = os.path.join(conf['safepath'],conf['filename'])
-            data = self.parseFRA(conf)
-        else: 
-            path = os.path.join(conf['safepath'],conf['filename'])
-            data = self.parse_nox(conf)
-        print("going out from measuring folder")
+
+        data = self.parse_nox(parse_instruction = parse_instruction,
+                              save_dir = save_dir, optional_name = name)
         sleep(0.1)
+        log.info(f"finished measuring and saving procedure {procedure}")
+
         return data

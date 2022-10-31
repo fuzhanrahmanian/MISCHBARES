@@ -199,7 +199,7 @@ class Autolab:
 
 
     def set_current_range(self, current_range):
-        """_summary_
+        """set the current range of the instrument.
 
         Args:
             current_range (str): set the current range of the instrument.

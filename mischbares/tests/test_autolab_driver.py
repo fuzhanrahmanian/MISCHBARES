@@ -15,15 +15,34 @@ def test_load_procedure():
 def test_potential():
     """Test setting a potential
     """
-    applied_potential = AUTOLAB.potential()
-    assert round(applied_potential, 2) == 0.0
+    current_potential = AUTOLAB.potential()
+    assert round(current_potential, 2) == 0.0
 
 
 def test_current():
     """Test setting a current
     """
-    applied_current = AUTOLAB.current()
-    assert round(applied_current, 2) == 0.0
+    current = AUTOLAB.current()
+    assert round(current, 2) == 0.0
 
 
-# def test_
+def test_applied_potential():
+    """Test setting a potential
+    """
+    applied_potential = AUTOLAB.applied_potential()
+    assert round(applied_potential, 2) == 0.0
+
+
+def test_measure_status():
+    """Test measuring the status
+    """
+    status = AUTOLAB.measure_status()
+    assert status is False
+
+
+def test_set_setpoints():
+    """Test setting the setpoints
+    """
+    AUTOLAB.load_procedure("ocp")
+    AUTOLAB.set_setpoints({'FHLevel': {'Duration': 20}})
+    assert Autolab.proc.Commands["FHLevel"].CommandParameters["Duration"] == 20

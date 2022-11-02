@@ -16,9 +16,9 @@ class Autolab:
     """autolab class for defining the base functions of Metrohm instrument.
     """
 
-    def __init__(self,autolab_conf):
+    def __init__(self, autolab_conf):
         #init a Queue for the visualizer
-        self.queue = asyncio.Queue(loop=asyncio.get_event_loop())
+        #self.queue = asyncio.Queue(loop=asyncio.get_event_loop())
         self.basep = autolab_conf["basep"]
         sys.path.append(self.basep)
         self.procp = autolab_conf["procp"]
@@ -30,8 +30,9 @@ class Autolab:
             # pylint: disable=E1101, E0401, C0415
             clr.AddReference("EcoChemie.Autolab.Sdk")
             from EcoChemie.Autolab import Sdk as sdk
-        except:
-            log.error("cannot find the autolab SDK")
+        except Exception as exp:
+            log.error(f"Cannot find the autolab SDK. With error {exp}")
+            sys.exit()
 
         self.inst = sdk.Instrument()
         self.connect()
@@ -85,10 +86,14 @@ class Autolab:
     def connect(self):
         """connect to the instrument.
         """
-        self.inst.HardwareSetupFile = self.hwsetupf
-        self.inst.AutolabConnection.EmbeddedExeFileToStart = self.micsetupf
-        self.inst.Connect()
-        log.info("Connected to Autolab")
+        try:
+            self.inst.HardwareSetupFile = self.hwsetupf
+            self.inst.AutolabConnection.EmbeddedExeFileToStart = self.micsetupf
+            self.inst.Connect()
+            log.info("Connected to Autolab")
+        except Exception as exp:
+            log.error(exp)
+            sys.exit()
 
 
     def set_cell(self, onoff):
@@ -148,8 +153,12 @@ class Autolab:
         Args:
             name (str): name of the procedure.
         """
-        self.proc = self.inst.LoadProcedure(self.proceduresd[name])
-        log.info(f"procedure {name} loaded")
+        try:
+            self.proc = self.inst.LoadProcedure(self.proceduresd[name])
+            log.info(f"procedure {name} loaded")
+        except Exception as exp:
+            log.error(exp)
+            sys.exit()
 
 
     def potential(self):

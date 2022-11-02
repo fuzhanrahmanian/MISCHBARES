@@ -111,3 +111,9 @@ mischbares/config/autolab_configuration/*
 
 # ignore the history
 .history
+
+# add  json files
+*.json
+
+# add nox files
+*.nox

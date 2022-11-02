@@ -113,6 +113,14 @@ class Autolab:
         elif onoff == 'na':
             log.info("no action for cell")
 
+    # reset the instrument
+    def reset(self):
+        """reset the instrument.
+        """
+        self.set_cell("off")
+        self.set_cell("on")
+        log.info("instrument reset")
+
 
     def abort(self):
         """abort the current procedure.
@@ -167,9 +175,9 @@ class Autolab:
         Returns:
             float: current pottential.
         """
-        applied_potential = float(self.inst.Ei.get_Potential())
-        log.info(f"current potential vs. reference electrode is {applied_potential}")
-        return applied_potential
+        current_potential = float(self.inst.Ei.get_Potential())
+        log.info(f"current potential vs. reference electrode is {current_potential}")
+        return current_potential
 
 
     def applied_potential(self):
@@ -178,9 +186,9 @@ class Autolab:
         Returns:
             flaot: applied potential.
         """
-        current_potential = float(self.inst.Ei.PotentialApplied)
-        log.info(f"current applied potential vs. reference electrode is {current_potential}")
-        return current_potential
+        applied_potential = float(self.inst.Ei.PotentialApplied)
+        log.info(f"current applied potential vs. reference electrode is {applied_potential}")
+        return applied_potential
 
 
     def current(self):
@@ -369,8 +377,8 @@ class Autolab:
         log.info(f"The procedure path is {save_dir}")
 
         # create a file name for the nox file
-        name = utils.assemble_file_name(self.__class__.__name__, optional_name, ".nox") if \
-                optional_name else utils.assemble_file_name(self.__class__.__name__, ".nox")
+        name = utils.assemble_file_name(self.__class__.__name__, optional_name) if \
+                optional_name else utils.assemble_file_name(self.__class__.__name__)
 
         # load the procedure
         self.load_procedure(procedure)
@@ -385,14 +393,14 @@ class Autolab:
 
         # Todo
         # visualize the measurement live while it is being measured
-        await self.visualize_measurement(plot_type)
+        #await self.visualize_measurement(plot_type)
 
         # cell status after measurement
         self.set_cell(on_off_status)
 
         # time required for switching the cell off and save the data
         sleep(0.25)
-        self.proc.SaveAs(os.path.join(save_dir, name))
+        self.proc.SaveAs(os.path.join(save_dir, f"{name}.nox"))
 
         # make a configuration of the procedure
         procedure_configuration = dict(procedure = procedure, setpoints = setpoints,

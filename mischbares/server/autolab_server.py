@@ -4,11 +4,12 @@ import time
 import re
 
 import json
+#pylint: disable=E0611
 from pydantic import BaseModel
 from fastapi import FastAPI, WebSocket
 import uvicorn
 
-from mischbares.config.main_config_sdc_2 import config
+from mischbares.config.main_config_2 import config
 from mischbares.driver.autolab_driver import Autolab
 from mischbares.logger import logger
 from mischbares.utils import utils
@@ -19,15 +20,14 @@ SERVERKEY= "autolabDriver"
 
 app = FastAPI(title="Autolab", description="AutolabDriver API", version="2.1.0")
 
+
 #pylint: disable=R0903
-class return_class(BaseModel):
+class ReturnClass(BaseModel):
     """
     define a return class for returning the result with pydantic
     """
     parameters: dict = None
     data: dict = None
-
-
 
 
 @app.on_event("startup")
@@ -36,6 +36,7 @@ def startup_event():
     """
     global AUTOLAB
     AUTOLAB = Autolab(config[SERVERKEY])
+    log.info("Autolab server started")
 
 
 @app.get("/autolabDriver/cellonoff")
@@ -44,18 +45,39 @@ def set_cell(onoff: str):
 
     Args:
         onoff (str): "on" or "off" for the cell.
+
+    Returns:
+        retc (ReturnClass): return class with the parameters and the data
     """
     AUTOLAB.set_cell(onoff)
-    retc = return_class(parameters={'onoff': onoff}, data=None)
+    retc = ReturnClass(parameters={'onoff': onoff}, data=None)
+    log.info("set_cell: %s at the server level", onoff)
+    return retc
+
+
+@app.get("/autolabDriver/reset")
+def reset():
+    """reset the autolab driver
+
+    Returns:
+        retc (ReturnClass): return class with the parameters and the data
+    """
+    AUTOLAB.reset()
+    retc = ReturnClass(parameters=None, data=None)
+    log.info("Autolab reset at the server level")
     return retc
 
 
 @app.get("/autolabDriver/abort")
 def abort():
     """abort the current procedure.
+
+    Returns:
+        retc (ReturnClass): return class with the parameters and the data
     """
     AUTOLAB.abort()
-    retc = return_class(parameters=None, data=None)
+    retc = ReturnClass(parameters=None, data=None)
+    log.info("Autolab abort at the server level")
     return retc
 
 
@@ -64,6 +86,7 @@ def disconnect():
     """ disconnect from the instrument.
     """
     AUTOLAB.disconnect()
+    log.info("Autolab server shutdown")
 
 
 @app.get("/autolabDriver/setstability")
@@ -72,9 +95,13 @@ def set_stability(stability: str):
 
     Args:
         stability (str): "high", "low".
+
+    Returns:
+        retc (ReturnClass): return class with the parameters and the data
     """
     AUTOLAB.set_stability(stability)
-    retc = return_class(parameters={'stability': stability}, data=None)
+    retc = ReturnClass(parameters={'stability': stability}, data=None)
+    log.info("set_stability: %s at the server level", stability)
     return retc
 
 
@@ -83,10 +110,10 @@ def potential():
     """get the current of the instrument vs. reference electrode.
 
     Returns:
-        float: current pottential.
+        retc (ReturnClass): return class with the parameters and the data
     """
     ret = AUTOLAB.potential()
-    retc = return_class(parameters=None, data={'potential': ret, 'units': 'V'})
+    retc = ReturnClass(parameters=None, data={'potential': ret, 'units': 'V'})
     return retc
 
 
@@ -95,10 +122,10 @@ def applied_potential():
     """get the applied potential of the instrument vs. reference electrode.
 
     Returns:
-        flaot: applied potential.
+        retc (ReturnClass): return class with the parameters and the data
     """
     ret = AUTOLAB.applied_potential()
-    retc = return_class(parameters=None, data={
+    retc = ReturnClass(parameters=None, data={
                         'applied_potential': ret, 'units': 'V'})
     return retc
 
@@ -111,7 +138,7 @@ def current():
         current (float): current value.
     """
     ret = AUTOLAB.current()
-    retc = return_class(parameters=None, data={'current': ret, 'units': 'A'})
+    retc = ReturnClass(parameters=None, data={'current': ret, 'units': 'A'})
     return retc
 
 
@@ -120,10 +147,10 @@ def measure_status():
     """check if the instrument is measuring.
 
     Returns:
-        bool: True if measuring, False if not.
+        retc (ReturnClass): return class with the parameters and the data
     """
     ret = AUTOLAB.measure_status()
-    retc = return_class(parameters=None, data={'ismeasuring': ret})
+    retc = ReturnClass(parameters=None, data={'measure_status': ret})
     return retc
 
 
@@ -131,13 +158,14 @@ def measure_status():
 def set_current_range(crange: str):
     """set the current range of the instrument.
 
-    Args:
-        current_range (str): set the current range of the instrument.
+    Returns:
+        retc (ReturnClass): return class with the parameters and the data
     """
     AUTOLAB.set_current_range(crange)
     res = [re.findall(r'(\d+)(\w+)', crange)[0]]
-    retc = return_class(
+    retc = ReturnClass(
         parameters={'parameters': crange, 'units': res[0][1]}, data=None)
+    log.info("set_current_range: %s with unit %s at the server level", crange, res[0][1])
     return retc
 
 
@@ -154,25 +182,38 @@ async def perform_measurement(procedure: str, setpoints: str, plot_type: str, on
         parse_instruction (list[str]): the instruction for parsing the data.
         save_dir (str): save directory.
         optional_name (str): optional file name.
+
     Returns:
-        data (dict): extracted data from the nox file of the procedure.
+        retc (ReturnClass): return class with the parameters and the data
     """
+    # eval to convert the string to dict
     setpoints = eval(setpoints)
-    parseinstruction = [parse_instruction]
 
-    data = await AUTOLAB.perform_measurement(procedure, setpoints, plot_type, on_off_status, save_dir, optional_name, parseinstruction)
+    if isinstance(parse_instruction, list):
+        parse_instruction = [parse_instruction]
 
-    retc = return_class(measurement_type='potentiostat_autolab',
-                        parameters={'command': 'measure',
-                                    'parameters': dict(procedure=procedure, setpointjson=setpoints,
-                                                       plot=plot_type, onoffafter=on_off_status,
-                                                       safepath=save_dir, filename=optional_name, parseinstruction=parseinstruction)},
+    data = await AUTOLAB.perform_measurement(procedure = procedure, setpoints = setpoints,
+                                             plot_type = plot_type,
+                                             on_off_status = on_off_status,
+                                             save_dir = save_dir, optional_name = optional_name,
+                                             parse_instruction = parse_instruction)
+
+    retc = ReturnClass(measurement_type='potentiostat_autolab',
+                        parameters={'command': 'perform_measurement',
+                                    'parameters': dict(procedure=procedure, setpoints=setpoints,
+                                                       plot_type=plot_type,
+                                                       on_off_status=on_off_status,
+                                                       parse_instruction=parse_instruction,
+                                                       save_dir=save_dir,
+                                                       optional_name=optional_name)},
                         data=data)
+    log.info(f"perforn {procedure} wih parameters {setpoints} at the server level \n the result \
+                                                                                    is \n {data}")
     return retc
 
 
 
-
+#TODO: check the functionality of this function
 @app.websocket("/ws")
 async def websocket_messages(websocket: WebSocket):
     """websocket for the autolab driver and visualise the results.
@@ -182,7 +223,7 @@ async def websocket_messages(websocket: WebSocket):
     """
     await websocket.accept()
     while True:
-        data = await AUTOLAB.q.get()
+        data = await AUTOLAB.queue.get()
         print('data: '+str(data))
         data = {k: [v] for k, v in zip(
             ["t_s", "freq", "Ewe_V", "Ach_V", "Z_real", "Z_imag", "phase", "modulus", "I_A"], data)}
@@ -192,22 +233,22 @@ async def websocket_messages(websocket: WebSocket):
 
 
 @app.get("/autolabDriver/retrieve")
-def retrieve(safepath: str, filename: str):
+def retrieve(save_dir: str, file_name: str):
     """retrieve the data from the nox file.
 
     Args:
-        safepath (str): _description_
-        filename (str): _description_
+        safepath (str): the path of the nox file.
+        file_name (str): the name of the nox file.
 
     Returns:
-        _type_: _description_
+        retc (ReturnClass): return class with the parameters and the data
     """
-    conf = dict(safepath=safepath, filename=filename)
-    path = os.path.join(conf['safepath'], conf['filename'])
-    with open(path.replace('.nox', '_data.json'), 'r') as f:
-        ret = json.load(f)
-    retc = return_class(parameters={'safepath': safepath, 'filename': filename},
-                        data={'appliedpotential': ret})
+
+    data = utils.load_data_as_json(directory=save_dir, name=file_name.replace('.nox', 'data.json'))
+    retc = ReturnClass(parameters = {'save_dir': save_dir, 'file_name': file_name},
+                        data= data)
+    log.info(f"retrieve the data from {save_dir} with file name {file_name} \
+                at the server level with data \n {data}")
     return retc
 
 

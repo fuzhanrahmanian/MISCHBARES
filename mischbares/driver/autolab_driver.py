@@ -18,7 +18,7 @@ class Autolab:
 
     def __init__(self, autolab_conf):
         #init a Queue for the visualizer
-        #self.queue = asyncio.Queue(loop=asyncio.get_event_loop())
+        self.queue = asyncio.Queue() # loop=asyncio.get_event_loop()
         self.basep = autolab_conf["basep"]
         sys.path.append(self.basep)
         self.procp = autolab_conf["procp"]
@@ -357,7 +357,7 @@ class Autolab:
 
 
     async def perform_measurement(self, procedure, setpoints, plot_type, on_off_status,
-                                    parse_instruction, save_dir, optional_name):
+                                    parse_instruction, save_dir, optional_name = None):
         """perform the measurement
 
         Args:

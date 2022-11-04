@@ -1,5 +1,4 @@
 """autolab dirver"""
-import os
 import time
 import re
 
@@ -34,6 +33,7 @@ class ReturnClass(BaseModel):
 def startup_event():
     """startup event for initializing the autolab driver
     """
+    #pylint: disable=W0601
     global AUTOLAB
     AUTOLAB = Autolab(config[SERVERKEY])
     log.info("Autolab server started")
@@ -47,10 +47,10 @@ def set_cell(onoff: str):
         onoff (str): "on" or "off" for the cell.
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.set_cell(onoff)
-    retc = ReturnClass(parameters={'onoff': onoff}, data=None)
+    retc = ReturnClass(parameters = {'onoff': onoff}, data = None)
     log.info("set_cell: %s at the server level", onoff)
     return retc
 
@@ -60,7 +60,7 @@ def reset():
     """reset the autolab driver
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.reset()
     retc = ReturnClass(parameters=None, data=None)
@@ -73,7 +73,7 @@ def abort():
     """abort the current procedure.
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.abort()
     retc = ReturnClass(parameters=None, data=None)
@@ -97,7 +97,7 @@ def set_stability(stability: str):
         stability (str): "high", "low".
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.set_stability(stability)
     retc = ReturnClass(parameters={'stability': stability}, data=None)
@@ -110,7 +110,7 @@ def potential():
     """get the current of the instrument vs. reference electrode.
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     ret = AUTOLAB.potential()
     retc = ReturnClass(parameters=None, data={'potential': ret, 'units': 'V'})
@@ -122,7 +122,7 @@ def applied_potential():
     """get the applied potential of the instrument vs. reference electrode.
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     ret = AUTOLAB.applied_potential()
     retc = ReturnClass(parameters=None, data={
@@ -171,7 +171,7 @@ def set_current_range(crange: str):
 
 @app.get("/autolabDriver/measure")
 async def perform_measurement(procedure: str, setpoints: str, plot_type: str, on_off_status: str,
-                              parse_instruction : str, save_dir: str, optional_name: str):
+                              parse_instruction : str, save_dir: str, optional_name: str = None):
     """perform the measurement
 
     Args:
@@ -252,6 +252,12 @@ def retrieve(save_dir: str, file_name: str):
     return retc
 
 
-if __name__ == "__main__":
+def main():
+    """main function to run the server.
+    """
     uvicorn.run(app, host=config['servers'][SERVERKEY]
                 ['host'], port=config['servers'][SERVERKEY]['port'])
+
+
+if __name__ == "__main__":
+    main()

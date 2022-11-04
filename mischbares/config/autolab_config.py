@@ -33,4 +33,4 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                                                     'OCP_record_signal.nox')})
 
 # action should get the driver url
-autolab_config['autolab'] = dict(url = 'http://192.168.31.121:13374')
+autolab_config['autolab'] = dict(url = 'http://192.168.31.121:15374')

@@ -336,11 +336,14 @@ class Autolab:
             self.optional_name = optional_name
 
         # load the finished procedure
-        log.info(f"loading procedure from {self.save_dir}")
+        log.info(f"loading procedure from {self.save_dir} with filename {self.optional_name}")
         self.finished_procedure = self.inst.LoadProcedure(
-                                            os.path.join(self.save_dir, self.optional_name))
+                                        os.path.join(self.save_dir, f"{self.optional_name}.nox"))
 
         self.data = {}
+        # check if the procedure is a list
+        if not isinstance(parse_instruction, list):
+            parse_instruction = [parse_instruction]
         for comm in parse_instruction:
             # get the procedure's parameters
             names = [str(n) for n in self.finished_procedure.Commands[comm].Signals.Names]
@@ -393,13 +396,13 @@ class Autolab:
 
         # Todo
         # visualize the measurement live while it is being measured
-        #await self.visualize_measurement(plot_type)
+        await self.visualize_measurement(plot_type)
 
         # cell status after measurement
         self.set_cell(on_off_status)
 
         # time required for switching the cell off and save the data
-        sleep(0.25)
+        sleep(2)
         self.proc.SaveAs(os.path.join(save_dir, f"{name}.nox"))
 
         # make a configuration of the procedure
@@ -409,7 +412,7 @@ class Autolab:
                                     parse_instructions = parse_instruction)
 
         utils.save_data_as_json(directory = save_dir, data = procedure_configuration,
-                                name = name.replace('.nox', '_configuration.json'))
+                                name = f"{name}_configuration.json")
         sleep(0.1)
 
         data = self.parse_nox(parse_instruction = parse_instruction,

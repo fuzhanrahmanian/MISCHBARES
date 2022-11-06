@@ -50,7 +50,7 @@ def set_cell(onoff: str):
         retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.set_cell(onoff)
-    retc = ReturnClass(parameters = {'onoff': onoff}, data = None)
+    retc = ReturnClass(parameters = {'onoff': onoff}, data = {})
     log.info("set_cell: %s at the server level", onoff)
     return retc
 
@@ -63,7 +63,7 @@ def reset():
         retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.reset()
-    retc = ReturnClass(parameters=None, data=None)
+    retc = ReturnClass(parameters={}, data={})
     log.info("Autolab reset at the server level")
     return retc
 
@@ -76,7 +76,7 @@ def abort():
         retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.abort()
-    retc = ReturnClass(parameters=None, data=None)
+    retc = ReturnClass(parameters={}, data={})
     log.info("Autolab abort at the server level")
     return retc
 
@@ -100,7 +100,7 @@ def set_stability(stability: str):
         retc (ReturnClass): return class with the parameters and the data.
     """
     AUTOLAB.set_stability(stability)
-    retc = ReturnClass(parameters={'stability': stability}, data=None)
+    retc = ReturnClass(parameters={'stability': stability}, data={})
     log.info("set_stability: %s at the server level", stability)
     return retc
 
@@ -113,7 +113,7 @@ def potential():
         retc (ReturnClass): return class with the parameters and the data.
     """
     ret = AUTOLAB.potential()
-    retc = ReturnClass(parameters=None, data={'potential': ret, 'units': 'V'})
+    retc = ReturnClass(parameters= {}, data={'potential': ret, 'units': 'V'})
     return retc
 
 
@@ -125,7 +125,7 @@ def applied_potential():
         retc (ReturnClass): return class with the parameters and the data.
     """
     ret = AUTOLAB.applied_potential()
-    retc = ReturnClass(parameters=None, data={
+    retc = ReturnClass(parameters={}, data={
                         'applied_potential': ret, 'units': 'V'})
     return retc
 
@@ -138,7 +138,7 @@ def current():
         current (float): current value.
     """
     ret = AUTOLAB.current()
-    retc = ReturnClass(parameters=None, data={'current': ret, 'units': 'A'})
+    retc = ReturnClass(parameters={}, data={'current': ret, 'units': 'A'})
     return retc
 
 
@@ -150,7 +150,7 @@ def measure_status():
         retc (ReturnClass): return class with the parameters and the data
     """
     ret = AUTOLAB.measure_status()
-    retc = ReturnClass(parameters=None, data={'measure_status': ret})
+    retc = ReturnClass(parameters={}, data={'measure_status': ret})
     return retc
 
 
@@ -164,7 +164,7 @@ def set_current_range(crange: str):
     AUTOLAB.set_current_range(crange)
     res = [re.findall(r'(\d+)(\w+)', crange)[0]]
     retc = ReturnClass(
-        parameters={'parameters': crange, 'units': res[0][1]}, data=None)
+        parameters={'parameters': crange, 'units': res[0][1]}, data={})
     log.info("set_current_range: %s with unit %s at the server level", crange, res[0][1])
     return retc
 
@@ -189,28 +189,24 @@ async def perform_measurement(procedure: str, setpoints: str, plot_type: str, on
     # eval to convert the string to dict
     setpoints = eval(setpoints)
 
-    if isinstance(parse_instruction, list):
-        parse_instruction = [parse_instruction]
-
     data = await AUTOLAB.perform_measurement(procedure = procedure, setpoints = setpoints,
-                                             plot_type = plot_type,
-                                             on_off_status = on_off_status,
-                                             save_dir = save_dir, optional_name = optional_name,
-                                             parse_instruction = parse_instruction)
+                                            plot_type = plot_type,
+                                            on_off_status = on_off_status,
+                                            save_dir = save_dir, optional_name = optional_name,
+                                            parse_instruction = parse_instruction)
 
     retc = ReturnClass(measurement_type='potentiostat_autolab',
                         parameters={'command': 'perform_measurement',
                                     'parameters': dict(procedure=procedure, setpoints=setpoints,
-                                                       plot_type=plot_type,
-                                                       on_off_status=on_off_status,
-                                                       parse_instruction=parse_instruction,
-                                                       save_dir=save_dir,
-                                                       optional_name=optional_name)},
+                                                    plot_type=plot_type,
+                                                    on_off_status=on_off_status,
+                                                    parse_instruction=parse_instruction,
+                                                    save_dir=save_dir,
+                                                    optional_name=optional_name)},
                         data=data)
-    log.info(f"perforn {procedure} wih parameters {setpoints} at the server level \n the result \
+    log.info(f"perform {procedure} wih parameters {setpoints} at the server level \n the result \
                                                                                     is \n {data}")
     return retc
-
 
 
 #TODO: check the functionality of this function

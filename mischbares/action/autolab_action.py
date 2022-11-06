@@ -37,7 +37,7 @@ def set_cell(onoff:str):
         retc (ReturnClass): return class with the parameters and the data
     """
     res = requests.get(f"{server_url}/autolabDriver/cellonoff", params={'onoff':onoff},
-                       timeout=5).json()
+                       timeout=None).json()
     retc = ReturnClass(parameters = {'cellonoff':onoff}, data = res)
     log.info("set_cell: %s at the action level", onoff)
     return retc
@@ -50,8 +50,8 @@ def potential():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/potential", timeout = 6).json()
-    retc = ReturnClass(parameters = None,data = res)
+    res = requests.get(f"{server_url}/autolabDriver/potential", timeout=None).json()
+    retc = ReturnClass(parameters = {}, data = res)
     return retc
 
 
@@ -62,8 +62,8 @@ def applied_potential():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/appliedpotential", timeout=5).json()
-    retc = ReturnClass(parameters = None, data = res)
+    res = requests.get(f"{server_url}/autolabDriver/appliedpotential", timeout=None).json()
+    retc = ReturnClass(parameters = {}, data = res)
     return retc
 
 
@@ -74,7 +74,7 @@ def current():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/current", timeout=5).json()
+    res = requests.get(f"{server_url}/autolabDriver/current", timeout=None).json()
     retc = ReturnClass(parameters = None,data = res)
     return retc
 
@@ -84,9 +84,9 @@ def measure_status():
     """check if the instrument is measuring.
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/ismeasuring", timeout=6).json()
+    res = requests.get(f"{server_url}/autolabDriver/ismeasuring", timeout=None).json()
     retc = ReturnClass(parameters = None,data = res)
     return retc
 
@@ -97,13 +97,13 @@ def set_current_range(crange:str):
 
     Args:
         crange (str): current range of the instrument
-                        (10A, 1A, 100A, 10mA, 1mA, 100uA, 10uA, 1uA, 100nA, 10nA)
+                        (10A, 1A, 100A, 10mA, 1mA, 100uA, 10uA, 1uA, 100nA, 10nA).
 
     Returns:
         _type_: _description_
     """
     res = requests.get(f"{server_url}/autolabDriver/setcurrentrange",
-                        params={'crange':crange}, timeout=3).json()
+                        params={'crange':crange}, timeout=None).json()
     retc = ReturnClass(parameters= {'crange': crange}, data = res)
     return retc
 
@@ -197,9 +197,10 @@ def measure(procedure: str, setpointjson: str, plot_type: str, on_off_status: st
 
     #TODO: time out should be modified.
     res = requests.get(f"{server_url}/autolabDriver/measure",
-                        params=measure_conf, timeout=300).json()
+                        params=measure_conf, timeout=None).json()
 
     retc = ReturnClass(parameters = measure_conf, data = res)
+    #TODO: more proper log for this function.
     return retc
 
 
@@ -208,14 +209,14 @@ def retrieve(save_dir: str, file_name: str):
     """retrieve the data from the file.
 
     Args:
-        save_dir (str): directory of the file
-        file_name (str): name of the file
+        save_dir (str): directory of the file.
+        file_name (str): name of the file.
 
     Returns:
-        retc (ReturnClass): return class with the parameters and the data
+        retc (ReturnClass): return class with the parameters and the data.
     """
     conf = dict(safepath= save_dir,filename = file_name)
-    res = requests.get(f"{server_url}/autolabDriver/retrieve", params=conf, timeout=20).json()
+    res = requests.get(f"{server_url}/autolabDriver/retrieve", params=conf, timeout=None).json()
     retc = ReturnClass(parameters = {'save_dir':save_dir,'file_name':file_name}, data = res)
     return retc
 

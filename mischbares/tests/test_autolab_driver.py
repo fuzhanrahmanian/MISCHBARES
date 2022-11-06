@@ -54,7 +54,7 @@ def test_parse_nox():
     """
     data = AUTOLAB.parse_nox(parse_instruction = ['recordsignal'],
                       save_dir = os.path.join(os.getcwd(), "results"),
-                      optional_name = "OCP_example.nox")
+                      optional_name = "OCP_example")
     assert round(np.mean(data['recordsignal']['WE(1).Potential']), 3) == 0.0
 
 

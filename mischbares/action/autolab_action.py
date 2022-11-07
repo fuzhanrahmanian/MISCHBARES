@@ -8,13 +8,13 @@ import requests
 
 import numpy as np
 
-from mischbares.config.main_config_2 import config
+from mischbares.config.main_config import config
 from mischbares.logger import logger
 from mischbares.utils import utils
 
 log = logger.get_logger("autolab_action")
 SERVERKEY = "autolab"
-
+SERVER_URL = config[SERVERKEY]['url']
 app = FastAPI(title="Autolab", description="Autolab API", version="2.1.0")
 
 
@@ -36,7 +36,7 @@ def set_cell(onoff:str):
     Returns:
         retc (ReturnClass): return class with the parameters and the data
     """
-    res = requests.get(f"{server_url}/autolabDriver/cellonoff", params={'onoff':onoff},
+    res = requests.get(f"{SERVER_URL}/autolabDriver/cellonoff", params={'onoff':onoff},
                        timeout=None).json()
     retc = ReturnClass(parameters = {'cellonoff':onoff}, data = res)
     log.info("set_cell: %s at the action level", onoff)
@@ -50,7 +50,7 @@ def potential():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/potential", timeout=None).json()
+    res = requests.get(f"{SERVER_URL}/autolabDriver/potential", timeout=None).json()
     retc = ReturnClass(parameters = {}, data = res)
     return retc
 
@@ -62,7 +62,7 @@ def applied_potential():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/appliedpotential", timeout=None).json()
+    res = requests.get(f"{SERVER_URL}/autolabDriver/appliedpotential", timeout=None).json()
     retc = ReturnClass(parameters = {}, data = res)
     return retc
 
@@ -74,8 +74,8 @@ def current():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/current", timeout=None).json()
-    retc = ReturnClass(parameters = None,data = res)
+    res = requests.get(f"{SERVER_URL}/autolabDriver/current", timeout=None).json()
+    retc = ReturnClass(parameters = {}, data = res)
     return retc
 
 
@@ -86,8 +86,8 @@ def measure_status():
     Returns:
         retc (ReturnClass): return class with the parameters and the data.
     """
-    res = requests.get(f"{server_url}/autolabDriver/ismeasuring", timeout=None).json()
-    retc = ReturnClass(parameters = None,data = res)
+    res = requests.get(f"{SERVER_URL}/autolabDriver/ismeasuring", timeout=None).json()
+    retc = ReturnClass(parameters = {}, data = res)
     return retc
 
 
@@ -102,7 +102,7 @@ def set_current_range(crange:str):
     Returns:
         _type_: _description_
     """
-    res = requests.get(f"{server_url}/autolabDriver/setcurrentrange",
+    res = requests.get(f"{SERVER_URL}/autolabDriver/setcurrentrange",
                         params={'crange':crange}, timeout=None).json()
     retc = ReturnClass(parameters= {'crange': crange}, data = res)
     return retc
@@ -128,8 +128,8 @@ def get_ocp_voltage(file_name, path="C:/Users/SDC_1/Documents/Github/sdc_gb"):
 
 #TODO: this is a temporary solution for the measurement.It should be modified.
 @app.get("/autolab/measure/")
-def measure(procedure: str, setpointjson: str, plot_type: str, on_off_status: str,
-            parse_instruction: str, save_dir: str, optional_name: str, iteration: str = None):
+def measure(procedure: str, setpoints: str, plot_type: str, on_off_status: str,
+            parse_instruction: str, save_dir: str, optional_name: str = None, iteration: str = None):
     """
     Measure a recipe and manipulate the parameters:
 
@@ -137,57 +137,57 @@ def measure(procedure: str, setpointjson: str, plot_type: str, on_off_status: st
     """
 
     # Need to check whether there ocp voltage needs to be taken or not , and from which experiment
-    print(f"setpoint json before is {setpointjson}")
+    log.info(f"setpoint json before is {setpoints}")
     if procedure=="ca":
-        setpointjson = eval(setpointjson)
-        log.infor("the applied potential is : %s", setpointjson["applypotential"])
+        setpoints = eval(setpoints)
+        log.infor("the applied potential is : %s", setpoints["applypotential"])
 
-        if setpointjson["applypotential"]["Setpoint value"] == "?":
-            setpointjson["applypotential"]["Setpoint value"] = \
+        if setpoints["applypotential"]["Setpoint value"] == "?":
+            setpoints["applypotential"]["Setpoint value"] = \
                 get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
         else:
-            setpointjson["applypotential"]["Setpoint value"] += \
+            setpoints["applypotential"]["Setpoint value"] += \
                 get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-        setpointjson = json.dumps(setpointjson)
+        setpoints = json.dumps(setpoints)
         sleep(0.7)
 
     if procedure=="eis":
-        setpointjson = eval(setpointjson)
-        log.infor("the applied potential is : %s", setpointjson["FHSetSetpointPotential"])
-        if setpointjson["FHSetSetpointPotential"]["Setpoint value"] == "?":
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"] =\
+        setpoints = eval(setpoints)
+        log.infor("the applied potential is : %s", setpoints["FHSetSetpointPotential"])
+        if setpoints["FHSetSetpointPotential"]["Setpoint value"] == "?":
+            setpoints["FHSetSetpointPotential"]["Setpoint value"] =\
                 get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
 
         else:
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"] +=\
+            setpoints["FHSetSetpointPotential"]["Setpoint value"] +=\
                 get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-        setpointjson = json.dumps(setpointjson)
+        setpoints = json.dumps(setpoints)
         sleep(0.7)
 
     if procedure=="cv":
-        setpointjson = eval(setpointjson)
-        if setpointjson["FHSetSetpointPotential"]["Setpoint value"] == "?":
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"] =\
+        setpoints = eval(setpoints)
+        if setpoints["FHSetSetpointPotential"]["Setpoint value"] == "?":
+            setpoints["FHSetSetpointPotential"]["Setpoint value"] =\
                 get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
         else:
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"] +=\
+            setpoints["FHSetSetpointPotential"]["Setpoint value"] +=\
                 get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
 
-        setpointjson["CVLinearScanAdc164"]["StartValue"] =\
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"]
-        setpointjson["CVLinearScanAdc164"]["UpperVertex"] +=\
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"]
-        setpointjson["CVLinearScanAdc164"]["LowerVertex"] +=\
-            setpointjson["FHSetSetpointPotential"]["Setpoint value"]
+        setpoints["CVLinearScanAdc164"]["StartValue"] =\
+            setpoints["FHSetSetpointPotential"]["Setpoint value"]
+        setpoints["CVLinearScanAdc164"]["UpperVertex"] +=\
+            setpoints["FHSetSetpointPotential"]["Setpoint value"]
+        setpoints["CVLinearScanAdc164"]["LowerVertex"] +=\
+            setpoints["FHSetSetpointPotential"]["Setpoint value"]
 
-        setpointjson = json.dumps(setpointjson)
+        setpoints = json.dumps(setpoints)
         sleep(0.7)
-    log.info("setpoint json after ocp applied is %s", setpointjson)
+    log.info("setpoint json after ocp applied is %s", setpoints)
 
     measure_conf = dict(procedure=procedure,
-                        setpointjson=setpointjson,
-                        plot=plot_type,
-                        onoffafter=on_off_status,
+                        setpoints=setpoints,
+                        plot_type=plot_type,
+                        on_off_status=on_off_status,
                         save_dir=save_dir,
                         optional_name=optional_name,
                         parse_instruction=parse_instruction)
@@ -196,7 +196,7 @@ def measure(procedure: str, setpointjson: str, plot_type: str, on_off_status: st
     log.info("measure_conf: %s", measure_conf)
 
     #TODO: time out should be modified.
-    res = requests.get(f"{server_url}/autolabDriver/measure",
+    res = requests.get(f"{SERVER_URL}/autolabDriver/measure",
                         params=measure_conf, timeout=None).json()
 
     retc = ReturnClass(parameters = measure_conf, data = res)
@@ -216,7 +216,7 @@ def retrieve(save_dir: str, file_name: str):
         retc (ReturnClass): return class with the parameters and the data.
     """
     conf = dict(safepath= save_dir,filename = file_name)
-    res = requests.get(f"{server_url}/autolabDriver/retrieve", params=conf, timeout=None).json()
+    res = requests.get(f"{SERVER_URL}/autolabDriver/retrieve", params=conf, timeout=None).json()
     retc = ReturnClass(parameters = {'save_dir':save_dir,'file_name':file_name}, data = res)
     return retc
 
@@ -229,5 +229,4 @@ def main():
 
 
 if __name__ == "__main__":
-    server_url = config[SERVERKEY]['url']
     main()

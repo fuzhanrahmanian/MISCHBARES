@@ -6,8 +6,8 @@ import pytest
 import numpy as np
 
 import requests
-from mischbares.config.main_config_2 import config
-import mischbares.server.autolab_server as autolab_server
+from mischbares.config.main_config import config
+from mischbares.server import autolab_server
 
 host_url = config['servers']['autolabDriver']['host']
 port = config['servers']['autolabDriver']['port']
@@ -29,7 +29,7 @@ def server_instance():
     sleep(15)
     yield proc
     proc.kill()
-    shutil.rmtree('mischbares/test/data', ignore_errors=True)
+    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
 def test_server_connection():
@@ -45,7 +45,7 @@ def test_potential_server():
     assert round(eval(response.content)["data"]["potential"], 2) == 0.0
 
 
-def test_applied_voltage_server():
+def test_applied_potential_server():
     """Test the applied voltage server."""
     response = requests.get(f"http://{host_url}:{port}/autolabDriver/appliedpotential",
                             timeout=None)

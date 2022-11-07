@@ -412,7 +412,7 @@ class Autolab:
                                     parse_instructions = parse_instruction)
 
         utils.save_data_as_json(directory = save_dir, data = procedure_configuration,
-                                name = f"{name}_configuration.json")
+                                name = f"{name}_configuration")
         sleep(0.1)
 
         data = self.parse_nox(parse_instruction = parse_instruction,

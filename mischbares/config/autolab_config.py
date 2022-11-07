@@ -3,10 +3,13 @@
 # in the autolabDriver section, the driver to use is specified.
 # in the autolab the url and procedures will be described
 import os
+import socket
 
 config_path, _ = os.path.split(__file__)
 
 autolab_config = {}
+
+ip_adress = socket.gethostbyname(socket.gethostname())
 
 autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autolab_configuration',
                                         'Autolab SDK 1.11'),
@@ -33,4 +36,4 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                                                     'OCP_record_signal.nox')})
 
 # action should get the driver url
-autolab_config['autolab'] = dict(url = 'http://192.168.31.121:15374')
+autolab_config['autolab'] = dict(url = f'http://{ip_adress}:15374')

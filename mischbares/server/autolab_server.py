@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from fastapi import FastAPI, WebSocket
 import uvicorn
 
-from mischbares.config.main_config_2 import config
+from mischbares.config.main_config import config
 from mischbares.driver.autolab_driver import Autolab
 from mischbares.logger import logger
 from mischbares.utils import utils

@@ -1,0 +1,5 @@
+# In the main directory, you need to run:
+pytest --disable-warning
+
+# if you want to see your print statement
+pytest -s

@@ -42,7 +42,7 @@ def save_data_as_json(directory, data, name):
     """
 
     log.info(f"Saving data in {directory} as json")
-    with open(os.path.join(directory, name), 'w', encoding="utf8") as file:
+    with open(os.path.join(directory, f"{name}.json"), 'w', encoding="utf8") as file:
         json.dump(data, file, ensure_ascii=False)
 
 

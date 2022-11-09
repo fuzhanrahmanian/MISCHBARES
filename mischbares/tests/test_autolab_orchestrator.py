@@ -87,12 +87,19 @@ def test_send_measurment():
                                           'setpoints': "{'FHLevel':{'Duration':10}}",
                                           "plot_type":'tCV',
                                           "on_off_status":'off',
-                                          "save_dir":'mischabres/tests',
+                                          "save_dir":'mischbares/tests',
                                           "parse_instruction":'recordsignal'}}, meta=dict())
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None)
     assert response.status_code == 200
+    # wait for the measurement to finish
+    time.sleep(15)
+    # Check if there is a file that ends with autolab.nox
+    for file_endings in ['Autolab.nox', 'Autolab.json', 'Autolab_configuration.json']:
+        assert len([f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]) == 1
+
 
 
 def test_finish_orchestrator():

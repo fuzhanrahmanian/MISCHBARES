@@ -19,13 +19,18 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                 micsetupf = os.path.join(config_path, 'autolab_configuration', 'Autolab SDK 1.11',
                                         'Hardware Setup Files', 'Adk.bin'),
                 proceuduresd = {'cp': os.path.join(config_path, 'electrochemical_procedures',
-                                                   'CP.nox'),
+                                                   'CP_MISCHBARES.nox'),
                                 'ca': os.path.join(config_path, 'electrochemical_procedures',
-                                                   'CA.nox'),
+                                                   'CA_MISCHBARES.nox'),
                                 'cv': os.path.join(config_path, 'electrochemical_procedures',
                                                    'CV.nox'),
                                 'eis': os.path.join(config_path, 'electrochemical_procedures',
-                                                    'EIS.nox'),
+                                                    'EIS_MISCHBARES.nox'),
+                                'eis_reverse': os.path.join(config_path,
+                                                'electrochemical_procedures',
+                                                'EIS_MISCHBARES_REVERSE.nox'),
+                                'lissajous': os.path.join(config_path, 'electrochemical_procedures',
+                                                          'LISSAJOUS_MISCHBARES.nox'),
                                 'on': os.path.join(config_path, 'electrochemical_procedures',
                                                    'ON.nox'),
                                 'off': os.path.join(config_path, 'electrochemical_procedures',
@@ -33,7 +38,7 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                                 'ocp_cv': os.path.join(config_path, 'electrochemical_procedures',
                                                        'OCP_CV.nox'),
                                 'ocp': os.path.join(config_path, 'electrochemical_procedures',
-                                                    'OCP_record_signal.nox')})
+                                                    'OCP_MISCHBARES.nox')})
 
 # action should get the driver url
 autolab_config['autolab'] = dict(url = f'http://{ip_adress}:15374')

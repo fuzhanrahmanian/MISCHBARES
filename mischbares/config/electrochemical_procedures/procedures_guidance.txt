@@ -1,25 +1,26 @@
 In this file, user can find out the instruction about various elechtrochemical test procedures and 
-how they can be called. 
+how they can be called.
 
 # example configuration for available procedures
 autolab_config['autolab']['procedures'] = {}
 
 # chrono amperometry
-
+# self.proc.Commands["switchpotentiostatic"].CommandParameters["WE(1).Current range"].Value = self.inst.Ei.CurrentRange
 autolab_config['autolab']['procedures']['ca'] = {'procedure': 'ca',
-                            'setpoints': {'applypotential': {'Setpoint value': 0.735},
-                                            'recordsignal': {'Duration': 1000}},
+                            'setpoints': {'applypotential0': {'Setpoint value: 0.0},
+                                          'applypotential': {'Setpoint value': 0.735},
+                                        'recordsignal': {'Duration (s)': 1000, 'Interval time (s)': 0.4}},
                             'plot': 'tCV',
                             'onoffafter': 'off',
                             'safepath': None, # path to save the data
                             'filename': 'ca.nox',
                             'parseinstructions': ['recordsignal']}
-							
-			
+
 # open circuit potential
 
 autolab_config['autolab']['procedures']['ocp'] = {'procedure': 'ocp',
-			'setpoints': {'FHLevel': {'Duration': 20}},
+			'setpoints': {'recordsignal': {'Interval time (s)': 0.05,
+                                            'Duration (s)': 20}},
 			'plot': 'tCV',
 			'onoffafter': 'off',
 			'safepath': None, # Path to save the data
@@ -29,10 +30,12 @@ autolab_config['autolab']['procedures']['ocp'] = {'procedure': 'ocp',
 
 
 # chrono potensiometry
-
+# self.proc.Commands["switchgalvanostatic"].CommandParameters["WE(1).Current range"].Value = self.inst.Ei.CurrentRange
 autolab_config['autolab']['procedures']['cp'] = {'procedure': 'cp',
-                        'setpoints': {'applycurrent': {'Setpoint value': 7*(10**-6)},
-                                    'recordsignal': {'Duration': 600, "Interval time (s)": 0.01}}, #'Interval time in µs'
+                        'setpoints': {'applycurrent0': {Setpoint value': 0.0}, # here should be the ocp
+                                      'applycurrent': {'Setpoint value': 7*(10**-6)},
+                                    'recordsignal': {'Duration (s)': 600, "Interval time (s)": 0.01}},
+                                    #TODO check the threshold of the number of poits that can be recorded.
                         'plot': 'tCV',
                         'onoffafter': 'off',
                         'safepath': None, # path to save the data
@@ -55,14 +58,33 @@ autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
                         'safepath': None, # path to save the data
                         'filename': 'cv.nox',
                         'parseinstructions': ['CVLinearScanAdc164']}
-						
-						
-# electro impedance analysis
 
+
+# impedance analysis
+# self.proc.Commands['Autolab control'].CommandParameters['WE(1).Current range'].Value = self.inst.Ei.CurrentRange
 autolab_config['autolab']['procedures']['eis'] = {'procedure': 'eis',
-                            'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.01}},
+                            'setpoints': {'Set potential': {'Setpoint value': 0.01},
+                                          'FRA single frequency': {'IntegrationTime: 0.125,
+                                                                   'IntegrationCycle': 1,
+                                                                   'DsgFrequency': 10000}},
                             'plot': 'impedance',
                             'onoffafter': 'off',
                             'safepath': None, # path to save the data
                             'filename': 'eis.nox',
-                            'parseinstructions': ['FIAMeasPotentiostatic']}
+                            'parseinstructions': ['FIAMeasPotentiostatic', 'FIAMeasurement]}
+
+
+# electro impedance analysis
+# self.proc.Commands['Autolab control'].CommandParameters['WE(1).Current range'].Value = self.inst.Ei.CurrentRange
+autolab_config['autolab']['procedures']['eis_reverse'] = {'procedure': 'eis_reverse',
+                            'setpoints': {'Set potential': {'Setpoint value': 0.01},
+                                          'FRA single frequency': {'IntegrationTime: 0.125,
+                                                                   'IntegrationCycle': 1,
+                                                                   'DsgFrequency': 10}},
+                            'plot': 'impedance',
+                            'onoffafter': 'off',
+                            'safepath': None, # path to save the data
+                            'filename': 'eis_reverse.nox',
+                            'parseinstructions': ['FIAMeasPotentiostatic', 'FIAMeasurement]}
+
+

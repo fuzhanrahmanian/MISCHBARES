@@ -4,6 +4,7 @@ import sys
 import time
 from time import sleep
 from copy import copy
+import numpy as np
 import asyncio
 import clr
 
@@ -252,6 +253,8 @@ class Autolab:
         elif current_range == "10nA":
             self.inst.Ei.CurrentRange = -8
 
+        return self.inst.Ei.CurrentRange
+
 
     def set_setpoints(self, setpoints):
         """set the setpoints of the procedure.
@@ -268,6 +271,7 @@ class Autolab:
             for param, value in params.items():
                 self.proc.Commands[comm].CommandParameters[param].Value = value
                 log.info(f"set {param} to {value}")
+
 
 
     # This function needs to be modified to work with the bokeh visualizer properly

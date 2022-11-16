@@ -43,23 +43,6 @@ autolab_config['autolab']['procedures']['cp'] = {'procedure': 'cp',
                         'parseinstructions': ['recordsignal']}
 
 
-
-# chrono voltammetry analysis
-autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
-                        'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.4},
-                                        'FHWait': {'Time': 2},
-                                        'CVLinearScanAdc164': {'StartValue': 0.4,
-                                                                'UpperVertex': 1.5,
-                                                                'LowerVertex': 0.399,
-                                                                'NumberOfStopCrossings': 50,
-                                                                'ScanRate': 0.02}},
-                        'plot': 'tCV',
-                        'onoffafter': 'off',
-                        'safepath': None, # path to save the data
-                        'filename': 'cv.nox',
-                        'parseinstructions': ['CVLinearScanAdc164']}
-
-
 # impedance analysis
 # self.proc.Commands['Autolab control'].CommandParameters['WE(1).Current range'].Value = self.inst.Ei.CurrentRange
 autolab_config['autolab']['procedures']['eis'] = {'procedure': 'eis',
@@ -88,3 +71,18 @@ autolab_config['autolab']['procedures']['eis_reverse'] = {'procedure': 'eis_reve
                             'parseinstructions': ['FIAMeasPotentiostatic', 'FIAMeasurement]}
 
 
+
+# chrono voltammetry analysis
+autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
+                        'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.4},
+                                        'FHWait': {'Time': 2},
+                                        'CVLinearScanAdc164': {'StartValue': 0.4,
+                                                                'UpperVertex': 1.5,
+                                                                'LowerVertex': 0.399,
+                                                                'NumberOfStopCrossings': 50,
+                                                                'ScanRate': 0.02}},
+                        'plot': 'tCV',
+                        'onoffafter': 'off',
+                        'safepath': None, # path to save the data
+                        'filename': 'cv.nox',
+                        'parseinstructions': ['CVLinearScanAdc164']}

@@ -428,14 +428,14 @@ class Autolab:
 
         Args:
             procedure (str): the procedure to be performed.
-            setpoints (dict): the setpoints of the procedure.
             plot_type (str): the type of plot.
-            on_off_status (str): the status of the instrument.
             parse_instruction (list[str]): the instruction for parsing the data.
-            current_range (str): the current range.
             save_dir (str): save directory.
-            optional_name (str): optional file name.
-            measure_at_ocp (bool): whether to measure at ocp.
+            setpoints (dict): the setpoints of the procedure.
+            current_range (str): the current range. Defaults to "1mA".
+            on_off_status (str): the status of the instrument. Defaults to "off".
+            optional_name (str): optional file name. Defaults to None.
+            measure_at_ocp (bool): whether to measure at ocp. Default is False.
         Returns:
             data (dict): extracted data from the nox file of the procedure.
         """
@@ -498,4 +498,3 @@ class Autolab:
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data
-

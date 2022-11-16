@@ -271,7 +271,7 @@ class Autolab:
             setpoints (dict): a dictionary of the procedure's parameters.
             current_range (str): the current range of the instrument.
         """
-        if procedure is list(self.current_range_procedure_setting.keys()):
+        if procedure in list(self.current_range_procedure_setting.keys()):
             # set the current range
             new_current_range = self.set_current_range(current_range)
 
@@ -291,6 +291,16 @@ class Autolab:
                 for param, value in params.items():
                     self.proc.Commands[comm].CommandParameters[param].Value = value
                     log.info(f"set {param} to {value}")
+
+
+    def set_ocp_value(self, procedure, ocp_value):
+        """ set the ocp potential or current of the procedure.
+        Args:
+            procedure (str): name of the procedure.
+            ocp_value (float): ocp potential or current value.
+        """
+        ocp_command = self.ocp_procedure_setting[procedure]
+        self.proc.Commands[ocp_command].CommandParameters["Setpoint value"].Value = ocp_value
 
 
     def get_ocp_on_the_fly(self):
@@ -314,6 +324,7 @@ class Autolab:
             # due to oscillation, an averaged value is used
             ocp_values.append(np.mean(extracted_values[-5:]))
 
+        sleep(5)
         # empty the procedure
         self.proc = None
         # first value is the current, second value is the potential
@@ -408,7 +419,6 @@ class Autolab:
 
 
 
-
     async def perform_measurement(self, procedure, plot_type,
                                     parse_instruction, save_dir,
                                     setpoints = None, current_range = "1mA",
@@ -438,19 +448,21 @@ class Autolab:
         name = utils.assemble_file_name(self.__class__.__name__, optional_name) if \
                 optional_name else utils.assemble_file_name(self.__class__.__name__)
 
-        # load the procedure
-        self.load_procedure(procedure)
-        log.info(f"loading the procedure {procedure}")
-
         if measure_at_ocp:
             if procedure == "cp":
-                ocp_current, _ = self.get_ocp_on_the_fly()
-                setpoints[self.ocp_procedure_setting[procedure]]["Setpoint value"] = ocp_current
+                ocp_value, _ = self.get_ocp_on_the_fly()
+
             elif procedure == "ca" or procedure == "eis":
-                _, ocp_potential = self.get_ocp_on_the_fly()
-                setpoints[self.ocp_procedure_setting[procedure]]["Setpoint value"] = ocp_potential
+                _, ocp_value = self.get_ocp_on_the_fly()
+
             else:
                 log.error("The procedure is not supported for measuring at OCP")
+
+        # load the procedure
+        self.load_procedure(procedure)
+
+        self.set_ocp_value(procedure, ocp_value)
+        log.info(f"loading the procedure {procedure}")
 
         # set the setpoints
         self.set_setpoints(procedure, setpoints, current_range)
@@ -458,7 +470,7 @@ class Autolab:
         # measure the procedure
         self.proc.Measure()
         log.info("measuring the procedure")
-
+        #
         # Todo
         # visualize the measurement live while it is being measured
         await self.visualize_measurement(plot_type)

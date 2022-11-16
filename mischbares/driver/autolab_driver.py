@@ -258,17 +258,28 @@ class Autolab:
         elif current_range == "10nA":
             self.inst.Ei.CurrentRange = -8
 
+        log.info(f"current range set to {current_range}\
+                with the value {self.inst.Ei.CurrentRange}")
         return self.inst.Ei.CurrentRange
 
 
-    def set_setpoints(self, setpoints):
+    def set_setpoints(self, procedure, setpoints, current_range):
         """set the setpoints of the procedure.
 
         Args:
+            procedure (str): name of the procedure.
             setpoints (dict): a dictionary of the procedure's parameters.
+            current_range (str): the current range of the instrument.
         """
-        for comm, params in setpoints.items():
+        # set the current range
+        new_current_range = self.set_current_range(current_range)
 
+        # change this range in the correcponded experiment
+        current_comm = self.current_range_procedure_setting[procedure]
+        self.proc.Commands[current_comm].CommandParameters["WE(1).Current range"].Value = \
+                                                                                new_current_range
+
+        for comm, params in setpoints.items():
             if  params is None:
                 log.info(f"no parameters for {comm}")
                 continue
@@ -395,7 +406,7 @@ class Autolab:
 
 
     async def perform_measurement(self, procedure, setpoints, plot_type, on_off_status,
-                                    parse_instruction, save_dir, optional_name = None):
+                                    parse_instruction, current_range, save_dir, optional_name = None):
         """perform the measurement
 
         Args:
@@ -404,6 +415,7 @@ class Autolab:
             plot_type (str): the type of plot.
             on_off_status (str): the status of the instrument.
             parse_instruction (list[str]): the instruction for parsing the data.
+            current_range (str): the current range.
             save_dir (str): save directory.
             optional_name (str): optional file name.
         Returns:
@@ -423,7 +435,7 @@ class Autolab:
         log.info(f"loading the procedure {procedure}")
 
         # set the setpoints
-        self.set_setpoints(setpoints)
+        self.set_setpoints(procedure, setpoints, current_range)
 
         # measure the procedure
         self.proc.Measure()

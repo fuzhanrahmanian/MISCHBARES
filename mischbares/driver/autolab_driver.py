@@ -4,8 +4,8 @@ import sys
 import time
 from time import sleep
 from copy import copy
-import numpy as np
 import asyncio
+import numpy as np
 import clr
 
 from mischbares.logger import logger
@@ -42,7 +42,12 @@ class Autolab:
         self._optional_name = None
         self.finished_procedure = None
         self.data = None
-
+        self.current_range_procedure_setting = dict(ca = "switchpotentiostatic",
+                                                    cp = "switchgalvanostatic",
+                                                    eis = "Autolab control")
+        self.ocp_procedure_setting = dict(ca = "applypotential0",
+                                          cp = "applycurrent0",
+                                          eis = "Set potential")
 
     @property
     def save_dir(self):
@@ -273,6 +278,32 @@ class Autolab:
                 log.info(f"set {param} to {value}")
 
 
+    def get_ocp_on_the_fly(self):
+        """get the on the fly OCP value as initial point for autolab procedures.
+
+        Returns:
+            current (float): current value at ocp.
+            potential (float): potential value at ocp.
+        """
+        self.load_procedure	("ocp")
+        # measure the procedure for 10 seconds
+        self.proc.Measure()
+
+        # extracting the OCP values
+        ocp_values = []
+        for ocp_item in ['WE(1).Current', 'WE(1).Potential']:
+            extracted_values =\
+                list(self.proc.Commands['recordsignal'].Signals.get_Item(ocp_item).Value)
+            log.info(f"extracted {ocp_item} value: {extracted_values}")
+
+            # due to oscillation, an averaged value is used
+            ocp_values.append(np.mean(extracted_values[-5:]))
+
+        # empty the procedure
+        self.proc = None
+        # first value is the current, second value is the potential
+        return ocp_values[0], ocp_values[1]
+
 
     # This function needs to be modified to work with the bokeh visualizer properly
     # Todo
@@ -425,3 +456,15 @@ class Autolab:
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data
+
+
+# setting current range
+# CommandParameters in all is ["WE(1).Current range"]
+# ca: "switchpotentiostatic"
+# cp: "switchgalvanostatis"
+# eis: "Autolab control"
+
+# where to apply ocp potential, the commandParameters of all is "Setpoint Value"
+# ca: "applypotential0"
+# cp: "applycurrent0"
+# eis: "Set potential"

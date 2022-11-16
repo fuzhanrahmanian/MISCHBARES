@@ -271,6 +271,7 @@ class Autolab:
             setpoints (dict): a dictionary of the procedure's parameters.
             current_range (str): the current range of the instrument.
         """
+
         # set the current range
         new_current_range = self.set_current_range(current_range)
 
@@ -278,6 +279,8 @@ class Autolab:
         current_comm = self.current_range_procedure_setting[procedure]
         self.proc.Commands[current_comm].CommandParameters["WE(1).Current range"].Value = \
                                                                                 new_current_range
+        log.info(f"current range set to {current_range} in procedure {procedure} \n \
+                    the experment settings are {setpoints}")
 
         for comm, params in setpoints.items():
             if  params is None:
@@ -406,7 +409,8 @@ class Autolab:
 
 
     async def perform_measurement(self, procedure, setpoints, plot_type, on_off_status,
-                                    parse_instruction, current_range, save_dir, optional_name = None):
+                                    parse_instruction, current_range, save_dir,
+                                    optional_name = None, measure_at_ocp = False):
         """perform the measurement
 
         Args:
@@ -418,6 +422,7 @@ class Autolab:
             current_range (str): the current range.
             save_dir (str): save directory.
             optional_name (str): optional file name.
+            measure_at_ocp (bool): whether to measure at ocp.
         Returns:
             data (dict): extracted data from the nox file of the procedure.
         """
@@ -433,6 +438,16 @@ class Autolab:
         # load the procedure
         self.load_procedure(procedure)
         log.info(f"loading the procedure {procedure}")
+
+        if measure_at_ocp:
+            if procedure == "cp":
+                ocp_current, _ = self.get_ocp_on_the_fly()
+                setpoints[self.ocp_procedure_setting[procedure]]["Setpoint value"] = ocp_current
+            elif procedure == "ca" or procedure == "eis":
+                _, ocp_potential = self.get_ocp_on_the_fly()
+                setpoints[self.ocp_procedure_setting[procedure]]["Setpoint value"] = ocp_potential
+            else:
+                log.error("The procedure is not supported for measuring at OCP")
 
         # set the setpoints
         self.set_setpoints(procedure, setpoints, current_range)
@@ -469,14 +484,3 @@ class Autolab:
 
         return data
 
-
-# setting current range
-# CommandParameters in all is ["WE(1).Current range"]
-# ca: "switchpotentiostatic"
-# cp: "switchgalvanostatis"
-# eis: "Autolab control"
-
-# where to apply ocp potential, the commandParameters of all is "Setpoint Value"
-# ca: "applypotential0"
-# cp: "applycurrent0"
-# eis: "Set potential"

@@ -62,10 +62,10 @@ def test_measure():
     """Test measuring
     """
     AUTOLAB.load_procedure("ocp")
-    AUTOLAB.set_setpoints({'FHLevel': {'Duration': 10}})
+    AUTOLAB.set_setpoints({'recordsignal': {'Duration (s)': 10}})
     AUTOLAB.proc.Measure()
     AUTOLAB.proc.SaveAs(os.path.join(os.getcwd(), "results", "test.nox"))
-    assert len([str(n) for n in AUTOLAB.proc.Commands['FHLevel'].Signals.Names]) == 6
+    assert len([str(n) for n in AUTOLAB.proc.Commands['recordsignal'].Signals.Names]) == 10
 
 
 def test_disconnect():

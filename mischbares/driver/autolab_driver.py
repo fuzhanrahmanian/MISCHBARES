@@ -271,25 +271,26 @@ class Autolab:
             setpoints (dict): a dictionary of the procedure's parameters.
             current_range (str): the current range of the instrument.
         """
+        if procedure is list(self.current_range_procedure_setting.keys()):
+            # set the current range
+            new_current_range = self.set_current_range(current_range)
 
-        # set the current range
-        new_current_range = self.set_current_range(current_range)
+            # change current range in the correcponded experiment
+            current_comm = self.current_range_procedure_setting[procedure]
+            self.proc.Commands[current_comm].CommandParameters["WE(1).Current range"].Value = \
+                                                                                    new_current_range
+            log.info(f"current range set to {current_range} in procedure {procedure} \n \
+                        the experment settings are {setpoints}")
 
-        # change this range in the correcponded experiment
-        current_comm = self.current_range_procedure_setting[procedure]
-        self.proc.Commands[current_comm].CommandParameters["WE(1).Current range"].Value = \
-                                                                                new_current_range
-        log.info(f"current range set to {current_range} in procedure {procedure} \n \
-                    the experment settings are {setpoints}")
+        if  setpoints is None:
+            log.info(f"no parameters for {procedure}")
 
-        for comm, params in setpoints.items():
-            if  params is None:
-                log.info(f"no parameters for {comm}")
-                continue
+        else:
+            for comm, params in setpoints.items():
 
-            for param, value in params.items():
-                self.proc.Commands[comm].CommandParameters[param].Value = value
-                log.info(f"set {param} to {value}")
+                for param, value in params.items():
+                    self.proc.Commands[comm].CommandParameters[param].Value = value
+                    log.info(f"set {param} to {value}")
 
 
     def get_ocp_on_the_fly(self):
@@ -408,8 +409,10 @@ class Autolab:
 
 
 
-    async def perform_measurement(self, procedure, setpoints, plot_type, on_off_status,
-                                    parse_instruction, current_range, save_dir,
+    async def perform_measurement(self, procedure, plot_type,
+                                    parse_instruction, save_dir,
+                                    setpoints = None, current_range = "1mA",
+                                    on_off_status = "off",
                                     optional_name = None, measure_at_ocp = False):
         """perform the measurement
 

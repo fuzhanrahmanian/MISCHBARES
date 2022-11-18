@@ -460,8 +460,9 @@ class Autolab:
 
         # load the procedure
         self.load_procedure(procedure)
+        if measure_at_ocp:
+            self.set_ocp_value(procedure, ocp_value)
 
-        self.set_ocp_value(procedure, ocp_value)
         log.info(f"loading the procedure {procedure}")
 
         # set the setpoints

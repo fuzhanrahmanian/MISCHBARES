@@ -3,6 +3,7 @@ import shutil
 from time import sleep
 from multiprocessing import Process
 import pytest
+import json
 import numpy as np
 
 import requests
@@ -68,16 +69,36 @@ def test_measure_status_server():
     assert evaluate_status["data"]["measure_status"] is False
 
 
-def test_perform_measurment_server():
+def test_perform_measurment_ocp_server():
     """Test the perform measurment server."""
-    params =dict(procedure= 'ocp', setpoints= "{'FHLevel':{'Duration':10}}",
-                 plot_type= 'tCV', on_off_status= 'off',parse_instruction='recordsignal',
-                 save_dir= "mischbares/tests"
-                 )
+    params =dict(procedure= 'ocp', plot_type= 'tCV',
+                parse_instruction=['recordsignal'],
+                save_dir= "mischbares/tests",
+                setpoints= json.dumps({'recordsignal': {'Duration (s)': 10}}),
+                current_range = "10mA",on_off_status= 'off',
+                measrue_at_ocp = False)
+
     response = requests.get(f"http://{host_url}:{port}/autolabDriver/measure",
                             params=params, timeout=None)
-    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None"))
+    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\
+                            .replace("false", "False"))
     evaluate_potential = evaluate_potential['data']['recordsignal']['WE(1).Potential'][-5:]
     evaluate_potential = round(np.mean(evaluate_potential), 2)
     assert response.status_code == 200
     assert evaluate_potential == 0.0
+
+# def test_perform_measurment_cp_server():
+#     """Test the perform measurment server."""
+#     params =dict(procedure= 'ocp', plot_type= 'tCV',
+#                 parse_instruction='recordsignal',
+#                 save_dir= "mischbares/tests",
+#                 setpoints= {'recordsignal': {'Duration (s)': 10}},
+#                 current_range = "10mA",
+#                 on_off_status= 'off')
+#     response = requests.get(f"http://{host_url}:{port}/autolabDriver/measure",
+#                             params=params, timeout=None)
+#     evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None"))
+#     evaluate_potential = evaluate_potential['data']['recordsignal']['WE(1).Potential'][-5:]
+#     evaluate_potential = round(np.mean(evaluate_potential), 2)
+#     assert response.status_code == 200
+#     assert evaluate_potential == 0.0

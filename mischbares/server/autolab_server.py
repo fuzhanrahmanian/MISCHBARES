@@ -170,34 +170,50 @@ def set_current_range(crange: str):
 
 
 @app.get("/autolabDriver/measure")
-async def perform_measurement(procedure: str, setpoints: str, plot_type: str, on_off_status: str,
-                              parse_instruction : str, save_dir: str, optional_name: str = None):
+async def perform_measurement(procedure: str, plot_type: str,
+                              parse_instruction, save_dir: str,
+                              setpoints, current_range: str = "1mA",
+                              on_off_status: str = "off",
+                              optional_name: str = None, measure_at_ocp: bool = False):
     """perform the measurement
 
     Args:
         procedure (str): the procedure to be performed.
-        setpoints (dict): the setpoints of the procedure.
         plot_type (str): the type of plot.
-        on_off_status (str): the status of the instrument.
         parse_instruction (list[str]): the instruction for parsing the data.
         save_dir (str): save directory.
-        optional_name (str): optional file name.
+        setpoints (dict): the setpoints of the procedure. Defaults to None.
+        current_range (str): the current range of the instrument. Defaults to "1mA".
+        on_off_status (str): the status of the instrument. Defaults to "off".
+        optional_name (str): optional file name. Defaults to None.
+        measure_at_ocp (bool): measure at ocp. Defaults to False.
 
     Returns:
         retc (ReturnClass): return class with the parameters and the data
     """
-    # eval to convert the string to dict
-    setpoints = eval(setpoints)
 
-    data = await AUTOLAB.perform_measurement(procedure = procedure, setpoints = setpoints,
-                                            plot_type = plot_type,
+    # eval to convert the string to dict
+    if setpoints is not None:
+        setpoints = eval(setpoints)
+
+    # check the instance of the parse instruction
+    if isinstance(parse_instruction, str):
+        parse_instruction = [parse_instruction]
+
+    data = await AUTOLAB.perform_measurement(procedure = procedure, plot_type = plot_type,
+                                            parse_instruction = parse_instruction,
+                                            save_dir = save_dir,
+                                            setpoints = setpoints,
+                                            current_range = current_range,
                                             on_off_status = on_off_status,
-                                            save_dir = save_dir, optional_name = optional_name,
-                                            parse_instruction = parse_instruction)
+                                            optional_name = optional_name,
+                                            measure_at_ocp = measure_at_ocp)
 
     retc = ReturnClass(measurement_type='potentiostat_autolab',
                         parameters={'command': 'perform_measurement',
                                     'parameters': dict(procedure=procedure, setpoints=setpoints,
+                                                    current_range=current_range,
+                                                    measure_at_ocp=measure_at_ocp,
                                                     plot_type=plot_type,
                                                     on_off_status=on_off_status,
                                                     parse_instruction=parse_instruction,

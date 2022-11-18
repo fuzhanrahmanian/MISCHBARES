@@ -282,7 +282,7 @@ class Autolab:
             log.info(f"current range set to {current_range} in procedure {procedure} \n \
                         the experment settings are {setpoints}")
 
-        if  setpoints is None:
+        if  setpoints is None or setpoints == {}:
             log.info(f"no parameters for {procedure}")
 
         else:
@@ -303,7 +303,7 @@ class Autolab:
         self.proc.Commands[ocp_command].CommandParameters["Setpoint value"].Value = ocp_value
 
 
-    def get_ocp_on_the_fly(self):
+    async def get_ocp_on_the_fly(self):
         """get the on the fly OCP value as initial point for autolab procedures.
 
         Returns:
@@ -313,6 +313,8 @@ class Autolab:
         self.load_procedure	("ocp")
         # measure the procedure for 10 seconds
         self.proc.Measure()
+
+        await asyncio.sleep(10)
 
         # extracting the OCP values
         ocp_values = []
@@ -324,7 +326,6 @@ class Autolab:
             # due to oscillation, an averaged value is used
             ocp_values.append(np.mean(extracted_values[-5:]))
 
-        sleep(5)
         # empty the procedure
         self.proc = None
         # first value is the current, second value is the potential
@@ -450,10 +451,10 @@ class Autolab:
 
         if measure_at_ocp:
             if procedure == "cp":
-                ocp_value, _ = self.get_ocp_on_the_fly()
+                ocp_value, _ = await self.get_ocp_on_the_fly()
 
             elif procedure == "ca" or procedure == "eis":
-                _, ocp_value = self.get_ocp_on_the_fly()
+                _, ocp_value = await self.get_ocp_on_the_fly()
 
             else:
                 log.error("The procedure is not supported for measuring at OCP")
@@ -480,7 +481,7 @@ class Autolab:
         self.set_cell(on_off_status)
 
         # time required for switching the cell off and save the data
-        sleep(2)
+        await asyncio.sleep(2)
         self.proc.SaveAs(os.path.join(save_dir, f"{name}.nox"))
 
         # make a configuration of the procedure
@@ -491,11 +492,11 @@ class Autolab:
 
         utils.save_data_as_json(directory = save_dir, data = procedure_configuration,
                                 name = f"{name}_configuration")
-        sleep(0.1)
+        await asyncio.sleep(0.2)
 
         data = self.parse_nox(parse_instruction = parse_instruction,
                               save_dir = save_dir, optional_name = name)
-        sleep(0.1)
+        await asyncio.sleep(0.2)
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data

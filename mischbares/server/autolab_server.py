@@ -198,7 +198,7 @@ async def perform_measurement(procedure: str, plot_type: str,
 
     # check the instance of the parse instruction
     if isinstance(parse_instruction, str):
-        parse_instruction = [parse_instruction]
+        parse_instruction = eval(parse_instruction)
 
     data = await AUTOLAB.perform_measurement(procedure = procedure, plot_type = plot_type,
                                             parse_instruction = parse_instruction,

@@ -1,5 +1,5 @@
 # In the main directory, you need to run:
-pytest --disable-warning
+pytest --disable-warnings
 
 # if you want to see your print statement
 pytest -s

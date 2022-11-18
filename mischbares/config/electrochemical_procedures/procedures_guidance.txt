@@ -1,4 +1,4 @@
-In this file, user can find out the instruction about various elechtrochemical test procedures and 
+In this file, user can find out the instruction about various elechtrochemical test procedures and
 how they can be called.
 
 # example configuration for available procedures
@@ -57,7 +57,7 @@ autolab_config['autolab']['procedures']['eis'] = {'procedure': 'eis',
                             'parseinstructions': ['FIAMeasPotentiostatic', 'FIAMeasurement]}
 
 
-# electro impedance analysis
+# Impedance analysis
 # self.proc.Commands['Autolab control'].CommandParameters['WE(1).Current range'].Value = self.inst.Ei.CurrentRange
 autolab_config['autolab']['procedures']['eis_reverse'] = {'procedure': 'eis_reverse',
                             'setpoints': {'Set potential': {'Setpoint value': 0.01},

@@ -3,6 +3,7 @@ import time
 import shutil
 from multiprocessing import Process
 
+import json
 import requests
 import numpy as np
 
@@ -89,17 +90,83 @@ def test_measure_status_action():
     assert evaluate_status["data"]["data"]["measure_status"] is False
 
 
-def test_autolab_measure_action():
-    """Test the autolab measure action."""
-    params =dict(procedure= 'ocp', setpoints= "{'FHLevel':{'Duration':10}}",
-                 plot_type= 'tCV', on_off_status= 'off',parse_instruction='recordsignal',
-                 save_dir= "mischbares/tests"
-                 )
+def test_autolab_measure_ocp_action():
+    """Test the autolab measure action with ocp procedure."""
+    params =dict(procedure= 'ocp', plot_type= 'tCV',
+                 parse_instruction= json.dumps(['recordsignal']),
+                 save_dir= "mischbares/tests",
+                 setpoints= json.dumps({'recordsignal': {'Duration (s)': 10}}),
+                 current_range = "10mA",on_off_status= 'off',
+                 optional_name = 'ocp', measure_at_ocp = False)
+
     response = requests.get(f"http://{host_url}:{port_action}/autolab/measure", params=params,
                             timeout=None)
 
-    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None"))
+    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\
+                                .replace("false", "False"))
     evaluate_potential = evaluate_potential['data']['data']['recordsignal']['WE(1).Potential'][-5:]
     evaluate_potential = round(np.mean(evaluate_potential), 2)
+    assert response.status_code == 200
+    assert evaluate_potential == 0.0
+
+
+def test_autolab_measure_cp_action():
+    """Test the autolab measure action with cp procedure."""
+    params =dict(procedure= 'cp', plot_type= 'tCV',
+                 parse_instruction= json.dumps(['recordsignal']),
+                 save_dir= "mischbares/tests",
+                 setpoints= json.dumps({'applycurrent': {'Setpoint value': 0.00001},\
+                        'recordsignal': {'Duration (s)': 10, 'Interval time (s)': 0.5}}),
+                 current_range = "10mA",on_off_status= 'off',
+                 optional_name = 'cp', measure_at_ocp = True)
+
+    response = requests.get(f"http://{host_url}:{port_action}/autolab/measure", params=params,
+                            timeout=None)
+
+    evaluate_current = eval(response.content.decode("utf-8").replace("null", "None")\
+                                .replace("false", "False").replace("true", "True"))
+    evaluate_current = evaluate_current['data']['data']['recordsignal']['WE(1).Current'][-5:]
+    evaluate_current = round(np.mean(evaluate_current), 2)
+    assert response.status_code == 200
+    assert evaluate_current == 0.0
+
+
+def test_autolab_measure_ca_action():
+    """Test the autolab measure action with ca procedure."""
+    params =dict(procedure= 'ca', plot_type= 'tCV',
+                 parse_instruction= json.dumps(['recordsignal']),
+                 save_dir= "mischbares/tests",
+                 setpoints=  json.dumps({'applypotential': {'Setpoint value': 0.7},\
+                    'recordsignal': {'Duration (s)': 5, 'Interval time (s)': 0.5}}),
+                 current_range = "10mA",on_off_status= 'off',
+                 optional_name = 'ca', measure_at_ocp = True)
+
+    response = requests.get(f"http://{host_url}:{port_action}/autolab/measure", params=params,
+                            timeout=None)
+
+    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\
+                                .replace("false", "False").replace("true", "True"))
+    evaluate_potential = evaluate_potential['data']['data']['recordsignal']['WE(1).Potential'][-5:]
+    evaluate_potential = round(np.mean(evaluate_potential), 2)
+    assert response.status_code == 200
+    assert evaluate_potential == 0.7
+
+
+def test_autolab_measure_eis_action():
+    """Test the autolab measure action with eis procedure."""
+    params =dict(procedure= 'eis', plot_type= 'impedance',
+                 parse_instruction= json.dumps(['FIAMeasPotentiostatic', 'FIAMeasurement']),
+                 save_dir= "mischbares/tests",
+                 setpoints=  json.dumps({}),
+                 current_range = "10mA",on_off_status= 'off',
+                 optional_name = 'eis', measure_at_ocp = True)
+
+    response = requests.get(f"http://{host_url}:{port_action}/autolab/measure", params=params,
+                            timeout=None)
+
+    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\
+                                .replace("false", "False").replace("true", "True"))
+    evaluate_potential = evaluate_potential['data']['data']['FIAMeasurement']['Potential (DC)'][0]
+    evaluate_potential = round(np.mean(evaluate_potential), 1)
     assert response.status_code == 200
     assert evaluate_potential == 0.0

@@ -52,7 +52,7 @@ def server_instance():
     yield processes
     for proc in processes:
         proc.kill()
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+    #shutil.rmtree('mischbares/tests/data', ignore_errors=True)
     shutil.rmtree('data/test', ignore_errors=True)
 
 def test_server_connection():
@@ -80,15 +80,20 @@ def test_start_orchestrator():
     assert os.path.exists("data/test/SDC_test_session_0.h5") is True
 
 
-def test_send_measurment():
-    """ Test if the experiment is added to the orchestrator """
+def test_send_measurment_ocp():
+    """ Test if the ocp experiment is added to the orchestrator """
     sequence = dict(soe=['autolab/measure_0'],
                     params={'measure_0': {'procedure':'ocp',
-                                          'setpoints': "{'FHLevel':{'Duration':10}}",
-                                          "plot_type":'tCV',
-                                          "on_off_status":'off',
-                                          "save_dir":'mischbares/tests',
-                                          "parse_instruction":'recordsignal'}}, meta=dict())
+                                'plot_type':'tCV',
+                                'parse_instruction': json.dumps(['recordsignal']),
+                                'save_dir':'mischbares/tests',
+                                'setpoints': json.dumps({'recordsignal': {'Duration (s)': 10}}),
+                                'current_range': '10mA',
+                                'on_off_status':'off',
+                                'optional_name': 'ocp',
+                                'measure_at_ocp': False}},
+                    meta=dict())
+
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None)
@@ -96,10 +101,135 @@ def test_send_measurment():
     # wait for the measurement to finish
     time.sleep(15)
     # Check if there is a file that ends with autolab.nox
-    for file_endings in ['Autolab.nox', 'Autolab.json', 'Autolab_configuration.json']:
+    for file_endings in ['Autolab_ocp.nox', 'Autolab_ocp.json', 'Autolab_ocp_configuration.json']:
         assert len([f for f in os.listdir('mischbares/tests/data')
                     if f.endswith(file_endings)]) == 1
 
+
+def test_send_measurment_cp():
+    """ Test if the cp experiment is added to the orchestrator """
+    sequence = dict(soe=['autolab/measure_0'],
+                    params={'measure_0': {'procedure':'cp',
+                                'plot_type':'tCV',
+                                'parse_instruction': json.dumps(['recordsignal']),
+                                'save_dir':'mischbares/tests',
+                                'setpoints': json.dumps({'applycurrent':\
+                                            {'Setpoint value': 0.00001},
+                                            'recordsignal': {'Duration (s)': 5,\
+                                            'Interval time (s)': 0.5}}),
+                                'current_range': '10mA',
+                                'on_off_status':'off',
+                                'optional_name': 'cp',
+                                'measure_at_ocp': True}},
+                    meta=dict())
+
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None)
+    assert response.status_code == 200
+    # wait for the measurement to finish
+    time.sleep(30)
+    # Check if there is a file that ends with autolab.nox
+    for file_endings in ['Autolab_cp.nox', 'Autolab_cp.json', 'Autolab_cp_configuration.json']:
+        assert len([f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]) == 1
+    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+
+
+def test_send_measurment_ca():
+    """ Test if the ca experiment is added to the orchestrator """
+    sequence = dict(soe=['autolab/measure_0'],
+                    params={'measure_0': {'procedure':'ca',
+                                'plot_type':'tCV',
+                                'parse_instruction': json.dumps(['recordsignal']),
+                                'save_dir':'mischbares/tests',
+                                'setpoints': json.dumps({'applypotential': {'Setpoint value': 0.7},\
+                                            'recordsignal': {'Duration (s)': 5,\
+                                            'Interval time (s)': 0.5}}),
+                                'current_range': '10mA',
+                                'on_off_status':'off',
+                                'optional_name': 'ca',
+                                'measure_at_ocp': True}},
+                    meta=dict())
+
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None)
+    assert response.status_code == 200
+    # wait for the measurement to finish
+    time.sleep(50)
+    # Check if there is a file that ends with autolab.nox
+    for file_endings in ['Autolab_ca.nox', 'Autolab_ca.json', 'Autolab_ca_configuration.json']:
+        assert len([f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]) == 1
+    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+
+
+def test_send_measurment_eis():
+    """ Test if the eis experiment is added to the orchestrator """
+    sequence = dict(soe=['autolab/measure_0'],
+                    params={'measure_0': {'procedure':'eis',
+                                'plot_type':'impedance',
+                                'parse_instruction':\
+                                    json.dumps(['FIAMeasPotentiostatic', 'FIAMeasurement']),
+                                'save_dir':'mischbares/tests',
+                                'setpoints': json.dumps({}),
+                                'current_range': '10mA',
+                                'on_off_status':'off',
+                                'optional_name': 'eis',
+                                'measure_at_ocp': True}},
+                    meta=dict())
+
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None)
+    assert response.status_code == 200
+    # wait for the measurement to finish
+    time.sleep(500)
+    # Check if there is a file that ends with autolab.nox
+    for file_endings in ['Autolab_eis.nox', 'Autolab_eis.json', 'Autolab_eis_configuration.json']:
+        assert len([f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]) == 1
+
+
+def test_send_measurment_cvcc():
+    """ Test a seqeunce of two experiments to the orchestrator """
+    sequence = dict(soe=['autolab/measure_0', 'autolab/measure_1'],
+                    params={'measure_0': {'procedure':'ca',
+                                'plot_type':'tCV',
+                                'parse_instruction': json.dumps(['recordsignal']),
+                                'save_dir':'mischbares/tests',
+                                'setpoints': json.dumps({'applypotential': {'Setpoint value': 0.7},\
+                                            'recordsignal': {'Duration (s)': 5,\
+                                            'Interval time (s)': 0.5}}),
+                                'current_range': '10mA',
+                                'on_off_status':'off',
+                                'optional_name': 'ca',
+                                'measure_at_ocp': True},
+                            'measure_1:': {'procedure':'cp',
+                                'plot_type':'tCV',
+                                'parse_instruction': json.dumps(['recordsignal']),
+                                'save_dir':'mischbares/tests',
+                                'setpoints': json.dumps({'applycurrent':\
+                                            {'Setpoint value': 0.00001},
+                                            'recordsignal': {'Duration (s)': 5,\
+                                            'Interval time (s)': 0.5}}),
+                                'current_range': '10mA',
+                                'on_off_status':'off',
+                                'optional_name': 'cp',
+                                'measure_at_ocp': True}},
+                    meta=dict())
+
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None)
+    assert response.status_code == 200
+    # wait for the measurement to finish
+    time.sleep(100)
+    # Check if there is a file that ends with autolab.nox
+    for file_endings in ['Autolab_cp.json', 'Autolab_ca.json']:
+        assert len([f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]) == 1
 
 
 def test_finish_orchestrator():

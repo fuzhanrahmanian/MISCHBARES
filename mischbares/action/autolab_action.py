@@ -108,99 +108,43 @@ def set_current_range(crange:str):
     return retc
 
 
-#TODO:this function need to be removed and data retrieval should be done with database.
-def get_ocp_voltage(file_name, path="C:/Users/SDC_1/Documents/Github/sdc_gb"):
-    """get the ocp voltage from the file.
-
+@app.get("/autolab/measure/")
+def measure(procedure: str, plot_type: str, parse_instruction, save_dir: str,
+            setpoints, current_range: str = "1mA",
+            on_off_status: str = "off",
+            optional_name: str = None, measure_at_ocp: bool = False):
+    """measure the requested procedure.
     Args:
-        file_name (str): file name of the file
-        path (str, optional): path to the save data.
-                              Defaults to "C:/Users/SDC_1/Documents/Github/sdc_gb".
+        procedure (str): procedure to be measured.
+        plot_type (str): plot type of the procedure.
+        parse_instruction (str): parse instruction of the procedure.
+        save_dir (str): save directory of the procedure.
+        setpoints (str): setpoints of the procedure.
+        current_range (str, optional): current range of the instrument.
+        on_off_status (str, optional): on or off status of the cell.
+        optional_name (str, optional): optional name of the procedure.
+        measure_at_ocp (bool, optional): measure at ocp or not.
 
     Returns:
-        voltage (float): ocp voltage
+        retc (ReturnClass): return class with the parameters and the data.
     """
-    data = utils.load_data_as_json(directory = path, name = f"{file_name}_data.json")
-    voltage = np.round(np.mean(data['recordsignal']['WE(1).Potential'][-10:]),5)
-    log.info("get_ocp_voltage: %s", voltage)
-    return voltage
+    log.info("measure: %s at action level", procedure)
 
+    measure_conf = dict(procedure = procedure, plot_type = plot_type,
+                        parse_instruction = parse_instruction,
+                        save_dir = save_dir, setpoints = setpoints,
+                        current_range = current_range,
+                        on_off_status = on_off_status,
+                        optional_name = optional_name,
+                        measure_at_ocp = measure_at_ocp)
 
-#TODO: this is a temporary solution for the measurement.It should be modified.
-@app.get("/autolab/measure/")
-def measure(procedure: str, setpoints: str, plot_type: str, on_off_status: str,
-            parse_instruction: str, save_dir: str, optional_name: str = None, iteration: str = None):
-    """
-    Measure a recipe and manipulate the parameters:
+    log.info("The procedure parameters at action level is: %s", measure_conf)
 
-    **measure_conf**: is explained in the echemprocedures folder
-    """
-
-    # Need to check whether there ocp voltage needs to be taken or not , and from which experiment
-    log.info(f"setpoint json before is {setpoints}")
-    if procedure=="ca":
-        setpoints = eval(setpoints)
-        log.infor("the applied potential is : %s", setpoints["applypotential"])
-
-        if setpoints["applypotential"]["Setpoint value"] == "?":
-            setpoints["applypotential"]["Setpoint value"] = \
-                get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-        else:
-            setpoints["applypotential"]["Setpoint value"] += \
-                get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-        setpoints = json.dumps(setpoints)
-        sleep(0.7)
-
-    if procedure=="eis":
-        setpoints = eval(setpoints)
-        log.infor("the applied potential is : %s", setpoints["FHSetSetpointPotential"])
-        if setpoints["FHSetSetpointPotential"]["Setpoint value"] == "?":
-            setpoints["FHSetSetpointPotential"]["Setpoint value"] =\
-                get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-
-        else:
-            setpoints["FHSetSetpointPotential"]["Setpoint value"] +=\
-                get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-        setpoints = json.dumps(setpoints)
-        sleep(0.7)
-
-    if procedure=="cv":
-        setpoints = eval(setpoints)
-        if setpoints["FHSetSetpointPotential"]["Setpoint value"] == "?":
-            setpoints["FHSetSetpointPotential"]["Setpoint value"] =\
-                get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-        else:
-            setpoints["FHSetSetpointPotential"]["Setpoint value"] +=\
-                get_ocp_voltage(file_name = f"OCP_record_signal_{eval(iteration)}", path=save_dir)
-
-        setpoints["CVLinearScanAdc164"]["StartValue"] =\
-            setpoints["FHSetSetpointPotential"]["Setpoint value"]
-        setpoints["CVLinearScanAdc164"]["UpperVertex"] +=\
-            setpoints["FHSetSetpointPotential"]["Setpoint value"]
-        setpoints["CVLinearScanAdc164"]["LowerVertex"] +=\
-            setpoints["FHSetSetpointPotential"]["Setpoint value"]
-
-        setpoints = json.dumps(setpoints)
-        sleep(0.7)
-    log.info("setpoint json after ocp applied is %s", setpoints)
-
-    measure_conf = dict(procedure=procedure,
-                        setpoints=setpoints,
-                        plot_type=plot_type,
-                        on_off_status=on_off_status,
-                        save_dir=save_dir,
-                        optional_name=optional_name,
-                        parse_instruction=parse_instruction)
-
-    #TODO: log info needs to be modified.This is just for testing and temporaty.
-    log.info("measure_conf: %s", measure_conf)
-
-    #TODO: time out should be modified.
     res = requests.get(f"{SERVER_URL}/autolabDriver/measure",
                         params=measure_conf, timeout=None).json()
 
     retc = ReturnClass(parameters = measure_conf, data = res)
-    #TODO: more proper log for this function.
+
     return retc
 
 

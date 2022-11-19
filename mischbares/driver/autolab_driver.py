@@ -314,7 +314,7 @@ class Autolab:
         # measure the procedure for 10 seconds
         self.proc.Measure()
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(11)
 
         # extracting the OCP values
         ocp_values = []
@@ -453,7 +453,7 @@ class Autolab:
             if procedure == "cp":
                 ocp_value, _ = await self.get_ocp_on_the_fly()
 
-            elif procedure == "ca" or procedure == "eis":
+            elif procedure in ("ca", "eis"):
                 _, ocp_value = await self.get_ocp_on_the_fly()
 
             else:
@@ -496,7 +496,7 @@ class Autolab:
 
         data = self.parse_nox(parse_instruction = parse_instruction,
                               save_dir = save_dir, optional_name = name)
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(2)
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data

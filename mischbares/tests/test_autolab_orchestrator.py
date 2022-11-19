@@ -52,7 +52,7 @@ def server_instance():
     yield processes
     for proc in processes:
         proc.kill()
-    #shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
     shutil.rmtree('data/test', ignore_errors=True)
 
 def test_server_connection():
@@ -99,7 +99,7 @@ def test_send_measurment_ocp():
                             params=params, timeout=None)
     assert response.status_code == 200
     # wait for the measurement to finish
-    time.sleep(15)
+    time.sleep(20)
     # Check if there is a file that ends with autolab.nox
     for file_endings in ['Autolab_ocp.nox', 'Autolab_ocp.json', 'Autolab_ocp_configuration.json']:
         assert len([f for f in os.listdir('mischbares/tests/data')
@@ -195,29 +195,22 @@ def test_send_measurment_eis():
 def test_send_measurment_cvcc():
     """ Test a seqeunce of two experiments to the orchestrator """
     sequence = dict(soe=['autolab/measure_0', 'autolab/measure_1'],
-                    params={'measure_0': {'procedure':'ca',
-                                'plot_type':'tCV',
+                    params={'measure_0': {'procedure':'ca','plot_type':'tCV',
                                 'parse_instruction': json.dumps(['recordsignal']),
                                 'save_dir':'mischbares/tests',
-                                'setpoints': json.dumps({'applypotential': {'Setpoint value': 0.7},\
-                                            'recordsignal': {'Duration (s)': 5,\
+                                'setpoints': json.dumps({'applypotential': {'Setpoint value': 0.7},
+                                            'recordsignal': {'Duration (s)': 5,
                                             'Interval time (s)': 0.5}}),
-                                'current_range': '10mA',
-                                'on_off_status':'off',
-                                'optional_name': 'ca',
-                                'measure_at_ocp': True},
-                            'measure_1:': {'procedure':'cp',
-                                'plot_type':'tCV',
-                                'parse_instruction': json.dumps(['recordsignal']),
-                                'save_dir':'mischbares/tests',
-                                'setpoints': json.dumps({'applycurrent':\
-                                            {'Setpoint value': 0.00001},
-                                            'recordsignal': {'Duration (s)': 5,\
-                                            'Interval time (s)': 0.5}}),
-                                'current_range': '10mA',
-                                'on_off_status':'off',
-                                'optional_name': 'cp',
-                                'measure_at_ocp': True}},
+                                            'current_range': '10mA','on_off_status':'off',
+                                            'optional_name': 'ca', 'measure_at_ocp': True},
+                            'measure_1': {'procedure':'cp','plot_type':'tCV',
+                                            'parse_instruction': json.dumps(['recordsignal']),
+                                            'save_dir':'mischbares/tests',
+                                            'setpoints': json.dumps({'applycurrent':
+                                                {'Setpoint value': 0.00001},'recordsignal':
+                                                {'Duration (s)': 5,'Interval time (s)': 0.5}}),
+                                'current_range': '10mA','on_off_status':'off',
+                                'optional_name': 'cp','measure_at_ocp': True}},
                     meta=dict())
 
     params = dict(experiment=json.dumps(sequence),thread=0)

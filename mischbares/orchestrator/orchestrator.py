@@ -99,7 +99,7 @@ class Experiment(BaseModel):
         """
         action = set([i.split('/')[-1] for i in values['soe']])
         if action != set(experiment.keys()):
-            raise ValueError("soe and params are not perfectly corresponding. \
+            raise ValueError("soe and params are not perfectly corresponding. \n \
                 must be params entry for every action in soe, and vice-versa")
         if len(action) != len(values['soe']):
             raise ValueError("duplicate entries in soe")

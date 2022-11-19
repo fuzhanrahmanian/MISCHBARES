@@ -2,8 +2,8 @@
 import shutil
 from time import sleep
 from multiprocessing import Process
-import pytest
 import json
+import pytest
 import numpy as np
 
 import requests
@@ -100,12 +100,12 @@ def test_perform_measurment_cp_server():
 
     response = requests.get(f"http://{host_url}:{port}/autolabDriver/measure",
                             params=params, timeout=None)
-    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\
+    evaluate_current = eval(response.content.decode("utf-8").replace("null", "None")\
                             .replace("false", "False").replace("true", "True"))
-    evaluate_potential = evaluate_potential['data']['recordsignal']['WE(1).Current'][-5:]
-    evaluate_potential = round(np.mean(evaluate_potential), 2)
+    evaluate_current = evaluate_current['data']['recordsignal']['WE(1).Current'][-5:]
+    evaluate_current = round(np.mean(evaluate_current), 2)
     assert response.status_code == 200
-    assert evaluate_potential == 0.0
+    assert evaluate_current == 0.0
 
 
 def test_perform_measurment_ca_server():

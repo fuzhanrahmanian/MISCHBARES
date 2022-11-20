@@ -1,16 +1,11 @@
 """ autolab action"""
-from time import sleep
-import json
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 import requests
 
-import numpy as np
-
 from mischbares.config.main_config import config
 from mischbares.logger import logger
-from mischbares.utils import utils
 
 log = logger.get_logger("autolab_action")
 SERVERKEY = "autolab"

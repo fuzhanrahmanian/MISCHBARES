@@ -68,10 +68,10 @@ def test_action_connection():
 
 
 def test_start_orchestrator():
-    """ Test if the experiment is added to the orchestrator """
+    """ Test if the experiment is added to the orchestrator. """
     # Assuming the start fucniotns works
     sequence = dict(soe=['orchestrator/start'],
-                  params={'start': {'collectionkey': "test"}}, meta=dict())
+                  params={'start': {'collectionkey': "test"}}, meta={})
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None)
@@ -81,7 +81,7 @@ def test_start_orchestrator():
 
 
 def test_send_measurment_ocp():
-    """ Test if the ocp experiment is added to the orchestrator """
+    """ Test if the ocp experiment is added to the orchestrator. """
     sequence = dict(soe=['autolab/measure_0'],
                     params={'measure_0': {'procedure':'ocp',
                                 'plot_type':'tCV',
@@ -92,11 +92,11 @@ def test_send_measurment_ocp():
                                 'on_off_status':'off',
                                 'optional_name': 'ocp',
                                 'measure_at_ocp': False}},
-                    meta=dict())
+                    meta={})
 
-    params = dict(experiment=json.dumps(sequence),thread=0)
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
-                            params=params, timeout=None)
+                            params=parameters, timeout=None)
     assert response.status_code == 200
     # wait for the measurement to finish
     time.sleep(20)
@@ -107,7 +107,7 @@ def test_send_measurment_ocp():
 
 
 def test_send_measurment_cp():
-    """ Test if the cp experiment is added to the orchestrator """
+    """ Test if the cp experiment is added to the orchestrator. """
     sequence = dict(soe=['autolab/measure_0'],
                     params={'measure_0': {'procedure':'cp',
                                 'plot_type':'tCV',
@@ -121,7 +121,7 @@ def test_send_measurment_cp():
                                 'on_off_status':'off',
                                 'optional_name': 'cp',
                                 'measure_at_ocp': True}},
-                    meta=dict())
+                    meta={})
 
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -137,7 +137,7 @@ def test_send_measurment_cp():
 
 
 def test_send_measurment_ca():
-    """ Test if the ca experiment is added to the orchestrator """
+    """ Test if the ca experiment is added to the orchestrator. """
     sequence = dict(soe=['autolab/measure_0'],
                     params={'measure_0': {'procedure':'ca',
                                 'plot_type':'tCV',
@@ -150,7 +150,7 @@ def test_send_measurment_ca():
                                 'on_off_status':'off',
                                 'optional_name': 'ca',
                                 'measure_at_ocp': True}},
-                    meta=dict())
+                    meta={})
 
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -166,7 +166,7 @@ def test_send_measurment_ca():
 
 
 def test_send_measurment_eis():
-    """ Test if the eis experiment is added to the orchestrator """
+    """ Test if the eis experiment is added to the orchestrator. """
     sequence = dict(soe=['autolab/measure_0'],
                     params={'measure_0': {'procedure':'eis',
                                 'plot_type':'impedance',
@@ -178,7 +178,7 @@ def test_send_measurment_eis():
                                 'on_off_status':'off',
                                 'optional_name': 'eis',
                                 'measure_at_ocp': True}},
-                    meta=dict())
+                    meta={})
 
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -193,7 +193,7 @@ def test_send_measurment_eis():
 
 
 def test_send_measurment_cvcc():
-    """ Test a seqeunce of two experiments to the orchestrator """
+    """ Test a seqeunce of two experiments to the orchestrator. """
     sequence = dict(soe=['autolab/measure_0', 'autolab/measure_1'],
                     params={'measure_0': {'procedure':'ca','plot_type':'tCV',
                                 'parse_instruction': json.dumps(['recordsignal']),
@@ -211,7 +211,7 @@ def test_send_measurment_cvcc():
                                                 {'Duration (s)': 5,'Interval time (s)': 0.5}}),
                                 'current_range': '10mA','on_off_status':'off',
                                 'optional_name': 'cp','measure_at_ocp': True}},
-                    meta=dict())
+                    meta={})
 
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -226,10 +226,10 @@ def test_send_measurment_cvcc():
 
 
 def test_finish_orchestrator():
-    """ Test if the experiment is added to the orchestrator """
+    """ Test if the experiment is added to the orchestrator. """
     # Assuming the start fucniotns works
     sequence = dict(soe=['orchestrator/finish'],
-                  params={'finish': None}, meta=dict())
+                  params={'finish': None}, meta={})
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None)

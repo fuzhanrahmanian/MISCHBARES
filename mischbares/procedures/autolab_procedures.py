@@ -1,6 +1,8 @@
 """ General assembles autolab procedures for orchestrator and UI"""
 import json
+from mischbares.logger import logger
 
+log = logger.get_logger("autolab_procedures")
 class AutolabProcedures:
     """ General assembles autolab procedures for orchestrator and UI"""
 
@@ -36,6 +38,8 @@ class AutolabProcedures:
                         'on_off_status':'off',
                         'optional_name': 'ocp',
                         'measure_at_ocp': False}}
+        log.info(f"initiate number {self.measurement_num} of ocp measurement with \n \
+                    {params} parameters")
         sequence = dict(soe = soe, params = params, meta={})
         return soe, params, sequence
 
@@ -69,7 +73,9 @@ class AutolabProcedures:
                                 'on_off_status':'off',
                                 'optional_name': 'ca',
                                 'measure_at_ocp': True}}
-        sequence = dict(soe = soe, params = params, meta={})
+        log.info(f"initiate number {self.measurement_num} of ca measurement with \n \
+                    {params} parameters")
+        sequence = dict(soe=soe, params=params, meta={})
         return soe, params, sequence
 
 
@@ -101,14 +107,14 @@ class AutolabProcedures:
                                 'on_off_status':'off',
                                 'optional_name': 'cp',
                                 'measure_at_ocp': True}}
+        log.info(f"initiate number {self.measurement_num} of cp measurement with \n \
+                    {params} parameters")
         sequence = dict(soe = soe, params = params, meta={})
         return soe, params, sequence
 
 
     # 4. currentRange_ocp/eis
-    def eis_measurement(self, apply_potential = 0.01, integration_time = 0.125,
-                        integration_cycle = 1, upper_frequency_level=10000,
-                        measure_at_ocp = True):
+    def eis_measurement(self, apply_potential = 0.1, measure_at_ocp = True):
         """electrochemical impedance spectroscopy measurement procedure from orchestrator level.
         Args:
             apply_potential (float, optional): potential in V. Defaults to 0.01.
@@ -124,31 +130,32 @@ class AutolabProcedures:
         """
 
         soe = [f'autolab/measure_{self.measurement_num}']
-        params = {f'measure_{self.measurement_num}': {'procedure': 'eis',
-                                'plot_type':'impedance',
-                                'parse_instruction': ['FIAMeasPotentiostatic', 'FIAMeasurement'],
-                                'save_dir': self.save_dir,
-                                'setpoints': {'FRA single frequency':
-                                                {'IntegrationTime': integration_time,
-                                                'IntegrationCycle': integration_cycle,
-                                                    'DsgFrequency': upper_frequency_level}},
-                                'current_range': self.current_range,
-                                'on_off_status':'off',
-                                'optional_name': 'eis',
-                                'measure_at_ocp': measure_at_ocp}}
-        if measure_at_ocp is False:
-            params[f'measure_{self.measurement_num}']['setpoints']\
-                .update({'Set potential': {'Setpoint value': apply_potential}})
 
-        sequence = dict(soe = soe, params = params, meta={})
+        if measure_at_ocp is False:
+            experiment_setpoints = {'Set potential':{'Setpoint value': apply_potential}}
+        else:
+            experiment_setpoints = {}
+
+        params = {f'measure_{self.measurement_num}': {'procedure':'eis',
+                                'plot_type':'impedance',
+                                'parse_instruction':json.dumps(['FIAMeasPotentiostatic', 'FIAMeasurement']),
+                                'save_dir':self.save_dir,
+                                'setpoints':json.dumps(experiment_setpoints),
+                                'current_range':self.current_range,
+                                'on_off_status':'off',
+                                'optional_name':'eis',
+                                'measure_at_ocp': measure_at_ocp}}
+
+        log.info(f"initiate number {self.measurement_num} of eis measurement with \n \
+                    {params} parameters")
+        sequence = dict(soe=soe, params=params, meta={})
         return soe, params, sequence
 
 
     # 5. currentRange_ocp/ca_ocp/eis
     def ca_eis_measurement(self,measurement_duration = 10, ca_potential = 0.1,
-                           ca_interval_time = 0.5, eis_potential = 0.0,
-                           eis_integration_time = 0.125, eis_integration_cycle = 1,
-                           eis_upper_frequency_level = 10000, eis_measure_at_ocp = False):
+                           ca_interval_time = 0.5, eis_potential = 0.1,
+                           eis_measure_at_ocp = False):
         """sequence of cyclic amperometric and electrochemical impedance spectroscopy measurement
             from orchestrator level.
         Args:
@@ -156,11 +163,7 @@ class AutolabProcedures:
                                                 Defaults to 10.
             ca_potential (float, optional): potential in V. Defaults to 0.1.
             ca_interval_time (float, optional): interval time in seconds. Defaults to 0.5.
-            eis_potential (float, optional): potential in V. Defaults to 0.0.
-            eis_integration_time (float, optional): integration time in seconds. Defaults to 0.125.
-            eis_integration_cycle (int, optional): integration cycle. Defaults to 1.
-            eis_upper_frequency_level (int, optional): upper frequency level in Hz.
-                                                    Defaults to 10000.
+            eis_potential (float, optional): potential in V. Defaults to 0.1.
             eis_measure_at_ocp (bool, optional): measure at ocp. Defaults to False.
 
         Returns:
@@ -171,12 +174,14 @@ class AutolabProcedures:
         soe_ca, params_ca, _ = self.ca_measurement(measurement_duration = measurement_duration,
                                         apply_potential = ca_potential,
                                         interval_time = ca_interval_time)
+        log.info(f"initiate number {self.measurement_num} of ca measurement with \n \
+                    {params_ca} parameters")
+
         self.measurement_num += 1
 
+        log.info(f"measurement number {self.measurement_num} of eis measurement with \n \
+                    ocp {eis_measure_at_ocp}")
         soe_eis, params_eis, _ = self.eis_measurement(apply_potential = eis_potential,
-                                            integration_time = eis_integration_time,
-                                            integration_cycle = eis_integration_cycle,
-                                            upper_frequency_level = eis_upper_frequency_level,
                                             measure_at_ocp = eis_measure_at_ocp)
         soe = soe_ca + soe_eis
         params = {**params_ca, **params_eis}
@@ -475,8 +480,6 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-
-
     # 13. currentRange_ocp/eis-ocp/ca-threshold-cp
     def eis_ca_cp_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
@@ -695,3 +698,5 @@ class AutolabProcedures:
         params = {**params_first_eis , **params_ca, **params_cp, **params_second_eis}
         sequence = dict(soe = soe, params = params, meta={})
         return soe, params, sequence
+
+#TODO add custom sequence for a given procedure

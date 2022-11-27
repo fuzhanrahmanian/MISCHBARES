@@ -117,3 +117,6 @@ mischbares/config/autolab_configuration/*
 
 # add nox files
 *.nox
+
+# add visualiser for now , till it fixes
+mischbares/visualiser/*

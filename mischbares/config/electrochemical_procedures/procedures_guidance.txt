@@ -12,7 +12,7 @@ autolab_config['autolab']['procedures']['ca'] = {'procedure': 'ca',
                                         'recordsignal': {'Duration (s)': 1000, 'Interval time (s)': 0.4}},
                             'plot': 'tCV',
                             'onoffafter': 'off',
-                            'safepath': None, # path to save the data
+                            'save_dir': None, # path to save the data
                             'filename': 'ca.nox',
                             'parseinstructions': ['recordsignal']}
 
@@ -23,7 +23,7 @@ autolab_config['autolab']['procedures']['ocp'] = {'procedure': 'ocp',
                                             'Duration (s)': 20}},
 			'plot': 'tCV',
 			'onoffafter': 'off',
-			'safepath': None, # Path to save the data
+			'save_dir': None, # Path to save the data
 			'filename': 'ocp.nox',
 			'parseinstructions': ['recordsignal']}
 
@@ -38,7 +38,7 @@ autolab_config['autolab']['procedures']['cp'] = {'procedure': 'cp',
                                     #TODO check the threshold of the number of poits that can be recorded.
                         'plot': 'tCV',
                         'onoffafter': 'off',
-                        'safepath': None, # path to save the data
+                        'save_dir': None, # path to save the data
                         'filename': 'cp.nox',
                         'parseinstructions': ['recordsignal']}
 
@@ -47,12 +47,12 @@ autolab_config['autolab']['procedures']['cp'] = {'procedure': 'cp',
 # self.proc.Commands['Autolab control'].CommandParameters['WE(1).Current range'].Value = self.inst.Ei.CurrentRange
 autolab_config['autolab']['procedures']['eis'] = {'procedure': 'eis',
                             'setpoints': {'Set potential': {'Setpoint value': 0.01},
-                                          'FRA single frequency': {'IntegrationTime: 0.125,
+                                          'FRA single frequency': {'IntegrationTime': 0.125,
                                                                    'IntegrationCycle': 1,
                                                                    'DsgFrequency': 10000}},
                             'plot': 'impedance',
                             'onoffafter': 'off',
-                            'safepath': None, # path to save the data
+                            'save_dir': None, # path to save the data
                             'filename': 'eis.nox',
                             'parseinstructions': ['FIAMeasPotentiostatic', 'FIAMeasurement]}
 
@@ -66,7 +66,7 @@ autolab_config['autolab']['procedures']['eis_reverse'] = {'procedure': 'eis_reve
                                                                    'DsgFrequency': 10}},
                             'plot': 'impedance',
                             'onoffafter': 'off',
-                            'safepath': None, # path to save the data
+                            'save_dir': None, # path to save the data
                             'filename': 'eis_reverse.nox',
                             'parseinstructions': ['FIAMeasPotentiostatic', 'FIAMeasurement]}
 
@@ -83,6 +83,6 @@ autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
                                                                 'ScanRate': 0.02}},
                         'plot': 'tCV',
                         'onoffafter': 'off',
-                        'safepath': None, # path to save the data
+                        'save_dir': None, # path to save the data
                         'filename': 'cv.nox',
                         'parseinstructions': ['CVLinearScanAdc164']}

@@ -120,3 +120,6 @@ mischbares/config/autolab_configuration/*
 
 # add visualiser for now , till it fixes
 mischbares/visualizer/*
+
+# add procedure instruction files
+mischbares/config/electrochemical_procedures/*

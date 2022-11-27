@@ -1,7 +1,7 @@
 """ Test file for the autolab driver """
 import os
-import numpy as np
 import asyncio
+import numpy as np
 from mischbares.config.main_config import config
 from mischbares.driver.autolab_driver import Autolab
 

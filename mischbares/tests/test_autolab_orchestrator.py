@@ -1,4 +1,4 @@
-""" Test file for the autolab action """
+""" Test file for the autolab orchestrator """
 import time
 import os
 import shutil
@@ -170,7 +170,7 @@ def test_send_measurment_eis():
     sequence = dict(soe=['autolab/measure_0'],
                     params={'measure_0': {'procedure':'eis',
                                 'plot_type':'impedance',
-                                'parse_instruction':\
+                                'parse_instruction':
                                     json.dumps(['FIAMeasPotentiostatic', 'FIAMeasurement']),
                                 'save_dir':'mischbares/tests',
                                 'setpoints': json.dumps({}),
@@ -179,13 +179,13 @@ def test_send_measurment_eis():
                                 'optional_name': 'eis',
                                 'measure_at_ocp': True}},
                     meta={})
-
+    #json.dumps({'Set potential': {'Setpoint value': 0.1}}),
     params = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None)
     assert response.status_code == 200
     # wait for the measurement to finish
-    time.sleep(500)
+    time.sleep(120)
     # Check if there is a file that ends with autolab.nox
     for file_endings in ['Autolab_eis.nox', 'Autolab_eis.json', 'Autolab_eis_configuration.json']:
         assert len([f for f in os.listdir('mischbares/tests/data')

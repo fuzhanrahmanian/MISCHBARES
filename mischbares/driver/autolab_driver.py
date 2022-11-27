@@ -314,7 +314,7 @@ class Autolab:
         # measure the procedure for 10 seconds
         self.proc.Measure()
 
-        await asyncio.sleep(11)
+        await asyncio.sleep(13)
 
         # extracting the OCP values
         ocp_values = []
@@ -488,7 +488,8 @@ class Autolab:
         procedure_configuration = dict(procedure = procedure, setpoints = setpoints,
                                     plot_type = plot_type, on_off_status = on_off_status,
                                     save_dir = save_dir, file_name= name,
-                                    parse_instructions = parse_instruction)
+                                    parse_instructions = parse_instruction,
+                                    measure_at_ocp = measure_at_ocp)
 
         utils.save_data_as_json(directory = save_dir, data = procedure_configuration,
                                 name = f"{name}_configuration")

@@ -136,7 +136,7 @@ def test_perform_measurment_eis_server():
                 setpoints= json.dumps({}),
                 current_range = "1mA",on_off_status= 'off',
                 measure_at_ocp = True)
-
+    #json.dumps({'Set potential': {'Setpoint value': 0.1}}),
     response = requests.get(f"http://{host_url}:{port}/autolabDriver/measure",
                             params=params, timeout=None)
     evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\

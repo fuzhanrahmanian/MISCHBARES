@@ -1,6 +1,7 @@
 """ Test file for the autolab driver """
 import os
 import numpy as np
+import asyncio
 from mischbares.config.main_config import config
 from mischbares.driver.autolab_driver import Autolab
 
@@ -107,11 +108,10 @@ def test_cp_at_ocp():
 def test_eis_at_ocp():
     """ Test performing eis measurement at ocp potential
     """
-    data = AUTOLAB.perform_measurement(procedure = "eis", setpoints = None, \
-            save_dir= "mischbares/tests",
-            plot_type ='impedance', \
-            parse_instruction = ["FIAMeasPotentiostatic", "FIAMeasurement"], \
-            current_range= "1mA", measure_at_ocp = True)
+    data = asyncio.run(AUTOLAB.perform_measurement(procedure = "eis", setpoints = None,
+            save_dir= "mischbares/tests", plot_type ='impedance',
+            parse_instruction = ["FIAMeasPotentiostatic", "FIAMeasurement"],
+            current_range= "1mA", measure_at_ocp = True))
     assert len(data.keys()) ==2
     assert round(data["FIAMeasurement"]['Potential (DC)'][0], 1) == 0.0
 

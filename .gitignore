@@ -123,3 +123,6 @@ mischbares/visualizer/*
 
 # add procedure instruction files
 mischbares/config/electrochemical_procedures/*
+
+# Config ini
+mischbares/db/config.ini

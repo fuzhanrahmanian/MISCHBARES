@@ -10,11 +10,7 @@ from mischbares.db.user import Users
 config = configparser.ConfigParser()
 config.read(os.path.join("mischbares", "db", "config.ini"))
 
-db  = Database(host=config["database"]["host"],
-                port=config["database"]["port"],
-                user=config["database"]["user"],
-                password=config["database"]["password"],
-                database=config["database"]["database"])
+db  = Database()
 
 def test_connect():
     """Test the connection to the database."""
@@ -41,30 +37,29 @@ def test_execute():
     result = db.execute(sql)
 
     # assert that the result is not None and of type list
-    assert result is not None and type(result).__name__ == "list"
+    assert result is not None and type(result).__name__ == "dict"
 
     # Close the connection to the database
     db.close()
 
+
 def test_get_user():
     """Test the get_user method."""
 
-    # Connect to the database
-    db.connect()
-    users = Users(db.connection, db.cursor)
+    users = Users()
     user = users.get_user("frahmanian")
 
     # Check that the user is not None and of type tuple and has username "frahmanian"
     assert user is not None and type(user).__name__ == "dict" and user["username"] == "frahmanian"
+    # close the connection to the database
+    db.close()
+
 
 @pytest.mark.dependency()
 def test_register_user():
     """Test the register_user method."""
 
-    # Connect to the database
-    db.connect()
-
-    users = Users(db.connection, db.cursor)
+    users = Users()
     assert users.register_user("test_username", "test_fisrt_name", "test_last_name", "test_email",
                         "test_password") is True
 
@@ -72,31 +67,26 @@ def test_register_user():
     test_user = users.get_user("test_username")
     assert test_user is not None and type(test_user).__name__ == "dict" and test_user["username"] == "test_username"
 
-    db.close()
+    users.close()
 
 def test_login_user():
     """Test the login_user method."""
 
-    # Connect to the database
-    db.connect()
-
-    users = Users(db.connection, db.cursor)
+    users = Users()
     assert users.login_user("test_username", "test_password") is True
+    assert users.login_user("test_username", "wrong_password") is False
 
-    db.close()
+    users.close()
 
 @pytest.mark.dependency(depends=["test_register_user"])
 def test_delete_user():
     """Test the delete_user method."""
 
-    # Connect to the database
-    db.connect()
-
-    users = Users(db.connection, db.cursor)
+    users = Users()
     assert users.delete_user("test_username") is True
 
     # Check that the user is None
     test_user = users.get_user("test_username")
     assert test_user is None
 
-    db.close()
+    users.close()

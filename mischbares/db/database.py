@@ -2,6 +2,8 @@
 import configparser
 import psycopg2
 
+import pandas as pd
+
 from mischbares.logger import logger
 
 log = logger.get_logger("db_database")
@@ -51,12 +53,20 @@ class Database:
 
     def execute(self, sql, params=None):
         """Execute a SQL statement"""
-        self.cursor.execute(sql, params)
-        result = self.cursor.fetchall()
-        if result:
-            cols = [desc[0] for desc in self.cursor.description]
-            return dict(zip(cols, result[0]))
-        return None
+        df = pd.read_sql_query(sql, self.connection, params=params)
+        if df.empty:
+            return None
+        return df
+        # self.cursor.execute(sql, params)
+        # result = self.cursor.fetchall()
+        # #TODO Make a pandas dataframe from the result
+        # if result:
+        #     cols = [desc[0] for desc in self.cursor.description]
+        #     for i in range(len(result)):
+        #         result[i] = dict(zip(cols, result[i]))
+        #     return result
+        #     #return dict(zip(cols, result[0]))
+        # return None
 
 
     def commit(self, sql, params=None):

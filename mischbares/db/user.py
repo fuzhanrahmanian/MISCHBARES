@@ -39,7 +39,7 @@ class Users(Database):
         hashed_password = hashpw(password.encode('utf-8'), gensalt())
         # check if the user already exists
         username_exists = self.get_user(username)
-        if username_exists:
+        if not username_exists.empty:
             log.info("User already exists")
             return False
 
@@ -62,10 +62,10 @@ class Users(Database):
         """
         sql = "SELECT * FROM users WHERE username = %s"
         result = self.execute(sql, (username,))
-        if result:
-            if checkpw(password.encode('utf-8'), result['password'].encode('utf-8')):
+        if not result.empty:
+            if checkpw(password.encode('utf-8'), result['password'].values[0].encode('utf-8')):
                 log.info(f"Password correct. User {username} logged in.")
-                self.user_id = result['user_id']
+                self.user_id = int(result['user_id'].values[0])
                 return True
             log.info("Password incorrect.")
             return False

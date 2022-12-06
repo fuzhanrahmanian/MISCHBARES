@@ -1,5 +1,4 @@
 """Class for handling the experiment table in the database. """
-import psycopg2
 
 from mischbares.db.database import Database
 from mischbares.logger import logger
@@ -10,6 +9,7 @@ class Experiments(Database):
     """class for handling experiment data"""
     def __init__(self):
         super().__init__()
+        self.experiment_id = None
 
     def add_experiment(self, material, date, user_id, start_time):
         """add an experiment to the database
@@ -21,10 +21,11 @@ class Experiments(Database):
             start_time (time): The start time of the experiment
         """
         commit_status = self.commit("INSERT INTO experiments \
-                (experiment_id, material, date, user, start_time)\
+                (experiment_id, material, date, user_id, start_time)\
                 VALUES (nextval('experiment_experiment_id_seq'::regclass), %s, %s, %s, %s)", \
                 (material, date, user_id, start_time))
         if commit_status:
+            self.experiment_id = int(self.execute("SELECT currval('experiment_experiment_id_seq'::regclass)").iloc[0][0])
             log.info(f"Experiment {material} added.")
         return commit_status
 
@@ -49,6 +50,6 @@ class Experiments(Database):
         Returns:
             experiments (list): A list containing all experiments
         """
-        sql = "SELECT * FROM experiments WHERE user = %s"
+        sql = "SELECT * FROM experiments WHERE user_id = %s"
         experiments = self.execute(sql, (user_id,))
         return experiments

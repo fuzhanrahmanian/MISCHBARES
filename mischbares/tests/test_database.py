@@ -36,8 +36,8 @@ def test_execute():
     sql = "SELECT * FROM users"
     result = db.execute(sql)
 
-    # assert that the result is not None and of type list
-    assert result is not None and type(result).__name__ == "dict"
+    # assert that the result is not None and a pandas dataframe
+    assert result is not None and type(result).__name__ == "DataFrame"
 
     # Close the connection to the database
     db.close()
@@ -50,7 +50,7 @@ def test_get_user():
     user = users.get_user("frahmanian")
 
     # Check that the user is not None and of type tuple and has username "frahmanian"
-    assert user is not None and type(user).__name__ == "dict" and user["username"] == "frahmanian"
+    assert user is not None and type(user).__name__ == "DataFrame" and user["username"].values[0] == "frahmanian"
     # close the connection to the database
     db.close()
 
@@ -65,10 +65,11 @@ def test_register_user():
 
     # Check that the user is not None and of type tuple and has username "test_username"
     test_user = users.get_user("test_username")
-    assert test_user is not None and type(test_user).__name__ == "dict" and test_user["username"] == "test_username"
+    assert test_user is not None and type(test_user).__name__ == "DataFrame" and test_user["username"].values[0] == "test_username"
 
     users.close()
 
+@pytest.mark.dependency(depends=["test_register_user"])
 def test_login_user():
     """Test the login_user method."""
 

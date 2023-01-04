@@ -19,6 +19,8 @@ class Experiments(Database):
             date (date): The date of the experiment
             user_id (int): The id of the user
             start_time (time): The start time of the experiment
+        Returns:
+            commit_status (bool): True if the commit was successful
         """
         commit_status = self.commit("INSERT INTO experiments \
                 (experiment_id, material, date, user_id, start_time)\

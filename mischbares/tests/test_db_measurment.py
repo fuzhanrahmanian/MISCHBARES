@@ -63,3 +63,13 @@ def test_get_measurements_by_procedure_name():
     # Assert that all experiment ids is the same
     assert test_meas_by_procedure["procedure_name"].unique()[0] == procedure_name
     measurment.close()
+
+def test_get_measurement_by_user_id():
+    """Test the get_measurement_by_user_id method."""
+
+    measurment = Measurements()
+    test_meas_by_user = measurment.get_measurements_by_user_id(test_meas_user.user_id)
+    assert test_meas_by_user is not None and type(test_meas_by_user).__name__ == "DataFrame"
+    # Assert that all experiment ids is the same
+    assert test_meas_by_user["user_id"].unique()[0] == test_meas_user.user_id
+    measurment.close()

@@ -11,6 +11,7 @@ class Measurements(Experiments):
     def __init__(self):
         super().__init__()
         self.measurement_id = None
+        self.procedure_name = None
 
 
     def add_measurement(self, procedure_name, experiment_id):
@@ -28,9 +29,10 @@ class Measurements(Experiments):
         commit_status = self.commit("INSERT INTO measurements \
             (measurement_id, procedure_name, experiment_id)\
             VALUES (nextval('measurment_measurment_id_seq'::regclass), %s, %s)", \
-            (procedure_name, experiment_id)) # This type in measurment_measurment_id_seq is a typo in the database
+            (procedure_name, experiment_id)) # This typo in measurment_measurment_id_seq is a typo in the database
         if commit_status:
             self.measurement_id = int(self.execute("SELECT currval('measurment_measurment_id_seq'::regclass)").iloc[0][0])
+            self.procedure_name = procedure_name
             log.info(f"Measurement {procedure_name} added.")
         return commit_status
 
@@ -78,11 +80,12 @@ class Measurements(Experiments):
         Args:
             user_id (int): The id of the user
         Returns:
-            measurements (list): A list containing all measurements
+            measurements (list): A list containing all measurements and the user_id
         """
-        # TODO: This is not very efficient -> write a join query for this
-        experiments_ids = self.get_all_experiments_by_user(user_id)
-        measurements = []
-        for experiment_id in experiments_ids:
-            measurements.append(self.get_measurements_by_experiment_id(experiment_id))
+        sql = "SELECT measurements.*, users.user_id \
+               FROM measurements \
+               JOIN experiments ON measurements.experiment_id = experiments.experiment_id \
+               JOIN users on experiments.user_id = users.user_id \
+               WHERE users.user_id = %s"
+        measurements = self.execute(sql, (user_id,))
         return measurements

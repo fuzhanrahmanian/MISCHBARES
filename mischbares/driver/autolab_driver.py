@@ -414,8 +414,8 @@ class Autolab:
                                 self.finished_procedure.Commands[comm].Signals.get_Item(n).Value] \
                                for n in names}
         utils.save_data_as_json(directory = self.save_dir, data = self.data, \
-                                name = self.optional_name.replace('.nox', '.json'))
-
+                                name = self.optional_name)
+                                # self.optional_name.replace('.nox', '.json')
         return self.data
 
 

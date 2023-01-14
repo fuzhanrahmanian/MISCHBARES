@@ -16,7 +16,8 @@ test_meas_user.login_user("test_meas_user", "test_psw_meas_user")
 
 # add a test_experiment to the database to test the measurement class
 experiments = Experiments()
-experiments.add_experiment("test_experiment", "2024-02-02",
+# get current date in format YYYY:mm:dd
+experiments.add_experiment("test_experiment_meas", datetime.now().strftime(("%Y-%m-%d")),
                            test_meas_user.user_id, datetime.now().strftime(("%H:%M:%S")))
 #datetime.now().strftime(("%Y-%m-%d")
 # test_procedure

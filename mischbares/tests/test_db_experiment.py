@@ -1,4 +1,6 @@
 """Test the database experiment class."""
+from datetime import datetime
+
 from mischbares.db.user import Users
 from mischbares.db.experiment import Experiments
 from mischbares.db.motor import Motor
@@ -16,7 +18,7 @@ def test_add_experiment():
     """Test the add_experiment method."""
 
     experiments = Experiments()
-    assert experiments.add_experiment("test_material", "2021-01-01", \
+    assert experiments.add_experiment("test_material", datetime.now().strftime(("%Y-%m-%d")), \
         test_exp_user.user_id, "12:00:00") is True
 
     # Check that the experiment is not None and of type tuple and has material "test_material"

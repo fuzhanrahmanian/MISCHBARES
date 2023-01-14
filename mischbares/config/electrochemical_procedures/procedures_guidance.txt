@@ -72,7 +72,26 @@ autolab_config['autolab']['procedures']['eis_reverse'] = {'procedure': 'eis_reve
 
 
 
-# chrono voltammetry analysis
+# cyclic voltammetry analysis (staircase)
+autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
+                        'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.4},
+                                        'FHWait': {'Time': 2},
+                                        'FHCyclicVoltammetry2': {'Start value': 0.4,
+                                                                'Upper vertex': 1.7,
+                                                                'Lower vertex': -1.5,
+																'Step': 0.00069,
+                                                                'NrOfStopCrossings': 8,
+																'Stop value': 0.4,
+                                                                'Scanrate': 0.005}},
+                        'plot': 'tCV',
+                        'onoffafter': 'off',
+                        'save_dir': None, # path to save the data
+                        'filename': 'cv.nox',
+                        'parseinstructions': ['CVLinearScanAdc164']}
+
+
+
+# cyclic voltammetry analysis (linear)
 autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
                         'setpoints': {'FHSetSetpointPotential': {'Setpoint value': 0.4},
                                         'FHWait': {'Time': 2},
@@ -86,3 +105,7 @@ autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
                         'save_dir': None, # path to save the data
                         'filename': 'cv.nox',
                         'parseinstructions': ['CVLinearScanAdc164']}
+
+
+											   
+											   

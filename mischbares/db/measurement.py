@@ -12,6 +12,7 @@ class Measurements(Experiments):
         super().__init__()
         self.measurement_id = None
         self.procedure_name = None
+        self.parser = None
 
 
     def add_measurement(self, procedure_name, experiment_id):
@@ -23,9 +24,10 @@ class Measurements(Experiments):
         Returns:
             commit_status (bool): True if the commit was successful
         """
-        if not procedure_name in config["procedures"]:
+        if not procedure_name in config["procedures"].keys():
             log.error(f"Procedure {procedure_name} not found in config.")
             return False
+        self.parser = config["procedures"][procedure_name]
         commit_status = self.commit("INSERT INTO measurements \
             (measurement_id, procedure_name, experiment_id)\
             VALUES (nextval('measurment_measurment_id_seq'::regclass), %s, %s)", \

@@ -10,15 +10,21 @@ class Procedure(Measurements):
     def __init__(self):
         super().__init__()
         self.procedure_id = None
-        #TODO add procedures when the tables are created
+        #TODO add Lissajous procedure
         # Define a dictionary that maps procedure names to tuples containing the SQL query and the number of values
         self.query_dict_information = {
         "ocp": ("INSERT INTO ocp_procedure (procedure_id, duration, interval_time, ocp_potential, ocp_measurment_id) VALUES \
                 (nextval('ocp_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s)", 4),
-        "cv": ("---", 5),
-        "ca": ("---", 5),
-        "cp": ("---", 5),
-        "eis": ("---", 5),
+        "cv_staircase": ("INSERT INTO cv_staircase_procedure (procedure_id, start_potential, upper_vertex, lower_vertex, step_size,\
+            num_of_stop_crossings, stop_value, scan_rate, cv_measurment_id) VALUES (nextval('cv_staircase_procedure_procedure_id_seq'::regclass), \
+                 %s, %s, %s, %s, %s, %s, %s, %s)", 8),
+        "ca": ("INSERT INTO ca_procedure (procedure_id, duration, applied_potential, interval_time, capacity, diffusion_coefficient,\
+            ca_measurment_id) VALUES (nextval('ca_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s, %s)", 6),
+        "cp": ("INSERT INTO cp_procedure (procedure_id, duration, applied_current, interval_time, transition_time, cp_measurment_id)\
+            VALUES (nextval('cp_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s)" , 5),
+        "eis": ("INSERT INTO eis_procedure (procedure_id, potential, integration_time, integration_cycle, lower_freuqency, upper_frequency,\
+            potential_dc, current_dc, fitted_circuit, eis_measurment_id) VALUES (nextval('eis_procedure_procedure_id_seq'::regclass),\
+                %s, %s, %s, %s, %s, %s, %s, %s, %s)", 9),
         "lissajous": ("---", 5),
         }
 
@@ -26,10 +32,14 @@ class Procedure(Measurements):
         self.query_raw_data_information = {
             "ocp": ("INSERT INTO ocp_raw (current, corrected_time, index, potential, dpotential_dt,\
                     power, charge, dpower_dt, dcharge_dt, procedure_id) VALUES", 9),
-            "cv": ("---", 5),
-            "ca": ("---", 5),
-            "cp": ("---", 5),
-            "eis": ("---", 5),
+            "cv_staircase": ("INSERT INTO cv_staircase_raw (index, potential_applied, scan_rate, charge, current,\
+                             potential, power, resistance, dcharge_dt, dcurrent_dt, procedure_id) VALUES", 10),
+            "ca": ("INSERT INTO ca_raw (corrected_time, index, charge, current, potential, power, dcharge_dt,\
+                    dcurrent_dt, dpotential_dt, dpower_dt, procedure_id) VALUES", 10),
+            "cp": ("INSERT INTO cp_raw (corrected_time, index, charge, current, potential, power,\
+                dcurrent_dt, procedure_id) VALUES", 7),
+            "eis": ("INSERT INTO eis_raw (index, frequency, z_real, neg_z_imag, z_norm, phase_shift,\
+                procedure_id) VALUES", 6),
             "lissajous": ("---", 5),
         }
 
@@ -61,9 +71,12 @@ class Procedure(Measurements):
         Args:
             procedure (str): name of the procedure
         """
+        if procedure not in config["procedures"]:
+            log.error(f"Invalid procedure name: {procedure}")
+            return None
         procedure_dict_information = {
             "ocp": ("SELECT * FROM ocp_procedure WHERE procedure_id = %s"),
-            "cv": ("SELECT * FROM cv_procedure WHERE procedure_id = %s"),
+            "cv_staircase": ("SELECT * FROM cv_staircase_procedure WHERE procedure_id = %s"),
             "ca": ("SELECT * FROM ca_procedure WHERE procedure_id = %s"),
             "cp": ("SELECT * FROM cp_procedure WHERE procedure_id = %s"),
             "eis": ("SELECT * FROM eis_procedure WHERE procedure_id = %s"),
@@ -81,6 +94,13 @@ class Procedure(Measurements):
         """
         # Prepare the dataset
         data.pop("Time")
+        if self.procedure_name == "eis":
+            try:
+                data.pop("Potential (DC)")
+                data.pop("Current (DC)")
+            except:
+                log.info("No DC potential or current. Not removing from data.")
+                pass
         tuples = [tuple(data[col]) for col in data.keys()]
         # Look up the relevant SQL query and number of values based on the procedure name
         query, num_values = self.query_raw_data_information.get(self.procedure_name, (None, None))
@@ -109,7 +129,7 @@ class Procedure(Measurements):
         """
         procedure_dict_raw_data = {
             "ocp": ("SELECT * FROM ocp_raw WHERE procedure_id = %s"),
-            "cv": ("SELECT * FROM cv_raw WHERE procedure_id = %s"),
+            "cv_staircase": ("SELECT * FROM cv_staircase_raw WHERE procedure_id = %s"),
             "ca": ("SELECT * FROM ca_raw WHERE procedure_id = %s"),
             "cp": ("SELECT * FROM cp_raw WHERE procedure_id = %s"),
             "eis": ("SELECT * FROM eis_raw WHERE procedure_id = %s"),

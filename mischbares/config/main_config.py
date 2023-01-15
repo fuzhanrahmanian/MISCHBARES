@@ -14,6 +14,7 @@ config["servers"] = dict(autolabDriver = dict(host=ip_adress, port=15374), # aut
 
 config['orchestrator'] = dict(path='data')#, kadiurl="http://127.0.0.1:13377")
 config['instrument'] = "SDC"
-config['procedures'] = ["ocp",  "ca", "cp", "cv", "eis", "lissajous"]
-
+config['procedures'] = {"ocp": "recordsignal",  "ca": "recordsignal", "cp": "recordsignal",\
+                        "cv_staircase": "FHCyclicVoltammetry2", "eis": 'FIAMeasPotentiostatic',\
+                        } #"lissajous": ['FIAMeasPotentiostatic', 'FIAMeasurement']
 config.update(autolab_config)

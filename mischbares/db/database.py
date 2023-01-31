@@ -20,7 +20,9 @@ class Database:
         self.database = config["database"]["database"]
         self.connection = None
         self.cursor = None
-        self.connect()
+        # Connect to the database if the connection is not established
+        if not self.connection:
+            self.connect()
 
 
     def __del__(self):
@@ -57,16 +59,6 @@ class Database:
         if df.empty:
             return None
         return df
-        # self.cursor.execute(sql, params)
-        # result = self.cursor.fetchall()
-        # #TODO Make a pandas dataframe from the result
-        # if result:
-        #     cols = [desc[0] for desc in self.cursor.description]
-        #     for i in range(len(result)):
-        #         result[i] = dict(zip(cols, result[i]))
-        #     return result
-        #     #return dict(zip(cols, result[0]))
-        # return None
 
 
     def commit(self, sql, params=None):

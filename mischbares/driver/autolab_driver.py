@@ -497,7 +497,11 @@ class Autolab:
 
         data = self.parse_nox(parse_instruction = parse_instruction,
                               save_dir = save_dir, optional_name = name)
+        # call madap , do data analysis : processed data
+
+        # insert to database both raw data and processed data
         await asyncio.sleep(2)
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data
+

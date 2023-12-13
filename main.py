@@ -1,91 +1,114 @@
 """Main module."""
 import requests
-import threading
+import time
+import shutil
+import json
+from multiprocessing import Process
 
 # postgres
 import psycopg2
-
-import mischbares.server.autolab_server as server
 from mischbares.logger import logger
+from mischbares.action import autolab_action
+from mischbares.server import autolab_server
+from mischbares.orchestrator import orchestrator
 from mischbares.config.main_config import config
-from mischbares.driver.autolab_driver import Autolab
+from mischbares.procedures.autolab_procedures import AutolabProcedures
 
 log = logger.setup_applevel_logger(file_name="mischbares.log")
 
-# connect to db postgres
-def connect_to_postgres(host = "localhost", port = 5432, user = "postgres", password = "PhD2020",
-                        database = "mischbares_test"):
-    con = psycopg2.connect(
-        host = host,
-        database = database,
-        user = user,
-        password = password,
-        port = port)
-    return con
+host_url = config['servers']['autolab']['host']
+port_action = config['servers']['autolab']['port']
+port_server = config['servers']['autolabDriver']['port']
+port_orchestrator = config['servers']['orchestrator']['port']
 
-
-def call_autolab_driver():
-    log.info("Start Autolab-Driver-Modul")
-    Autolab(config["autolabDriver"])
-
-def call_autolab_server():
-    host_url = config['servers']['autolabDriver']['host']
-    port_url = config['servers']['autolabDriver']['port']
-    requests.get(f"http://{host_url}:{port_url}").json()
-
-#call_autolab_server()
-# def echem_test(action, params):
-#     server = 'autolab'
-#     action = action
-#     params = params
-#     res = requests.get("http://{}:{}/{}/{}".format(
-#         config['servers']['autolab']['host'],
-#         config['servers']['autolab']['port'],server , action),
-#         params= params).json()
-#     return res
-
-def start_autolab_server():
+def run_action():
     """Start the Autolab server."""
-    server.main()
+    autolab_action.main()
+
+
+def run_server():
+    """Start the Autolab server."""
+    autolab_server.main()
+
+
+def run_orchestrator():
+    """Start the Autolab server."""
+    orchestrator.main()
+
+
+def banana_instance():
+    """Start the server and action in a separate processes."""
+    processes = [Process(target=run_server),
+                 Process(target=run_action),
+                 Process(target=run_orchestrator)]
+
+    for proc in processes:
+        try:
+            proc.start()
+            print("Waiting for processess to start...")
+        except RuntimeError as e:
+            print("Error starting server: ", e)
+    time.sleep(15)
+    yield processes
+    for proc in processes:
+        proc.kill()
+    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+    shutil.rmtree('data/test', ignore_errors=True)
+
+
+def start_orchestrator_experimentation():
+    """ Intantiate the orchestrator scheduler. """
+    # Assuming the start fucniotns works
+    sequence = dict(soe=['orchestrator/start'],
+                  params={'start': {'collectionkey': "db_test"}}, meta={})
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None).json()
+
+
+
+
+def end_orchestrator_experimentation():
+    sequence = dict(soe=['orchestrator/finish'], params={'finish': None}, meta={})
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None).json()
 
 
 def main():
     """Main function."""
-    log.info("Start Autolab-Driver-Modul")
-    # Start the server in a thread
-    server_thread = threading.Thread(target=start_autolab_server)
-    server_thread.start()
-    # Check if the server is running
-    response = None
-    while response != 200:
-        try:
-            response = requests.get("http://{}:{}/docs".format( \
-                config['servers']['autolabDriver']['host'], \
-                config['servers']['autolabDriver']['port'])).status_code
-        except requests.exceptions.ConnectionError:
-            pass
-    print("Server was started")
-    server_thread.stop()
-    print("Server was killed")
+    log.info("Start to do one experiment")
+
+    #TODO log in the user and connect to the database
+
+    # start the orchestrator
+    start_orchestrator_experimentation()
+    for i in range(1, 2):
+        #TODO create an experiment object and get the experiment id
+        #TODO create a measurement object and get the measurement id
+        #TODO create a procedure object with the measurement id and the experiment id and give it to the function
+        _, _, sequence = AutolabProcedures(measurement_num=i, save_dir=r"C:\Users\SDC_1\Documents\repositories\test_data_mischbares").ocp_measurement()
+        params = dict(experiment=json.dumps(sequence),thread=0)
+        requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                                params=params, timeout=None).json()
+
+    end_orchestrator_experimentation()
+
+
 
 # main function
 if __name__ == "__main__":
-    # call autolab server
-    #main()
-    connection_to_db = connect_to_postgres()
+    processes = [Process(target=run_server),
+                 Process(target=run_action),
+                 Process(target=run_orchestrator)]
 
-    # cursor
-    cursor_to_db = connection_to_db.cursor()
-
-    # execute query
-    cursor_to_db.execute("SELECT procedure FROM public.experiment")
-
-    # fetch all data
-    rows = cursor_to_db.fetchall()
-
-    # close the cursor
-    cursor_to_db.close()
-
-    # close connection
-    connection_to_db.close()
-    #start_autolab_server()
+    for proc in processes:
+        try:
+            proc.start()
+            print("Waiting for processess to start...")
+        except RuntimeError as e:
+            print("Error starting server: ", e)
+    time.sleep(15)
+    main()
+    for proc in processes:
+        proc.kill()

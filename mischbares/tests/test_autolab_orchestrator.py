@@ -58,6 +58,7 @@ def server_instance():
 def test_server_connection():
     """Test if the server is running."""
     response = requests.get(f"http://{host_url}:{port_server}/docs", timeout=None)
+    time.sleep(5)
     assert response.status_code == 200
 
 

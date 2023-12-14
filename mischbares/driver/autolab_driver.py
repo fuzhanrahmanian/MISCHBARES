@@ -7,9 +7,11 @@ from copy import copy
 import asyncio
 import numpy as np
 import clr
+from datetime import datetime
 
 from mischbares.logger import logger
 from mischbares.utils import utils
+from mischbares.db.procedure import Procedure
 
 log = logger.get_logger("autolab_driver")
 
@@ -47,7 +49,8 @@ class Autolab:
                                                     eis = "Autolab control")
         self.ocp_procedure_setting = dict(ca = "applypotential0",
                                           cp = "applycurrent0",
-                                          eis = "Set potential")
+                                          eis = "Set potential",
+                                          cv_staircase = "FHSetSetpointPotential")
 
     @property
     def save_dir(self):
@@ -301,6 +304,7 @@ class Autolab:
         """
         ocp_command = self.ocp_procedure_setting[procedure]
         self.proc.Commands[ocp_command].CommandParameters["Setpoint value"].Value = ocp_value
+        log.info(f"set the OCP value to {ocp_value} in procedure {procedure}")
 
 
     async def get_ocp_on_the_fly(self):
@@ -310,7 +314,7 @@ class Autolab:
             current (float): current value at ocp.
             potential (float): potential value at ocp.
         """
-        self.load_procedure	("ocp")
+        self.load_procedure("ocp")
         # measure the procedure for 10 seconds
         self.proc.Measure()
 
@@ -424,7 +428,9 @@ class Autolab:
                                     parse_instruction, save_dir,
                                     setpoints = None, current_range = "1mA",
                                     on_off_status = "off",
-                                    optional_name = None, measure_at_ocp = False):
+                                    optional_name = None,
+                                    measure_at_ocp = False,
+                                    user_id = None):
         """perform the measurement
 
         Args:
@@ -437,10 +443,18 @@ class Autolab:
             on_off_status (str): the status of the instrument. Defaults to "off".
             optional_name (str): optional file name. Defaults to None.
             measure_at_ocp (bool): whether to measure at ocp. Default is False.
+            db_procedure (object): the procedure object from the database. Defaults to None.
         Returns:
             data (dict): extracted data from the nox file of the procedure.
         """
-
+        # Add the procedure to a measurement
+        # Create procedure
+        #db_procedure = Procedure()
+        #db_procedure.add_experiment("test_experiment_all_procedure", datetime.now().strftime(("%Y-%m-%d")),
+        #                        user_id, datetime.now().strftime(("%H:%M:%S")))
+        # assamble_information about the procedure
+        #proc = {"ocp": [setpoints["recordsignal"]['Duration (s)'], 100, 0.0]}
+        #db_procedure.add_procedure_information(*proc[procedure], db_procedure.measurement_id)
         # define a save path for saving th nox files of the measurements
         save_dir = utils.create_dir(os.path.join(save_dir, "data"))
         log.info(f"The procedure path is {save_dir}")
@@ -453,7 +467,7 @@ class Autolab:
             if procedure == "cp":
                 ocp_value, _ = await self.get_ocp_on_the_fly()
 
-            elif procedure in ("ca", "eis"):
+            elif procedure in ("ca", "eis", "cv_staircase"):
                 _, ocp_value = await self.get_ocp_on_the_fly()
 
             else:
@@ -472,11 +486,9 @@ class Autolab:
         # measure the procedure
         self.proc.Measure()
         log.info("measuring the procedure")
-        #
         # Todo
         # visualize the measurement live while it is being measured
         await self.visualize_measurement(plot_type)
-
         # cell status after measurement
         self.set_cell(on_off_status)
 
@@ -499,7 +511,8 @@ class Autolab:
                               save_dir = save_dir, optional_name = name)
         # call madap , do data analysis : processed data
 
-        # insert to database both raw data and processed data
+        # Add the measured data to the database
+        #db_procedure.add_raw_procedure_data(data)
         await asyncio.sleep(2)
         log.info(f"finished measuring and saving procedure {procedure}")
 

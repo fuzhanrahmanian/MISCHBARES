@@ -39,7 +39,7 @@ class Users(Database):
         hashed_password = hashpw(password.encode('utf-8'), gensalt())
         # check if the user already exists
         username_exists = self.get_user(username)
-        if not username_exists.empty:
+        if username_exists is not None:
             log.info("User already exists")
             return False
 

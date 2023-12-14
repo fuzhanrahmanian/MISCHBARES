@@ -126,3 +126,6 @@ mischbares/config/electrochemical_procedures/*
 
 # Config ini
 mischbares/db/config.ini
+
+# h5 files
+*.h5

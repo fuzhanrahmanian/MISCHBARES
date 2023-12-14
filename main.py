@@ -87,10 +87,10 @@ def main():
         #TODO create an experiment object and get the experiment id
         #TODO create a measurement object and get the measurement id
         #TODO create a procedure object with the measurement id and the experiment id and give it to the function
-        _, _, sequence = AutolabProcedures(measurement_num=i, save_dir=r"C:\Users\SDC_1\Documents\repositories\test_data_mischbares").ocp_measurement()
+        _, _, sequence = AutolabProcedures(measurement_num=i, save_dir=r"C:\Users\LaborRatte23-3\Documents\repositories\test_data_mischbares").ocp_measurement()
         params = dict(experiment=json.dumps(sequence),thread=0)
-        requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
-                                params=params, timeout=None).json()
+        requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment", params=params, timeout=None).json()
+        time.sleep(25)
 
     end_orchestrator_experimentation()
 

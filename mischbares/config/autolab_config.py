@@ -6,6 +6,7 @@ import os
 import socket
 
 config_path, _ = os.path.split(__file__)
+print(f"config path is {config_path}")
 
 autolab_config = {}
 
@@ -15,7 +16,7 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                                         'Autolab SDK 1.11'),
                 procp = os.path.join(config_path, 'electrochemical_procedures'),
                 hwsetupf = os.path.join(config_path, 'autolab_configuration',
-                                        '12.0', 'HardwareSetup.AUT88173.xml'),
+                                        '12.0', 'HardwareSetup.AUT88078.xml'),
                 micsetupf = os.path.join(config_path, 'autolab_configuration', 'Autolab SDK 1.11',
                                         'Hardware Setup Files', 'Adk.bin'),
                 proceuduresd = {'cp': os.path.join(config_path, 'electrochemical_procedures',
@@ -42,4 +43,4 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                                                     'OCP_MISCHBARES.nox')})
 
 # action should get the driver url
-autolab_config['autolab'] = dict(url = f'http://{ip_adress}:15474')
+autolab_config['autolab'] = dict(url = f'http://{ip_adress}:15174')

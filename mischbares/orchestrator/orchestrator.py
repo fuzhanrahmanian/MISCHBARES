@@ -27,7 +27,7 @@ import asyncio
 import requests
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel, validator
 
 import numpy
@@ -67,6 +67,9 @@ class Experiment(BaseModel):
         for i in experiments:
             if i.count('_') > 1:
                 raise ValueError("too many underscores in function name")
+        for i in experiments:
+            if i.count('/') != 1 or i[0] == '/' or i[-1] == '/':
+                raise ValueError("action must consist of a server name and a function name separated by '/'")
 
         # check inappropriate experiments
         parsed_v = [i.split('_')[0] for i in experiments]
@@ -85,6 +88,7 @@ class Experiment(BaseModel):
             raise ValueError("orchestrator/repeat can only be followed \
                 by orchestrator/finish in soe")
         return experiments
+
 
     @validator('params')
     def parameter_correspondence(cls, experiment, values):
@@ -143,9 +147,11 @@ async def infl(thread: int):
     while True:
         *_,experiment = await EXPERIMENT_QUEUES[thread].get()
         if TRACKING[thread]['status'] == 'clear':
+            #await update_tracking(thread,'running','status')
             TRACKING[thread]['status'] = 'running'
         await do_measurement(experiment, thread)
         if EXPERIMENT_QUEUES[thread].empty() and TRACKING[thread]['status'] == 'running':
+            #await update_tracking(thread,'clear','status')
             TRACKING[thread]['status'] = 'clear'
 
 async def do_measurement(experiment: dict, thread: int):
@@ -339,8 +345,7 @@ async def start(experiment: dict,collectionkey:str,meta:dict={}):
         if TRACKING[thread]['path'] not in FILELOCKS.keys():
             FILELOCKS[TRACKING[thread]['path']] = asyncio.Lock()
         async with FILELOCKS[TRACKING[thread]['path']]:
-            orchestrator_utils.save_dict_to_hdf5(dict(meta=dict(date= \
-                datetime.date.today().strftime("%d/%m/%Y"))),TRACKING[thread]['path'])
+            orchestrator_utils.save_dict_to_hdf5(dict(meta=dict(date=datetime.date.today().strftime("%d/%m/%Y"))),TRACKING[thread]['path'])
 
     # otherwise grab most recent session in dir
     else:
@@ -351,11 +356,11 @@ async def start(experiment: dict,collectionkey:str,meta:dict={}):
     async with FILELOCKS[TRACKING[thread]['path']]:
         with h5py.File(TRACKING[thread]['path'], 'r') as session:
             # assigns date to this session if necessary, or replaces session if too old
-            if 'date' not in session['meta'].keys():
+            if 'meta' not in session.keys():
+                orchestrator_utils.save_dict_to_hdf5(dict(meta=dict(date=datetime.date.today().strftime("%d/%m/%Y"))),TRACKING[thread]['path'], path='/',mode='a')
+            elif 'date' not in session['meta'].keys():
                 session.close()
-                orchestrator_utils.save_dict_to_hdf5(dict(date= \
-                    datetime.date.today().strftime("%d/%m/%Y")),TRACKING[thread]['path'], \
-                        path='/meta/',mode='a')
+                orchestrator_utils.save_dict_to_hdf5(dict(date=datetime.date.today().strftime("%d/%m/%Y")),TRACKING[thread]['path'], path='/meta/',mode='a')
             elif session['meta/date/'][()] != datetime.date.today().strftime("%d/%m/%Y"):
                 log.info('current session is old, saving current session and creating new session')
                 session.close()

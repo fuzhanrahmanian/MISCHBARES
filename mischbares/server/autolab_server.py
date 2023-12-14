@@ -220,8 +220,7 @@ async def perform_measurement(procedure: str, plot_type: str,
                                                     save_dir=save_dir,
                                                     optional_name=optional_name)},
                         data=data)
-    log.info(f"perform {procedure} wih parameters {setpoints} at the server level \n the result \
-                                                                                    is \n {data}")
+    log.info(f"perform {procedure} wih parameters {setpoints} at the server level \n the result is \n {data}")
     return retc
 
 

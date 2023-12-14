@@ -135,8 +135,7 @@ def measure(procedure: str, plot_type: str, parse_instruction, save_dir: str,
 
     log.info("The procedure parameters at action level is: %s", measure_conf)
 
-    res = requests.get(f"{SERVER_URL}/autolabDriver/measure",
-                        params=measure_conf, timeout=None).json()
+    res = requests.get(f"{SERVER_URL}/autolabDriver/measure", params=measure_conf, timeout=None).json()
 
     retc = ReturnClass(parameters = measure_conf, data = res)
 

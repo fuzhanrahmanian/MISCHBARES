@@ -1,5 +1,6 @@
 """ General assembles autolab procedures for orchestrator and UI"""
 import json
+import jsonpickle
 from mischbares.logger import logger
 
 log = logger.get_logger("autolab_procedures")
@@ -18,7 +19,7 @@ class AutolabProcedures:
 
 
     # 1. currentRange_ocp
-    def ocp_measurement(self, measurement_duration = 10):
+    def ocp_measurement(self, measurement_duration = 10, interval_time = 0.05):
         """ocp measurement procedure from orchestrator level.
         Args:
             measurement_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -33,7 +34,8 @@ class AutolabProcedures:
                         'parse_instruction': json.dumps(['recordsignal']),
                         'save_dir': self.save_dir,
                         'setpoints': json.dumps({'recordsignal':
-                                        {'Duration (s)': measurement_duration}}),
+                                        {'Duration (s)': measurement_duration,
+                                        'Interval time (s)': interval_time}}),
                         'current_range': self.current_range,
                         'on_off_status':'off',
                         'optional_name': 'ocp',
@@ -113,7 +115,56 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 4. currentRange_ocp/eis
+    # 4. currentRange_ocp/cv
+    def cv_staircase_measurement(self, start_value, upper_vortex, lower_vortex, stop_value,
+                                step_size=0.0007, NrOfStopCrossings=2, scan_rate=0.5,
+                                measure_at_ocp=False):
+        """cyclic voltammetry measurement procedure from orchestrator level.
+
+        Args:
+            start_value (float): start value in V. Usually it is the ocp value.
+            upper_vortex (float): upper vortex in V.
+            lower_vortex (float): lower vortex in V.
+            stop_value (float): stop value in V.
+            step_size (float, optional): step size in V. Defaults to 0.0007.
+            NrOfStopCrossings (int, optional): number of stop crossings. Defaults to 2.
+            scan_rate (float, optional): scan rate in V/s. Defaults to 0.5.
+
+        Returns:
+            soe (list): list of the sequence of events.
+            params (dict): dictionary of the parameters.
+            sequence (dict): dict of the sequence of events with parameters.
+        """
+        soe = [f'autolab/measure_{self.measurement_num}']
+        if measure_at_ocp is False:
+            experiment_setpoints = {'FHSetSetpointPotential':{'Setpoint value': start_value},
+                                    'FHCyclicVoltammetry2': {'Start value': start_value}}
+        else:
+            experiment_setpoints = {}
+            experiment_setpoints["FHCyclicVoltammetry2"] = {}
+        experiment_setpoints['FHCyclicVoltammetry2'].update({'Upper vertex': upper_vortex,
+                                                            'Lower vertex': lower_vortex,
+                                                            'Stop value': stop_value,
+                                                            'Step': step_size,
+                                                            'NrOfStopCrossings': NrOfStopCrossings,
+                                                            'Scanrate': scan_rate,})
+
+        params = {f'measure_{self.measurement_num}': {'procedure':'cv_staircase',
+                                                    'plot_type':'tCV',
+                                                    'parse_instruction': json.dumps(['FHCyclicVoltammetry2']),
+                                                    'save_dir': self.save_dir,
+                                                    'setpoints': json.dumps(experiment_setpoints),
+                                                    'current_range': self.current_range,
+                                                    'on_off_status':'off',
+                                                    'optional_name': 'cv_staircase',
+                                                    'measure_at_ocp': measure_at_ocp}}
+        log.info(f"initiate number {self.measurement_num} of cv_staircase measurement with \n \
+                    {params} parameters")
+        sequence = dict(soe = soe, params = params, meta={})
+        return soe, params, sequence
+
+
+    # 5. currentRange_ocp/eis
     def eis_measurement(self, apply_potential = 0.1, measure_at_ocp = True):
         """electrochemical impedance spectroscopy measurement procedure from orchestrator level.
         Args:
@@ -152,7 +203,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 5. currentRange_ocp/ca_ocp/eis
+    # 6. currentRange_ocp/ca_ocp/eis
     def ca_eis_measurement(self,measurement_duration = 10, ca_potential = 0.1,
                            ca_interval_time = 0.5, eis_potential = 0.1,
                            eis_measure_at_ocp = True):
@@ -189,7 +240,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 6. currentRange_ocp/eis-ocp/ca
+    # 7. currentRange_ocp/eis-ocp/ca
     def eis_ca_measurement(self, measurement_duration = 10, ca_potential = 0.1,
                            ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
         """sequence of electrochemical impedance spectroscopy and cyclic amperometric measurement
@@ -227,7 +278,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 7. currentRange_ocp/cp-ocp/eis
+    # 8. currentRange_ocp/cp-ocp/eis
     def cp_eis_measurement(self, measurement_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
         """sequence of cyclic potentiostatic and electrochemical impedance spectroscopy measurement
@@ -267,7 +318,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 8. currentRange_ocp/eis-ocp/cp
+    # 9. currentRange_ocp/eis-ocp/cp
     def eis_cp_measurement(self, measurement_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
         """sequence of cyclic potentiostatic and electrochemical impedance spectroscopy measurement
@@ -305,8 +356,92 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
+    # 10. eis-ocp/cv
+    def eis_cv_staircase_measurement(self, start_value, upper_vortex, lower_vortex, stop_value, step_size=0.0007,
+                          NrOfStopCrossings=2, scan_rate=0.5, measure_at_ocp=False, eis_potential = 0.1, eis_measure_at_ocp = True):
+        """cyclic voltammetry measurement procedure from orchestrator level.
+        Args:
+            start_value (float): start value in V. Usually it is the ocp value.
+            upper_vortex (float): upper vortex in V.
+            lower_vortex (float): lower vortex in V.
+            stop_value (float): stop value in V.
+            step_size (float, optional): step size in V. Defaults to 0.0007.
+            NrOfStopCrossings (int, optional): number of stop crossings. Defaults to 2.
+            scan_rate (float, optional): scan rate in V/s. Defaults to 0.5.
+            eis_potential (float, optional): potential in V. Defaults to 0.1.
+            eis_measure_at_ocp (bool, optional): measure at ocp. Defaults to True.
 
-    # 9. currentRange_ocp/cp-threshold-ca (cccv)
+        Returns:
+            soe (list): list of the sequence of events.
+            Params (dict): dictionary of the parameters.
+            sequence (dict): dict of the sequence of events with parameters.
+        """
+        soe_eis, params_eis, _ = self.eis_measurement(apply_potential = eis_potential,
+                                                      measure_at_ocp = eis_measure_at_ocp)
+        log.info(f"initiate number {self.measurement_num} of eis measurement with \n \
+                     ocp {eis_measure_at_ocp}")
+
+        self.measurement_num += 1
+        soe_cv, params_cv, _ = self.cv_staircase_measurement(start_value = start_value,
+                                                            upper_vortex = upper_vortex,
+                                                            lower_vortex = lower_vortex,
+                                                            stop_value = stop_value,
+                                                            step_size = step_size,
+                                                            NrOfStopCrossings = NrOfStopCrossings,
+                                                            scan_rate = scan_rate,
+                                                            measure_at_ocp = measure_at_ocp)
+        log.info(f"measurement number {self.measurement_num} of cv_staircase measurement with \n \
+                    {params_cv} parameters")
+
+        soe = soe_eis + soe_cv
+        params = {**params_eis, **params_cv}
+        sequence = dict(soe = soe, params = params, meta={})
+        return soe, params, sequence
+
+
+    # 11. currentRange_cv-ocp/eis
+    def cv_stairstep_eis_measurement(self, start_value, upper_vortex, lower_vortex, stop_value, step_size=0.0007,
+                            NrOfStopCrossings=2, scan_rate=0.5, measure_at_ocp=False, eis_potential = 0.1, eis_measure_at_ocp = True):
+        """cyclic voltammetry and electrochemical impedance spectroscopy measurement procedure from orchestrator level.
+        Args:
+            start_value (float): start value in V. Usually it is the ocp value.
+            upper_vortex (float): upper vortex in V.
+            lower_vortex (float): lower vortex in V.
+            stop_value (float): stop value in V.
+            step_size (float, optional): step size in V. Defaults to 0.0007.
+            NrOfStopCrossings (int, optional): number of stop crossings. Defaults to 2.
+            scan_rate (float, optional): scan rate in V/s. Defaults to 0.5.
+            eis_potential (float, optional): potential in V. Defaults to 0.1.
+            eis_measure_at_ocp (bool, optional): measure at ocp. Defaults to True.
+
+        Returns:
+            soe (list): list of the sequence of events.
+            Params (dict): dictionary of the parameters.
+            sequence (dict): dict of the sequence of events with parameters.
+        """
+        soe_cv, params_cv, _ = self.cv_staircase_measurement(start_value = start_value,
+                                                            upper_vortex = upper_vortex,
+                                                            lower_vortex = lower_vortex,
+                                                            stop_value = stop_value,
+                                                            step_size = step_size,
+                                                            NrOfStopCrossings = NrOfStopCrossings,
+                                                            scan_rate = scan_rate,
+                                                            measure_at_ocp = measure_at_ocp)
+        log.info(f"initiate number {self.measurement_num} of cv_staircase measurement with \n \
+                    {params_cv} parameters")
+
+        self.measurement_num += 1
+        soe_eis, params_eis, _ = self.eis_measurement(apply_potential = eis_potential,
+                                                        measure_at_ocp = eis_measure_at_ocp)
+        log.info(f"measurement number {self.measurement_num} of eis measurement with \n \
+                    ocp {eis_measure_at_ocp}")
+
+        soe = soe_cv + soe_eis
+        params = {**params_cv, **params_eis}
+        sequence = dict(soe = soe, params = params, meta={})
+        return soe, params, sequence
+
+    # 12. currentRange_ocp/cp-threshold-ca (cccv)
     def cp_ca_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5):
@@ -345,7 +480,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 10. currentRange_ocp/ca-threshold-cp (cvcc)
+    # 13. currentRange_ocp/ca-threshold-cp (cvcc)
     def ca_cp_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5):
@@ -383,7 +518,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 11. currentRange_ocp/cp-threshold-ca-ocp/eis
+    # 14. currentRange_ocp/cp-threshold-ca-ocp/eis
     def cp_ca_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
@@ -431,7 +566,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 12. currentRange_ocp/ca-threshold-cp-ocp/eis
+    # 15. currentRange_ocp/ca-threshold-cp-ocp/eis
     def ca_cp_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
@@ -477,7 +612,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 13. currentRange_ocp/eis-ocp/ca-threshold-cp
+    # 16. currentRange_ocp/eis-ocp/ca-threshold-cp
     def eis_ca_cp_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
@@ -525,7 +660,7 @@ class AutolabProcedures:
 
 
 
-    # 14. currentRange_ocp/eis-ocp/cp-threshold-ca
+    # 17. currentRange_ocp/eis-ocp/cp-threshold-ca
     def eis_cp_ca_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
@@ -572,7 +707,61 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 15. currentRange_ocp/eis-ocp/cp-threshold-ca-ocp/eis (cccv)
+    # 18. eis-ocp/cv_staircase/eis
+    def eis_cv_staircase_eis_measurement(self, start_value, upper_vortex, lower_vortex, stop_value, step_size=0.0007,
+                            NrOfStopCrossings=2, scan_rate=0.5, measure_at_ocp=False, first_eis_potential = 0.1,
+                            first_eis_measure_at_ocp = True, second_eis_potential = 0.1, second_eis_measure_at_ocp = True):
+        """electrochemical impedance spectroscopy and cyclic voltammetry and electrochemical impedance spectroscopy
+            measurement procedure from orchestrator level.
+        Args:
+            start_value (float): start value in V. Usually it is the ocp value.
+            upper_vortex (float): upper vortex in V.
+            lower_vortex (float): lower vortex in V.
+            stop_value (float): stop value in V.
+            step_size (float, optional): step size in V. Defaults to 0.0007.
+            NrOfStopCrossings (int, optional): number of stop crossings. Defaults to 2.
+            scan_rate (float, optional): scan rate in V/s. Defaults to 0.5.
+            first_eis_potential (float, optional): potential in V. Defaults to 0.1.
+            first_eis_measure_at_ocp (bool, optional): measure at ocp. Defaults to True.
+            second_eis_potential (float, optional): potential in V. Defaults to 0.1.
+            second_eis_measure_at_ocp (bool, optional): measure at ocp. Defaults to True.
+
+        Returns:
+            soe (list): list of the sequence of events.
+            Params (dict): dictionary of the parameters.
+            sequence (dict): dict of the sequence of events with parameters.
+        """
+        soe_first_eis, params_first_eis, _ = self.eis_measurement(apply_potential = first_eis_potential,
+                                            measure_at_ocp = first_eis_measure_at_ocp)
+        log.info(f"initiate number {self.measurement_num} of first eis measurement with \n \
+                    {first_eis_measure_at_ocp} ocp and {params_first_eis} parameters")
+
+        self.measurement_num += 1
+
+        soe_cv, params_cv, _ = self.cv_staircase_measurement(start_value = start_value,
+                                                            upper_vortex = upper_vortex,
+                                                            lower_vortex = lower_vortex,
+                                                            stop_value = stop_value,
+                                                            step_size = step_size,
+                                                            NrOfStopCrossings = NrOfStopCrossings,
+                                                            scan_rate = scan_rate,
+                                                            measure_at_ocp = measure_at_ocp)
+        log.info(f"measurement number {self.measurement_num} of cv_staircase measurement with \n \
+                    {params_cv} parameters")
+
+        self.measurement_num += 1
+
+        soe_second_eis, params_second_eis, _ = self.eis_measurement(apply_potential = second_eis_potential,
+                                            measure_at_ocp = second_eis_measure_at_ocp)
+        log.info(f"initiate number {self.measurement_num} of second eis measurement with \n \
+                    {second_eis_measure_at_ocp} ocp and {params_second_eis} parameters")
+
+        soe = soe_first_eis + soe_cv + soe_second_eis
+        params = {**params_first_eis , **params_cv, **params_second_eis}
+        sequence = dict(soe = soe, params = params, meta={})
+        return soe, params, sequence
+
+    # 18. currentRange_ocp/eis-ocp/cp-threshold-ca-ocp/eis (cccv)
     def eis_cp_ca_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5, first_eis_potential = 0.1,
@@ -631,7 +820,7 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 16. currentRange_ocp/eis-ocp/ca-threshold-cp-ocp/eis (cvcc)
+    # 19. currentRange_ocp/eis-ocp/ca-threshold-cp-ocp/eis (cvcc)
     def eis_ca_cp_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
                            cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
                            ca_interval_time = 0.5, first_eis_potential = 0.1,

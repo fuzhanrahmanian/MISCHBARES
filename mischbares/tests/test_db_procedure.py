@@ -21,7 +21,7 @@ procedure.add_experiment("test_experiment_all_procedure", datetime.now().strftim
 procedures = config["procedures"].keys()
 
 proc_values = {
-    "ocp": [20,100,0.0],
+    "ocp": [20,100],
     "cv_staircase": [0.4, 1.5, -1, 0.005, 2, 0.1, 0.001],
     "ca": [20, 1, 0.5, 0.0001, 0.2],
     "cp": [21, 2e-6, 0.6, 0.0002],

@@ -107,7 +107,8 @@ def set_current_range(crange:str):
 def measure(procedure: str, plot_type: str, parse_instruction, save_dir: str,
             setpoints, current_range: str = "1mA",
             on_off_status: str = "off",
-            optional_name: str = None, measure_at_ocp: bool = False):
+            optional_name: str = None, measure_at_ocp: bool = False,
+            measurement_id: int = None):
     """measure the requested procedure.
     Args:
         procedure (str): procedure to be measured.
@@ -131,7 +132,8 @@ def measure(procedure: str, plot_type: str, parse_instruction, save_dir: str,
                         current_range = current_range,
                         on_off_status = on_off_status,
                         optional_name = optional_name,
-                        measure_at_ocp = measure_at_ocp)
+                        measure_at_ocp = measure_at_ocp,
+                        measurement_id = measurement_id)
 
     log.info("The procedure parameters at action level is: %s", measure_conf)
 

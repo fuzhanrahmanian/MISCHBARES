@@ -43,4 +43,4 @@ autolab_config['autolabDriver'] = dict(basep = os.path.join(config_path, 'autola
                                                     'OCP_MISCHBARES.nox')})
 
 # action should get the driver url
-autolab_config['autolab'] = dict(url = f'http://{ip_adress}:15174')
+autolab_config['autolab'] = dict(url = f'http://{ip_adress}:15111')

@@ -9,9 +9,11 @@ import numpy as np
 import clr
 from datetime import datetime
 
+from mischbares.driver.analysis_driver import AnalysisDriver
 from mischbares.logger import logger
 from mischbares.utils import utils
 from mischbares.db.procedure import Procedure
+
 
 log = logger.get_logger("autolab_driver")
 
@@ -430,7 +432,7 @@ class Autolab:
                                     on_off_status = "off",
                                     optional_name = None,
                                     measure_at_ocp = False,
-                                    user_id = None):
+                                    measurement_id = None):
         """perform the measurement
 
         Args:
@@ -449,9 +451,9 @@ class Autolab:
         """
         # Add the procedure to a measurement
         # Create procedure
-        #db_procedure = Procedure()
-        #db_procedure.add_experiment("test_experiment_all_procedure", datetime.now().strftime(("%Y-%m-%d")),
-        #                        user_id, datetime.now().strftime(("%H:%M:%S")))
+        db_procedure = Procedure()
+        db_procedure.procedure_name = procedure
+
         # assamble_information about the procedure
         #proc = {"ocp": [setpoints["recordsignal"]['Duration (s)'], 100, 0.0]}
         #db_procedure.add_procedure_information(*proc[procedure], db_procedure.measurement_id)
@@ -477,6 +479,9 @@ class Autolab:
         self.load_procedure(procedure)
         if measure_at_ocp:
             self.set_ocp_value(procedure, ocp_value)
+            ocp_command = self.ocp_procedure_setting[procedure]
+            setpoints[ocp_command] = {}
+            setpoints[ocp_command]["Setpoint value"] = ocp_value
 
         log.info(f"loading the procedure {procedure}")
 
@@ -486,7 +491,6 @@ class Autolab:
         # measure the procedure
         self.proc.Measure()
         log.info("measuring the procedure")
-        # Todo
         # visualize the measurement live while it is being measured
         await self.visualize_measurement(plot_type)
         # cell status after measurement
@@ -510,11 +514,56 @@ class Autolab:
         data = self.parse_nox(parse_instruction = parse_instruction,
                               save_dir = save_dir, optional_name = name)
         # call madap , do data analysis : processed data
-
+        analyzed_data = AnalysisDriver(procedure_configuration=procedure_configuration,
+                        data=data, parse_instruction=parse_instruction, db_procedure=db_procedure, measurement_id=measurement_id)
         # Add the measured data to the database
-        #db_procedure.add_raw_procedure_data(data)
+        info = self.prepare_data_for_db(procedure_configuration)
+        db_procedure.add_procedure_information(*info, measurement_id)
+        if procedure == "eis":
+            parse_instruction.pop(parse_instruction.index("FIAMeasurement"))
+        db_procedure.add_raw_procedure_data(data[parse_instruction[0]])
         await asyncio.sleep(2)
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data
 
+    def prepare_data_for_db(self, procedure_configuration, analyzed_data):
+        if procedure_configuration["procedure"] == "ocp":
+            # Info: duration, interval_time
+            proc_info = [procedure_configuration["setpoints"]["recordsignal"]["Duration (s)"],
+                         procedure_configuration["setpoints"]["recordsignal"]["Interval time (s)"]]
+            # raw: current, corrected_time, index, potential, dpotential_dt,power, charge, dpower_dt, dcharge_dt
+            return proc_info
+        if procedure_configuration["procedure"] == "cv_staircase":
+            # Info: start_potential, upper_vertex, lower_vertex, step_size, num_of_stop_crossings, stop_value, scan_rate
+            proc_info = [procedure_configuration["setpoints"]["FHSetSetpointPotential"]["Setpoint value"],
+                        procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Upper vertex"],
+                        procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Lower vertex"],
+                        procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Step"],
+                        procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["NrOfStopCrossings"],
+                        procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Stop value"],
+                        procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Scanrate"]]
+            # raw: index, potential_applied, scan_rate, charge, current, potential, power, resistance, dcharge_dt, dcurrent_dt,
+            return proc_info
+        if procedure_configuration["procedure"] == "ca":
+            # Info: duration, applied_potential, interval_time, capacity, diffusion_coefficient
+            proc_info = [procedure_configuration["setpoints"]["recordsignal"]["Duration (s)"],
+                        procedure_configuration["setpoints"]["applypotential"]["Setpoint value"],
+                        procedure_configuration["setpoints"]["recordsignal"]["Interval time (s)"],
+                        0, 0] # TODO: capacity and diffusion coefficient are not available in the procedure. Placeholder for MADAP
+            # raw: corrected_time, index, charge, current, potential, power, dcharge_dt, dcurrent_dt, dpotential_dt, dpower_dt
+            return proc_info
+        if procedure_configuration["procedure"] == "cp":
+            # Info: duration, applied_current, interval_time, transition_time
+            proc_info = [procedure_configuration["setpoints"]["recordsignal"]["Duration (s)"],
+                        procedure_configuration["setpoints"]["applycurrent"]["Setpoint value"],
+                        procedure_configuration["setpoints"]["recordsignal"]["Interval time (s)"],
+                        0] # TODO: transition time is not available in the procedure. Placeholder for MADAP
+            # raw: corrected_time, index, charge, current, potential, power, dcurrent_dt
+            return proc_info
+        if procedure_configuration["procedure"] == "eis":
+            # Info: potential, integration_time, integration_cycle, lower_freuqency, upper_frequency, potential_dc, current_dc, fitted_circuit
+            proc_info = [procedure_configuration["setpoints"]["Set potential"]["Setpoint value"],
+                         0,0,0,0,0,0,0] # TODO: integration_time, integration_cycle, lower_freuqency, upper_frequency, potential_dc, current_dc, fitted_circuit are not available in the procedure. Placeholder for MADAP
+            # raw: index, frequency, z_real, neg_z_imag, z_norm, phase_shift
+            return proc_info

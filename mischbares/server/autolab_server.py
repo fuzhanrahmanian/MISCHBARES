@@ -174,7 +174,8 @@ async def perform_measurement(procedure: str, plot_type: str,
                               parse_instruction, save_dir: str,
                               setpoints, current_range: str = "1mA",
                               on_off_status: str = "off",
-                              optional_name: str = None, measure_at_ocp: bool = False):
+                              optional_name: str = None, measure_at_ocp: bool = False,
+                              measurement_id: int = None):
     """perform the measurement
 
     Args:
@@ -207,7 +208,8 @@ async def perform_measurement(procedure: str, plot_type: str,
                                             current_range = current_range,
                                             on_off_status = on_off_status,
                                             optional_name = optional_name,
-                                            measure_at_ocp = measure_at_ocp)
+                                            measure_at_ocp = measure_at_ocp,
+                                            measurement_id = measurement_id)
 
     retc = ReturnClass(measurement_type='potentiostat_autolab',
                         parameters={'command': 'perform_measurement',

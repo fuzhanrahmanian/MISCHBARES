@@ -11,7 +11,8 @@ class Experiments(Database):
         super().__init__()
         self.experiment_id = None
 
-    def add_experiment(self, material, date, user_id, start_time):
+    def add_experiment(self, material, date, user_id, start_time, number_of_electrons,
+                       electrode_area, concentration_of_active_material, mass_of_active_material):
         """add an experiment to the database
 
         Args:
@@ -22,10 +23,11 @@ class Experiments(Database):
         Returns:
             commit_status (bool): True if the commit was successful
         """
+        duration = "00:00:00"
         commit_status = self.commit("INSERT INTO experiments \
-                (experiment_id, material, date, user_id, start_time)\
-                VALUES (nextval('experiment_experiment_id_seq'::regclass), %s, %s, %s, %s)", \
-                (material, date, user_id, start_time))
+                (experiment_id, material, date, user_id, start_time, number_of_electrons, electrode_area, concentration_of_active_material, mass_of_active_material, duration)\
+                VALUES (nextval('experiment_experiment_id_seq'::regclass), %s, %s, %s, %s, %s, %s, %s, %s, %s)", \
+                (material, date, user_id, start_time, number_of_electrons, electrode_area, concentration_of_active_material, mass_of_active_material, duration))
         if commit_status:
             self.experiment_id = int(self.execute("SELECT currval('experiment_experiment_id_seq'::regclass)").iloc[0][0])
             log.info(f"Experiment {material} added.")

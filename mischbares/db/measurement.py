@@ -50,6 +50,17 @@ class Measurements(Experiments):
         measurement = self.execute(sql, (measurement_id,))
         return measurement
 
+    def get_experiment_id_by_measurement_id(self, measurement_id):
+        """get a measurement from the database given a measurement id
+
+        Args:
+            measurement_id (int): The id of the measurement
+        Returns:
+            experiment_id (int): The id of the experiment
+        """
+        sql = "SELECT experiment_id FROM measurements WHERE measurement_id = %s"
+        experiment_id = self.execute(sql, (measurement_id,))
+        return experiment_id
 
     def get_measurements_by_experiment_id(self, experiment_id):
         """get a measurement from the database given an experiment id

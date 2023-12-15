@@ -9,9 +9,9 @@ config = {}
 ip_adress = socket.gethostbyname(socket.gethostname())
 print(f"ip adress is {ip_adress}")
 
-config["servers"] = dict(autolabDriver = dict(host=ip_adress, port=15174), # autolab
-                         autolab = dict(host=ip_adress, port = 15175),
-                         orchestrator=dict(host=ip_adress, port=15180))
+config["servers"] = dict(autolabDriver = dict(host=ip_adress, port=15111), # autolab
+                         autolab = dict(host=ip_adress, port = 15112),
+                         orchestrator=dict(host=ip_adress, port=15115))
 
 config['orchestrator'] = dict(path='data')#, kadiurl="http://127.0.0.1:13377")
 config['instrument'] = "SDC"

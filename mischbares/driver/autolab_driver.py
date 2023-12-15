@@ -517,7 +517,7 @@ class Autolab:
         analyzed_data = AnalysisDriver(procedure_configuration=procedure_configuration,
                         data=data, parse_instruction=parse_instruction, db_procedure=db_procedure, measurement_id=measurement_id)
         # Add the measured data to the database
-        info = self.prepare_data_for_db(procedure_configuration)
+        info = self.prepare_data_for_db(procedure_configuration, analyzed_data=analyzed_data)
         db_procedure.add_procedure_information(*info, measurement_id)
         if procedure == "eis":
             parse_instruction.pop(parse_instruction.index("FIAMeasurement"))
@@ -543,14 +543,17 @@ class Autolab:
                         procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["NrOfStopCrossings"],
                         procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Stop value"],
                         procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Scanrate"]]
-            # raw: index, potential_applied, scan_rate, charge, current, potential, power, resistance, dcharge_dt, dcurrent_dt,
             return proc_info
+
         if procedure_configuration["procedure"] == "ca":
             # Info: duration, applied_potential, interval_time, capacity, diffusion_coefficient
             proc_info = [procedure_configuration["setpoints"]["recordsignal"]["Duration (s)"],
                         procedure_configuration["setpoints"]["applypotential"]["Setpoint value"],
                         procedure_configuration["setpoints"]["recordsignal"]["Interval time (s)"],
-                        0, 0] # TODO: capacity and diffusion coefficient are not available in the procedure. Placeholder for MADAP
+                        analyzed_data.analysis_cls.np_cumulative_charge[-1], # capacity (last value of the cumulative charge)
+                        analyzed_data.analysis_cls.diffusion_coefficient,
+                        analyzed_data.analysis_cls.reaction_order,
+                        analyzed_data.analysis_cls.reaction_rate_constant]
             # raw: corrected_time, index, charge, current, potential, power, dcharge_dt, dcurrent_dt, dpotential_dt, dpower_dt
             return proc_info
         if procedure_configuration["procedure"] == "cp":
@@ -558,8 +561,8 @@ class Autolab:
             proc_info = [procedure_configuration["setpoints"]["recordsignal"]["Duration (s)"],
                         procedure_configuration["setpoints"]["applycurrent"]["Setpoint value"],
                         procedure_configuration["setpoints"]["recordsignal"]["Interval time (s)"],
-                        0] # TODO: transition time is not available in the procedure. Placeholder for MADAP
-            # raw: corrected_time, index, charge, current, potential, power, dcurrent_dt
+                        analyzed_data.analysis_cls.tao_initial, # intial transition time,
+                        list(analyzed_data.analysis_cls.stabilization_values.items())[0][1]] # initial stabilization potential
             return proc_info
         if procedure_configuration["procedure"] == "eis":
             # Info: potential, integration_time, integration_cycle, lower_freuqency, upper_frequency, potential_dc, current_dc, fitted_circuit

@@ -1,16 +1,33 @@
 """ General assembles autolab procedures for orchestrator and UI"""
 import json
-import jsonpickle
+from datetime import datetime
 from mischbares.logger import logger
+
+from mischbares.db.experiment import Experiments
+from mischbares.db.measurement import Measurements
 
 log = logger.get_logger("autolab_procedures")
 class AutolabProcedures:
     """ General assembles autolab procedures for orchestrator and UI"""
 
-    def __init__(self, measurement_num, current_range = '10mA', save_dir = 'mischbares/tests'):
+    def __init__(self, measurement_num, current_range = '10mA', save_dir = 'mischbares/tests', material=None, user_id=None,
+                 number_of_electrons=None, electrode_area=None, concentration_of_active_material=None, mass_of_active_material=None):
         self.measurement_num = measurement_num
         self.current_range = current_range
         self.save_dir = save_dir
+        self.experiment = Experiments()
+        self.measurements = Measurements()
+
+        if self.experiment.add_experiment(material, datetime.now().strftime(("%Y-%m-%d")), \
+                                    user_id, datetime.now().strftime(("%H:%M:%S")),
+                                    number_of_electrons=number_of_electrons, electrode_area=electrode_area,
+                                    concentration_of_active_material=concentration_of_active_material,
+                                    mass_of_active_material=mass_of_active_material):
+            log.info(f"Experiment {material} added.")
+        else:
+            raise Exception("Experiment could not be added to the database.")
+        self.experiment.close()
+
 
 
     def __repr__(self) -> str:
@@ -28,6 +45,7 @@ class AutolabProcedures:
             params (dict): dictionary of the parameters.
             sequence (dict): dict of the sequence of events with parameters.
         """
+        self.measurements.add_measurement("ocp", self.experiment.experiment_id)
         soe = [f'autolab/measure_{self.measurement_num}']
         params = {f'measure_{self.measurement_num}': {'procedure': 'ocp',
                         'plot_type':'tCV',
@@ -39,7 +57,8 @@ class AutolabProcedures:
                         'current_range': self.current_range,
                         'on_off_status':'off',
                         'optional_name': 'ocp',
-                        'measure_at_ocp': False}}
+                        'measure_at_ocp': False,
+                        'measurement_id':self.measurements.measurement_id}}
         log.info(f"initiate number {self.measurement_num} of ocp measurement with \n \
                     {params} parameters")
         sequence = dict(soe = soe, params = params, meta={})
@@ -61,6 +80,7 @@ class AutolabProcedures:
             Params (dict): dictionary of the parameters.
             sequence (dict): dict of the sequence of events with parameters.
         """
+        self.measurements.add_measurement("ca", self.experiment.experiment_id)
         soe = [f'autolab/measure_{self.measurement_num}']
         params = {f'measure_{self.measurement_num}': {'procedure': 'ca',
                             'plot_type':'tCV',
@@ -74,7 +94,8 @@ class AutolabProcedures:
                                 'current_range': self.current_range,
                                 'on_off_status':'off',
                                 'optional_name': 'ca',
-                                'measure_at_ocp': True}}
+                                'measure_at_ocp': True,
+                                'measurement_id': self.measurements.measurement_id}}
         log.info(f"initiate number {self.measurement_num} of ca measurement with \n \
                     {params} parameters")
         sequence = dict(soe=soe, params=params, meta={})
@@ -96,6 +117,7 @@ class AutolabProcedures:
             params (dict): dictionary of the parameters.
             sequence (dict): dict of the sequence of events with parameters.
         """
+        self.measurements.add_measurement("cp", self.experiment.experiment_id)
         soe = [f'autolab/measure_{self.measurement_num}']
         params = {f'measure_{self.measurement_num}': {'procedure':'cp',
                                 'plot_type':'tCV',
@@ -108,7 +130,8 @@ class AutolabProcedures:
                                 'current_range': self.current_range,
                                 'on_off_status':'off',
                                 'optional_name': 'cp',
-                                'measure_at_ocp': True}}
+                                'measure_at_ocp': True,
+                                'measurement_id': self.measurements.measurement_id}}
         log.info(f"initiate number {self.measurement_num} of cp measurement with \n \
                     {params} parameters")
         sequence = dict(soe = soe, params = params, meta={})
@@ -135,6 +158,7 @@ class AutolabProcedures:
             params (dict): dictionary of the parameters.
             sequence (dict): dict of the sequence of events with parameters.
         """
+        self.measurements.add_measurement("cv_staircase", self.experiment.experiment_id)
         soe = [f'autolab/measure_{self.measurement_num}']
         if measure_at_ocp is False:
             experiment_setpoints = {'FHSetSetpointPotential':{'Setpoint value': start_value},
@@ -157,7 +181,8 @@ class AutolabProcedures:
                                                     'current_range': self.current_range,
                                                     'on_off_status':'off',
                                                     'optional_name': 'cv_staircase',
-                                                    'measure_at_ocp': measure_at_ocp}}
+                                                    'measure_at_ocp': measure_at_ocp,
+                                                    'measurement_id': self.measurements.measurement_id}}
         log.info(f"initiate number {self.measurement_num} of cv_staircase measurement with \n \
                     {params} parameters")
         sequence = dict(soe = soe, params = params, meta={})
@@ -179,7 +204,8 @@ class AutolabProcedures:
             params (dict): dictionary of the parameters.
             sequence (dict): dict of the sequence of events with parameters.
         """
-
+        
+        self.measurements.add_measurement("eis", self.experiment.experiment_id)
         soe = [f'autolab/measure_{self.measurement_num}']
 
         if measure_at_ocp is False:
@@ -195,7 +221,8 @@ class AutolabProcedures:
                                 'current_range':self.current_range,
                                 'on_off_status':'off',
                                 'optional_name':'eis',
-                                'measure_at_ocp': measure_at_ocp}}
+                                'measure_at_ocp': measure_at_ocp,
+                                'measurement_id': self.measurements.measurement_id}}
 
         log.info(f"initiate number {self.measurement_num} of eis measurement with \n \
                     {params} parameters")

@@ -13,15 +13,15 @@ class Procedure(Measurements):
         #TODO add Lissajous procedure
         # Define a dictionary that maps procedure names to tuples containing the SQL query and the number of values
         self.query_dict_information = {
-        "ocp": ("INSERT INTO ocp_procedure (procedure_id, duration, interval_time, ocp_potential, ocp_measurment_id) VALUES \
-                (nextval('ocp_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s)", 4),
+        "ocp": ("INSERT INTO ocp_procedure (procedure_id, duration, interval_time, ocp_measurment_id) VALUES \
+                (nextval('ocp_procedure_procedure_id_seq'::regclass), %s, %s, %s)", 3),
         "cv_staircase": ("INSERT INTO cv_staircase_procedure (procedure_id, start_potential, upper_vertex, lower_vertex, step_size,\
             num_of_stop_crossings, stop_value, scan_rate, cv_measurment_id) VALUES (nextval('cv_staircase_procedure_procedure_id_seq'::regclass), \
                  %s, %s, %s, %s, %s, %s, %s, %s)", 8),
         "ca": ("INSERT INTO ca_procedure (procedure_id, duration, applied_potential, interval_time, capacity, diffusion_coefficient,\
-            ca_measurment_id) VALUES (nextval('ca_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s, %s)", 6),
-        "cp": ("INSERT INTO cp_procedure (procedure_id, duration, applied_current, interval_time, transition_time, cp_measurment_id)\
-            VALUES (nextval('cp_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s)" , 5),
+            reaction_order, reaction_rate_constant, ca_measurment_id) VALUES (nextval('ca_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s, %s, %s, %s)", 8),
+        "cp": ("INSERT INTO cp_procedure (procedure_id, duration, applied_current, interval_time, initial_transition_time, initial_transition_potential, cp_measurment_id)\
+            VALUES (nextval('cp_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s, %s)" , 6),
         "eis": ("INSERT INTO eis_procedure (procedure_id, potential, integration_time, integration_cycle, lower_freuqency, upper_frequency,\
             potential_dc, current_dc, fitted_circuit, eis_measurment_id) VALUES (nextval('eis_procedure_procedure_id_seq'::regclass),\
                 %s, %s, %s, %s, %s, %s, %s, %s, %s)", 9),
@@ -34,12 +34,11 @@ class Procedure(Measurements):
                     power, charge, dpower_dt, dcharge_dt, procedure_id) VALUES", 9),
             "cv_staircase": ("INSERT INTO cv_staircase_raw (index, potential_applied, scan_rate, charge, current,\
                              potential, power, resistance, dcharge_dt, dcurrent_dt, procedure_id) VALUES", 10),
-            "ca": ("INSERT INTO ca_raw (corrected_time, index, charge, current, potential, power, dcharge_dt,\
-                    dcurrent_dt, dpotential_dt, dpower_dt, procedure_id) VALUES", 10),
-            "cp": ("INSERT INTO cp_raw (corrected_time, index, charge, current, potential, power,\
-                dcurrent_dt, procedure_id) VALUES", 7),
-            "eis": ("INSERT INTO eis_raw (index, frequency, z_real, neg_z_imag, z_norm, phase_shift,\
-                procedure_id) VALUES", 6),
+            "ca": ("INSERT INTO ca_raw (potential, current, corrected_time, index, power, charge,\
+                    dcurrent_dt, dpotential_dt, dpower_dt, dcharge_dt, procedure_id) VALUES", 10),
+            "cp": ("INSERT INTO cp_raw (potential, corrected_time, index, current, power, charge, \
+                dcurrent_dt, dcharge_dt, dpotential_dt, dpower_dt, procedure_id) VALUES", 10),
+            "eis": ("INSERT INTO eis_raw (index, frequency, z_real, neg_z_imag, z_norm, neg_phase_shift, procedure_id) VALUES", 6),
             "lissajous": ("---", 5),
         }
 
@@ -63,6 +62,7 @@ class Procedure(Measurements):
         else:
             commit_status = False
             log.error("Invalid number of arguments for procedure")
+            raise(ValueError("Invalid number of arguments for procedure"))
         return commit_status
 
     def get_procedure_information(self, procedure):
@@ -98,6 +98,8 @@ class Procedure(Measurements):
             try:
                 data.pop("Potential (DC)")
                 data.pop("Current (DC)")
+                data.pop("Potential resolution")
+                data.pop("Current resolution")
             except:
                 log.info("No DC potential or current. Not removing from data.")
                 pass
@@ -118,6 +120,8 @@ class Procedure(Measurements):
         else:
             commit_status = False
             log.error("Invalid number of arguments for procedure")
+        if not commit_status:
+            raise(ValueError("Raw data could not be added to database"))
         return commit_status
 
 

@@ -512,13 +512,18 @@ class Autolab:
         await asyncio.sleep(0.2)
 
         data = self.parse_nox(parse_instruction = parse_instruction,
-                              save_dir = save_dir, optional_name = name)
+                             save_dir = save_dir, optional_name = name)
+        # with open(r"mischbares\tests\test_files\eis_finalized.json", "rb") as f:
+        #     import json
+        #     data = json.load(f)
         # call madap , do data analysis : processed data
         analyzed_data = AnalysisDriver(procedure_configuration=procedure_configuration,
                         data=data, parse_instruction=parse_instruction, db_procedure=db_procedure, measurement_id=measurement_id)
         # Add the measured data to the database
         info = self.prepare_data_for_db(procedure_configuration, analyzed_data=analyzed_data)
         db_procedure.add_procedure_information(*info, measurement_id)
+        if procedure == "cv_staircase":
+            self.add_cv_cycle_data_to_db(analyzed_data, db_procedure=db_procedure)
         if procedure == "eis":
             parse_instruction.pop(parse_instruction.index("FIAMeasurement"))
         db_procedure.add_raw_procedure_data(data[parse_instruction[0]])
@@ -526,6 +531,46 @@ class Autolab:
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data
+
+    def add_cv_cycle_data_to_db(self, analyzed_data, db_procedure):
+        for cycle in analyzed_data.analysis_cls.E_half_params:
+            cycle_number = cycle.split("_")[-1]
+            E_half, corrosion_points = [], []
+            for _, pair_dict in analyzed_data.analysis_cls.E_half_params[cycle].items():
+                E_half.append((pair_dict["E_half"], pair_dict["I_half"]))
+                if "corrosion_point" in pair_dict.keys():
+                    corrosion_points.append((pair_dict["corrosion_point"]["voltage"],
+                                            pair_dict["corrosion_point"]["current"]))
+                else:
+                    corrosion_points.append((None, None))
+
+            peak_anodic, height_anodic, D_anodic = [], [], []
+            for _, peak_dict in analyzed_data.analysis_cls.anodic_peak_params[cycle].items():
+                peak_anodic.append((peak_dict["voltage"], peak_dict["current"]))
+                if "D" in peak_dict.keys():
+                    D_anodic.append(peak_dict["D"])
+                else:
+                    D_anodic.append(None)
+                # check if height is in the dictionary
+                if "height" in peak_dict.keys():
+                    height_anodic.append(peak_dict["height"])
+                else:
+                    height_anodic.append(None)
+
+            peak_cathodic, height_cathodic, D_cathodic = [], [], []
+            for _, peak_dict in analyzed_data.analysis_cls.cathodic_peak_params[cycle].items():
+                peak_cathodic.append((peak_dict["voltage"], peak_dict["current"]))
+                if "D" in peak_dict.keys():
+                    D_cathodic.append(peak_dict["D"])
+                else:
+                    D_cathodic.append(None)
+                if "height" in peak_dict.keys():
+                    height_cathodic.append(peak_dict["height"])
+                else:
+                    height_cathodic.append(None)
+
+            db_procedure.add_cv_cycle_data(cycle_number, peak_anodic, peak_cathodic, D_anodic, D_cathodic, E_half, height_anodic,
+                                        height_cathodic, corrosion_points, analyzed_data.analysis_cls.temperature, db_procedure.procedure_id)
 
     def prepare_data_for_db(self, procedure_configuration, analyzed_data):
         if procedure_configuration["procedure"] == "ocp":
@@ -567,6 +612,9 @@ class Autolab:
         if procedure_configuration["procedure"] == "eis":
             # Info: potential, integration_time, integration_cycle, lower_freuqency, upper_frequency, potential_dc, current_dc, fitted_circuit
             proc_info = [procedure_configuration["setpoints"]["Set potential"]["Setpoint value"],
-                         0,0,0,0,0,0,0] # TODO: integration_time, integration_cycle, lower_freuqency, upper_frequency, potential_dc, current_dc, fitted_circuit are not available in the procedure. Placeholder for MADAP
-            # raw: index, frequency, z_real, neg_z_imag, z_norm, phase_shift
+                        analyzed_data.lower_frequency,
+                        analyzed_data.upper_frequency,
+                        analyzed_data.potential_DC,
+                        analyzed_data.current_DC]
+            #analyzed_data.analysis_cls.custom_circuit["Circuit String"]] # TODO: fitted_circuit are not available in the procedure. Placeholder for MADAP
             return proc_info

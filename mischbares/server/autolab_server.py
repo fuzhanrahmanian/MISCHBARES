@@ -39,6 +39,11 @@ def startup_event():
     log.info("Autolab server started")
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
 @app.get("/autolabDriver/cellonoff")
 def set_cell(onoff: str):
     """turn the cell on or off.

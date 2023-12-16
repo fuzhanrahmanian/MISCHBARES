@@ -66,7 +66,7 @@ class AutolabProcedures:
 
 
     # 2. currentRange_ocp/ca
-    def ca_measurement(self, measurement_duration = 10, apply_potential = 0.1,
+    def ca_measurement(self, measurement_duration = 20, apply_potential = 0.1,
                        interval_time = 0.5):
         """cyclic ammperometry measurement procedure from orchestrator level.
 
@@ -103,7 +103,7 @@ class AutolabProcedures:
 
 
     # 3. currentRange_ocp/cp
-    def cp_measurement(self, measurement_duration = 10, apply_current = 0.000001,
+    def cp_measurement(self, measurement_duration = 20, apply_current = 0.00001,
                        interval_time = 0.5):
         """cyclic potentiometric measurement procedure from orchestrator level.
 

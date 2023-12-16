@@ -110,6 +110,10 @@ class Experiment(BaseModel):
         return experiment
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
 @app.post("/orchestrator/addExperiment")
 async def send_measurement(experiment: str, thread: int = 0, priority: int = 10):
     """ Add sequence of experiment to the queue of the orchestrator

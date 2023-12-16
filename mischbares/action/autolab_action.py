@@ -21,6 +21,10 @@ class ReturnClass(BaseModel):
     parameters: dict = None
     data: dict = None
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
 @app.get("/autolab/cellonoff/")
 def set_cell(onoff:str):
     """turn the cell on or off.

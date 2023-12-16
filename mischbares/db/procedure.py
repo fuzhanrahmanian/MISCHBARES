@@ -1,3 +1,4 @@
+from psycopg2.extensions import adapt
 
 from mischbares.db.measurement import Measurements
 from mischbares.config.main_config import config
@@ -22,9 +23,9 @@ class Procedure(Measurements):
             reaction_order, reaction_rate_constant, ca_measurment_id) VALUES (nextval('ca_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s, %s, %s, %s)", 8),
         "cp": ("INSERT INTO cp_procedure (procedure_id, duration, applied_current, interval_time, initial_transition_time, initial_transition_potential, cp_measurment_id)\
             VALUES (nextval('cp_procedure_procedure_id_seq'::regclass), %s, %s, %s, %s, %s, %s)" , 6),
-        "eis": ("INSERT INTO eis_procedure (procedure_id, potential, integration_time, integration_cycle, lower_freuqency, upper_frequency,\
-            potential_dc, current_dc, fitted_circuit, eis_measurment_id) VALUES (nextval('eis_procedure_procedure_id_seq'::regclass),\
-                %s, %s, %s, %s, %s, %s, %s, %s, %s)", 9),
+        "eis": ("INSERT INTO eis_procedure (procedure_id, potential, lower_freuqency, upper_frequency,\
+            potential_dc, current_dc, eis_measurment_id) VALUES (nextval('eis_procedure_procedure_id_seq'::regclass),\
+                %s, %s, %s, %s, %s, %s)", 6),
         "lissajous": ("---", 5),
         }
 
@@ -32,8 +33,8 @@ class Procedure(Measurements):
         self.query_raw_data_information = {
             "ocp": ("INSERT INTO ocp_raw (current, corrected_time, index, potential, dpotential_dt,\
                     power, charge, dpower_dt, dcharge_dt, procedure_id) VALUES", 9),
-            "cv_staircase": ("INSERT INTO cv_staircase_raw (index, potential_applied, scan_rate, charge, current,\
-                             potential, power, resistance, dcharge_dt, dcurrent_dt, procedure_id) VALUES", 10),
+            "cv_staircase": ("INSERT INTO cv_staircase_raw (potential_applied, current, scan_number, index, potential, \
+                    power, resistance, charge, dcurrent_dt, dcharge_dt, procedure_id) VALUES", 10),
             "ca": ("INSERT INTO ca_raw (potential, current, corrected_time, index, power, charge,\
                     dcurrent_dt, dpotential_dt, dpower_dt, dcharge_dt, procedure_id) VALUES", 10),
             "cp": ("INSERT INTO cp_raw (potential, corrected_time, index, current, power, charge, \
@@ -42,6 +43,45 @@ class Procedure(Measurements):
             "lissajous": ("---", 5),
         }
 
+        self.query_cv_cycle_data_information = {
+            "cv_cycle": ("INSERT INTO cv_cycle (cycle_id, cycle_number, peaks_anodic, peaks_cathodic, D_anodic, D_cathodic,\
+                             e_half, h_anodic, h_cathodic, corrosion_point, temperature, procedure_id) \
+                             VALUES (nextval('cv_cycle_cycle_id_seq'::regclass), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 11)
+                             }
+
+    def add_cv_cycle_data(self, *args):
+        """add cv cycle data to the database
+        Args:
+            data: The values to be inserted into the database
+        """
+        query, num_values = self.query_cv_cycle_data_information.get("cv_cycle", (None, None))
+        if query and len(args) == num_values:
+            adapted_args = tuple(self._format_cv_cycle_for_postgres(arg) for arg in args)
+
+            # Execute the query. The first two arguments are the procedure name and the procedure id
+            # The rest of the arguments are the values to be inserted
+            # The procedure name is used to determine the table name
+            # Args is a tuple so it can be added to the existing tuple containing the procedure name and id
+            commit_status = self.commit(query, adapted_args)
+            if commit_status:
+                log.info(f"CV Cycle information added.")
+                return commit_status
+            else:
+                log.error("CV Cycle information could not be added to database")
+                return commit_status
+        else:
+            log.error("CV Cycle information have invalid number of arguments")
+            raise(ValueError("CV Cycle information have invalid number of arguments"))
+
+    def get_cv_cycle_data(self, procedure_id):
+        """get cv cycle data from the database
+        Args:
+            procedure_id (int): The id of the procedure
+        """
+        sql = "SELECT * FROM cv_cycle WHERE procedure_id = %s"
+        cv_cycle_data = self.execute(sql, (procedure_id, ))
+        return cv_cycle_data
+    
     def add_procedure_information(self, *args):
         """add procedure information to the database
 
@@ -143,3 +183,13 @@ class Procedure(Measurements):
         raw_data = self.execute(sql, (self.procedure_id, ))
         return raw_data
 
+    def _format_cv_cycle_for_postgres(self, value):
+        if isinstance(value, list):
+            # Check if the first element is a tuple
+            if value and isinstance(value[0], tuple):
+                return "{" + ",".join("{" + ",".join("NULL" if v is None else str(v) for v in tup) + "}" for tup in value) + "}"
+            else:
+                return "{" + ",".join("NULL" if v is None else str(v) for v in value) + "}"
+        elif value is None:
+            return None  # Handle standalone None values
+        return value  # For other non-list values

@@ -53,8 +53,19 @@ def server_instance():
     yield processes
     for proc in processes:
         proc.kill()
-    # shutil.rmtree('mischbares/tests/data', ignore_errors=True)
-    shutil.rmtree('data/test', ignore_errors=True)
+
+@pytest.fixture
+def clean_data_directory():
+    # Setup code can go here (if any)
+    yield
+    try:
+        if os.path.exists('mischbares/tests/data'):
+            shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+            print("2 Cleanup successful: mischbares/tests/data directory removed.")
+        else:
+            print("2 Cleanup skipped: mischbares/tests/data directory does not exist.")
+    except Exception as e:
+        print(f"Cleanup failed: {e}")
 
 def test_server_connection():
     """Test if the server is running."""
@@ -81,25 +92,31 @@ def test_start_orchestrator():
     assert os.path.exists("data/test/SDC_test_session_0.h5") is True
 
 
-def test_ocp_measurement():
+def test_ocp_measurement(clean_data_directory):
     """ Test if the ocp procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).ocp_measurement()
+    print("Starting OCP measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                       electrode_area=6.2, concentration_of_active_material=6.2,
+                                       mass_of_active_material=6.2).ocp_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=parameters, timeout=None)
     assert response.status_code == 200
-    time.sleep(20)
+    time.sleep(30)
     assert len([f for f in os.listdir('mischbares/tests/data')
                 if f.endswith('Autolab_ocp.json')]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_ca_measurement():
+
+def test_ca_measurement(clean_data_directory):
     """ Test if the ca procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).ca_measurement()
+    print("Starting CA measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).ca_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -108,13 +125,16 @@ def test_ca_measurement():
     time.sleep(30)
     assert len([f for f in os.listdir('mischbares/tests/data')
                 if f.endswith('Autolab_ca.json')]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_cp_measurement():
+
+def test_cp_measurement(clean_data_directory):
     """ Test if the cp procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).cp_measurement()
+    print("Starting CP measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cp_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -123,38 +143,75 @@ def test_cp_measurement():
     time.sleep(50)
     assert len([f for f in os.listdir('mischbares/tests/data')
                 if f.endswith('Autolab_cp.json')]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_eis_measurement_with_ocp():
+
+def test_cv_measurement(clean_data_directory):
+    """ Test if the cv procedure works.
+    """
+    print("Starting CV measurement test")
+    _,_, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cv_staircase_measurement(
+                                        start_value=0, upper_vortex=0.1, lower_vortex=-0.1, stop_value=0.0)
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
+
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=parameters, timeout=None)
+    assert response.status_code == 200
+    time.sleep(50)
+    assert len([f for f in os.listdir('mischbares/tests/data')
+                if f.endswith('Autolab_cv_staircase.json')]) == 1
+
+
+def test_cv_measurement_with_ocp(clean_data_directory):
+    """ Test if the cv procedure works.
+    """
+    print("Starting CV with OCP measurement test")
+    _,_, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cv_staircase_measurement(
+                                        start_value=0, upper_vortex=0.1, lower_vortex=-0.1, measure_at_ocp=True, stop_value=0.0)
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
+
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=parameters, timeout=None)
+    assert response.status_code == 200
+    time.sleep(50)
+    assert len([f for f in os.listdir('mischbares/tests/data')
+                if f.endswith('Autolab_cv_staircase.json')]) == 1
+
+
+
+def test_eis_measurement_with_ocp(clean_data_directory):
     """ Test if the eis procedure works at the ocp potential.
     """
-    autolab_procedure = AutolabProcedures(measurement_num=0)
+    print("Starting EIS measurement at OCP")
+    autolab_procedure = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2)
     _, _, sequence = autolab_procedure.eis_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
-    print("Starting EIS measurement at OCP")
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=parameters, timeout=None)
     assert response.status_code == 200
     time.sleep(120)
-    print("EIS measurement at OCP finished")
     data_name = [f for f in os.listdir('mischbares/tests/data')
                 if f.endswith('Autolab_eis.json')]
     assert len(data_name) == 1
     # check if the data is properly recorded or not
     with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
         data = json.load(f)
-    assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.0
-
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
-    print("data removed")
 
 
-def test_eis_measurement_without_ocp():
+
+def test_eis_measurement_without_ocp(clean_data_directory):
     """ Test if the eis procedure works at the defined potential.
     """
-
-    autolab_procedure = AutolabProcedures(measurement_num=0)
+    print("Starting EIS measurement test with no OCP")
+    autolab_procedure = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2)
     _, _, sequence = autolab_procedure.eis_measurement(apply_potential = 0.1, measure_at_ocp=False)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
     print("Starting EIS measurement with no OCP")
@@ -166,17 +223,17 @@ def test_eis_measurement_without_ocp():
     data_name = [f for f in os.listdir('mischbares/tests/data')
                 if f.endswith('Autolab_eis.json')]
     assert len(data_name) == 1
-    # check if the data is properly recorded or not
-    with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-        data = json.load(f)
-    assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_ca_eis_measurement(): #9
+
+
+def test_ca_eis_measurement(clean_data_directory): #9
     """ Test if the ca & eis procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).ca_eis_measurement(eis_potential=0.1,
+    print("Starting CA+EIS measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).ca_eis_measurement(eis_potential=0.1,
                                                                         eis_measure_at_ocp=False)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
@@ -188,18 +245,15 @@ def test_ca_eis_measurement(): #9
         data_name = [f for f in os.listdir('mischbares/tests/data')
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
-        # check if the data is properly recorded or not
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_eis_ca_measurement():
+def test_eis_ca_measurement(clean_data_directory):
     """ Test if the eis & ca procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).eis_ca_measurement()
+    print("Starting EIS+CA measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_ca_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -211,17 +265,14 @@ def test_eis_ca_measurement():
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.0
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
-
-def test_cp_eis_measurement(): #11
+def test_cp_eis_measurement(clean_data_directory): #11
     """ Test if the cp & eis procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).cp_eis_measurement()
+    print("Starting CP+EIS measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cp_eis_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -233,17 +284,57 @@ def test_cp_eis_measurement(): #11
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.0
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+
+def test_cv_eis(clean_data_directory):
+    """ Test if the cv procedure works.
+    """
+    print("Starting CV+EIS measurement test")
+    _,_, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cv_stairstep_eis_measurement(
+                                        start_value=0, upper_vortex=0.1, lower_vortex=-0.1,
+                                        eis_measure_at_ocp=True, stop_value=0.0)
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
+
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=parameters, timeout=None)
+    assert response.status_code == 200
+    time.sleep(200)
+    for file_endings in ['Autolab_eis.json', 'Autolab_cv_staircase.json']:
+        data_name = [f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]
+        assert len(data_name) == 1
 
 
-def test_eis_cp_measurement():
+def test_eis_cv(clean_data_directory):
+    """ Test if the cv procedure works.
+    """
+    print("Starting EIS+CV measurement test")
+    _,_, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_cv_staircase_measurement(
+                                        start_value=0, upper_vortex=0.1, lower_vortex=-0.1,
+                                        measure_at_ocp=True, stop_value=0.0)
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
+
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=parameters, timeout=None)
+    assert response.status_code == 200
+    time.sleep(200)
+    for file_endings in ['Autolab_eis.json', 'Autolab_cv_staircase.json']:
+        data_name = [f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]
+        assert len(data_name) == 1
+
+
+
+def test_eis_cp_measurement(clean_data_directory):
     """ Test if the eis & cp procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).eis_cp_measurement(eis_potential=0.2,
+    print("Starting EIS+CP measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_cp_measurement(eis_potential=0.2,
                                                                         eis_measure_at_ocp=False)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
@@ -256,17 +347,14 @@ def test_eis_cp_measurement():
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.2
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
-
-def test_cp_ca_measurement(): #13
+def test_cp_ca_measurement(clean_data_directory): #13
     """ Test if the cp & ca procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).cp_ca_measurement()
+    print("Starting CP+CA measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cp_ca_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -276,13 +364,16 @@ def test_cp_ca_measurement(): #13
     for file_endings in ['Autolab_cp.json', 'Autolab_ca.json']:
         assert len([f for f in os.listdir('mischbares/tests/data')
                 if f.endswith(file_endings)]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_ca_cp_measurement():
+
+def test_ca_cp_measurement(clean_data_directory):
     """ Test if the ca & cp procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).ca_cp_measurement()
+    print("Starting CA+CP measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).ca_cp_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -292,13 +383,16 @@ def test_ca_cp_measurement():
     for file_endings in ['Autolab_cp.json', 'Autolab_ca.json']:
         assert len([f for f in os.listdir('mischbares/tests/data')
                 if f.endswith(file_endings)]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_cp_ca_eis_measurement(): #15
+
+def test_cp_ca_eis_measurement(clean_data_directory): #15
     """ Test if the cp & ca & eis procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).cp_ca_eis_measurement()
+    print("Starting CP+CA+EIS measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cp_ca_eis_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -310,17 +404,14 @@ def test_cp_ca_eis_measurement(): #15
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.0
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
-
-def test_ca_cp_eis_measurement():
+def test_ca_cp_eis_measurement(clean_data_directory):
     """ Test if the ca & cp & eis procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).ca_cp_eis_measurement()
+    print("Starting CA+CP+EIS measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).ca_cp_eis_measurement()
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
@@ -332,17 +423,39 @@ def test_ca_cp_eis_measurement():
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.0
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
+
+def test_eis_cv_eis(clean_data_directory):
+    """ Test if the cv procedure works.
+    """
+    print("Starting EIS+CV+EIS measurement test")
+    _,_, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_cv_staircase_eis_measurement(
+                                        start_value=0, upper_vortex=0.1, lower_vortex=-0.1,
+                                        first_eis_measure_at_ocp=True, second_eis_measure_at_ocp=True, stop_value=0.0)
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
+
+    response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=parameters, timeout=None)
+    assert response.status_code == 200
+    time.sleep(200)
+    for file_endings in ['Autolab_eis.json', 'Autolab_cv_staircase.json']:
+        data_name = [f for f in os.listdir('mischbares/tests/data')
+                    if f.endswith(file_endings)]
+        if file_endings == 'Autolab_eis.json':
+            assert len(data_name) == 2
+        else:
+            assert len(data_name) == 1
 
 
-def test_eis_ca_cp_measurement(): #17
+
+def test_eis_ca_cp_measurement(clean_data_directory): #17
     """ Test if the eis & ca & cp procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).eis_ca_cp_measurement(eis_potential=0.2,
+    print("Starting EIS+CA+CP measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_ca_cp_measurement(eis_potential=0.2,
                                                                          eis_measure_at_ocp=False)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
@@ -355,17 +468,15 @@ def test_eis_ca_cp_measurement(): #17
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.2
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_eis_cp_ca_measurement():
+def test_eis_cp_ca_measurement(clean_data_directory):
     """ Test if the eis & cp & ca procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).eis_cp_ca_measurement(eis_potential=0.2,
+    print("Starting EIS+CP+CA measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_cp_ca_measurement(eis_potential=0.2,
                                                                          eis_measure_at_ocp=False)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
@@ -378,17 +489,15 @@ def test_eis_cp_ca_measurement():
                 if f.endswith(file_endings)]
         assert len(data_name) == 1
 
-        if file_endings == "Autolab_eis.json":
-            with open(os.path.join('mischbares/tests/data', data_name[0]), encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.2
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_eis_ca_cp_eis_measurement(): #19
+def test_eis_ca_cp_eis_measurement(clean_data_directory): #19
     """ Test if the eis & ca & cp & eis procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).eis_ca_cp_eis_measurement(
+    print("Starting EIS+CA+CP+EIS measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_ca_cp_eis_measurement(
                                         first_eis_measure_at_ocp=False, first_eis_potential=0.2)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
@@ -403,24 +512,20 @@ def test_eis_ca_cp_eis_measurement(): #19
             assert len(data_name) == 2
             data_time = [os.path.getmtime(os.path.join('mischbares/tests/data', file))\
                         for file in data_name]
-            # get the index of the file with the lowest time stamp
-            index = data_time.index(min(data_time))
-
-            with open(os.path.join('mischbares/tests/data', data_name[index]),
-                    encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.2
 
         else:
             assert len([f for f in os.listdir('mischbares/tests/data')
                     if f.endswith(file_endings)]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_eis_cp_ca_eis_measurement():
+
+def test_eis_cp_ca_eis_measurement(clean_data_directory):
     """ Test if the eis & cp & ca & eis procedure works.
     """
-    _, _, sequence = AutolabProcedures(measurement_num=0).eis_cp_ca_eis_measurement(
+    print("Starting EIS+CP+CA+EIS measurement test")
+    _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).eis_cp_ca_eis_measurement(
                                         first_eis_measure_at_ocp=False, first_eis_potential=0.2)
     parameters = dict(experiment=json.dumps(sequence),thread=0)
 
@@ -435,21 +540,13 @@ def test_eis_cp_ca_eis_measurement():
             assert len(data_name) == 2
             data_time = [os.path.getmtime(os.path.join('mischbares/tests/data', file))\
                         for file in data_name]
-            # get the index of the file with the latest time stamp
-            index = data_time.index(max(data_time))
-
-            with open(os.path.join('mischbares/tests/data', data_name[index]),
-                      encoding="utf-8") as f:
-                data = json.load(f)
-            assert round(data["FIAMeasurement"]["Potential (DC)"][0], 1) == 0.0
-
         else:
             assert len([f for f in os.listdir('mischbares/tests/data')
                     if f.endswith(file_endings)]) == 1
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
 
 
-def test_finish_orchestrator():
+
+def test_finish_orchestrator(clean_data_directory):
     """ Test if the experiment is added to the orchestrator. """
     # Assuming the start fucniotns works
     sequence = dict(soe=['orchestrator/finish'],

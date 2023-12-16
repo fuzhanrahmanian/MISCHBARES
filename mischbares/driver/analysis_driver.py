@@ -1,6 +1,7 @@
 """ Contains the analysis driver for the autolab driver with Madap. """
 import os
 
+from madap.echem.e_impedance import e_impedance
 from madap.echem.voltammetry import voltammetry_CA, voltammetry_CP, voltammetry_CV
 
 from mischbares.logger import logger
@@ -15,9 +16,9 @@ class MadapArgs:
     # pylint: disable=too-many-instance-attributes
     """This class implements the arguments"""
     eis_plots = ["nyquist" ,"nyquist_fit", "residual", "bode"]
-    arrhenius_plots = ["arrhenius", "arrhenius_fit"]
     ca_plots = ["CA", "Log_CA", "CC", "Cottrell", "Anson", "Voltage"]
     cp_plots = ["CP", "CC", "Cottrell", "Voltage_Profile", "Potential_Rate", "Differential_Capacity"]
+    cv_plots = ["E-t", "I-t", "Peak Scan", "CV"] #"Tafel"
 
 
     def __init__(self, db_procedure, measurement_id):
@@ -47,6 +48,7 @@ class MadapArgs:
         self.penalty_value = None
         self.temperature = None
         self.window_size = None
+        self.applied_scan_rate = None
 
 class AnalysisDriver():
     def __init__(self, procedure_configuration, data, parse_instruction, db_procedure, measurement_id):
@@ -62,7 +64,8 @@ class AnalysisDriver():
         """Perform the analysis with Madap"""
         result_dir = utils.create_dir(os.path.join(self.procedure_configuration["save_dir"], self.procedure))
         self.analysis_cls = self.create_analysis_class()
-        self.analysis_cls.perform_all_actions(save_dir=result_dir, plots=self.madap_args.plots)
+        if self.analysis_cls is not None:
+            self.analysis_cls.perform_all_actions(save_dir=result_dir, plots=self.madap_args.plots)
 
 
     def create_analysis_class(self):
@@ -93,9 +96,29 @@ class AnalysisDriver():
                                                  time=da.format_data(time_data),
                                                  charge=da.format_data(charge_data),
                                                  args=self.madap_args)
-        if self.procedure == "cv":
+        if self.procedure == "cv_staircase":
             self.madap_args.plots = self.madap_args.cv_plots
-            return voltammetry_CV.Voltammetry_CV()
+            current_data = self.data[self.parse_instruction[0]]["WE(1).Current"]
+            voltage_data = self.data[self.parse_instruction[0]]["WE(1).Potential"]
+            time_data = self.data[self.parse_instruction[0]]["Time"]
+            cycle_list = None
+            return voltammetry_CV.Voltammetry_CV(current=da.format_data(current_data),
+                                                 voltage=da.format_data(voltage_data),
+                                                 time_params=da.format_data(time_data),
+                                                 cycle_list=cycle_list,
+                                                 args=self.madap_args)
+        if self.procedure == "eis":
+            self.madap_args.plots = self.madap_args.eis_plots
+            self.potential_DC = self.data['FIAMeasurement']["Potential (DC)"][0]
+            self.current_DC = self.data['FIAMeasurement']["Current (DC)"][0]
+            self.lower_frequency = min(self.data["FIAMeasPotentiostatic"]["Frequency"])
+            self.upper_frequency = max(self.data["FIAMeasPotentiostatic"]["Frequency"])
+
+        #     impedance = e_impedance.EImpedance(frequency=da.format_data(self.data["FIAMeasPotentiostatic"]["Frequency"]),
+        #                                        real_impedance=da.format_data(self.data["FIAMeasPotentiostatic"]["Z'"]),
+        #                                        imaginary_impedance=da.format_data(self.data["FIAMeasPotentiostatic"]["-Z''"]))
+        #     return e_impedance.EIS(impedance=impedance,
+        #                            voltage=self.procedure_configuration["setpoints"]["Set potential"]["Setpoint value"])
         else:
             log.error("Procedure %s not supported", self.procedure)
             return None
@@ -106,3 +129,5 @@ class AnalysisDriver():
             self.madap_args.applied_voltage = self.procedure_configuration["setpoints"]["applypotential"]["Setpoint value"]
         if self.procedure == "cp":
             self.madap_args.applied_current = self.procedure_configuration["setpoints"]["applycurrent"]["Setpoint value"]
+        if self.procedure == "cv_staircase":
+            self.madap_args.applied_scan_rate = self.procedure_configuration["setpoints"]["FHCyclicVoltammetry2"]["Scanrate"]

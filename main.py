@@ -24,7 +24,6 @@ from mischbares.db.experiment import Experiments
 from mischbares.db.measurement import Measurements
 from mischbares.db.procedure import Procedure
 
-
 log = logger.setup_applevel_logger(file_name="mischbares.log")
 
 host_url = config['servers']['autolab']['host']

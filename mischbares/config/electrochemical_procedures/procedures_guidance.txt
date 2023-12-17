@@ -79,6 +79,7 @@ autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
                                         'FHCyclicVoltammetry2': {'Start value': 0.4,
                                                                 'Upper vertex': 1.7,
                                                                 'Lower vertex': -1.5,
+								'Step': 0.00069,
 																'Step': 0.00069,
                                                                 'NrOfStopCrossings': 8,
 																'Stop value': 0.4,
@@ -87,7 +88,7 @@ autolab_config['autolab']['procedures']['cv'] = {'procedure': 'cv',
                         'onoffafter': 'off',
                         'save_dir': None, # path to save the data
                         'filename': 'cv.nox',
-                        'parseinstructions': ['CVLinearScanAdc164']}
+                        'parseinstructions': ['FHCyclicVoltammetry2']}   #CVLinearScanAdc164
 
 
 

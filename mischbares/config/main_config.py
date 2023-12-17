@@ -13,7 +13,9 @@ config["servers"] = dict(autolabDriver = dict(host=ip_adress, port=15111), # aut
                          autolab = dict(host=ip_adress, port = 15112),
                          orchestrator=dict(host=ip_adress, port=15115),
                          hamiltonDriver=dict(host=ip_adress, port=16049),
-                         hamilton=dict(host=ip_adress, port=16050))
+                         hamilton=dict(host=ip_adress, port=16050),
+                         langDriver=dict(host=ip_adress, port=15211),
+                         lang=dict(host=ip_adress, port=15212))
 
 config['orchestrator'] = dict(path='data')#, kadiurl="http://127.0.0.1:13377")
 config['instrument'] = "SDC"
@@ -36,4 +38,17 @@ config['pump'] = {"Hamilton": {"path": r'C:\Program Files (x86)\Hamilton Company
                                                                     flowRate=50000,
                                                                     initFlowRate=50000),
                                                                     valve=dict(prefIn=2,prefOut=1)))}}
+
+config['lang'] = dict(langDriver= dict(velocity_x=5, velocity_y=5, velocity_z=5,
+                            serial_port='COM3',
+                            path_pylang=r"C:\Users\LaborRatte23-3\Documents\git\pyLang"
+                            ))
+
+# config['lang'] = dict(url="http://127.0.0.1:13381",
+#                     safe_home_pos=[0.0, 0.0, 0.0],
+#                     safe_waste_pos=[3.0, -31.0, 0.0],
+#                     safe_sample_pos=[3.0, 4.0, 0.0],
+#                     remove_drop=[3.0, -15.0, 10.25])
+
+
 config.update(autolab_config)

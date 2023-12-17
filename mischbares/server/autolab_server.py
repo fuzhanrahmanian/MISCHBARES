@@ -231,7 +231,7 @@ async def perform_measurement(procedure: str, plot_type: str,
     return retc
 
 
-#TODO: check the functionality of this function
+
 @app.websocket("/ws")
 async def websocket_messages(websocket: WebSocket):
     """websocket for the autolab driver and visualise the results.
@@ -244,7 +244,7 @@ async def websocket_messages(websocket: WebSocket):
         data = await AUTOLAB.queue.get()
         print('data: '+str(data))
         data = {k: [v] for k, v in zip(
-            ["t_s", "freq", "Ewe_V", "Ach_V", "Z_real", "Z_imag", "phase", "modulus", "I_A"], data)}
+            ["t_s", "freq", "Ewe_V", "Z_real", "Z_imag", "phase", "modulus", "I_A", "measurement_id"], data)}
         await websocket.send_text(json.dumps(time.time()))
         await websocket.send_text(json.dumps(data))
 

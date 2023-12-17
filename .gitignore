@@ -118,9 +118,6 @@ mischbares/config/autolab_configuration/*
 # add nox files
 *.nox
 
-# add visualiser for now , till it fixes
-mischbares/visualizer/*
-
 # add procedure instruction files
 mischbares/config/electrochemical_procedures/*
 
@@ -129,3 +126,10 @@ mischbares/db/config.ini
 
 # h5 files
 *.h5
+
+# csv
+*.csv
+
+# svg and png
+*.svg
+*.png

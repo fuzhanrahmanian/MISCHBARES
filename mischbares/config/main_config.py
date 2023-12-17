@@ -41,14 +41,12 @@ config['pump'] = {"Hamilton": {"path": r'C:\Program Files (x86)\Hamilton Company
 
 config['lang'] = dict(langDriver= dict(velocity_x=5, velocity_y=5, velocity_z=5,
                             serial_port='COM3',
-                            path_pylang=r"C:\Users\LaborRatte23-3\Documents\git\pyLang"
-                            ))
+                            path_pylang=r"C:\Users\LaborRatte23-3\Documents\git\pyLang"),
+                      langAction = dict(safe_home_pos=[0.0, 0.0, 0.0],
+                                        safe_waste_pos=[0.0, -35, 0.0],
+                                        safe_clean_pos_1=[81, -35, 7],
+                                        safe_clean_pos_2=[74, -35, 0.0],
+                                        safe_sample_pos=[0.0, 0.0, 0.0]))
 
-# config['lang'] = dict(url="http://127.0.0.1:13381",
-#                     safe_home_pos=[0.0, 0.0, 0.0],
-#                     safe_waste_pos=[3.0, -31.0, 0.0],
-#                     safe_sample_pos=[3.0, 4.0, 0.0],
-#                     remove_drop=[3.0, -15.0, 10.25])
-
-
+# TEST POISTION FOR THE LANG QC: [45.7, 27.2, 15.2]
 config.update(autolab_config)

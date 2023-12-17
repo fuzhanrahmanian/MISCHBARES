@@ -1,4 +1,6 @@
 """Main module."""
+import subprocess
+import os
 from datetime import datetime
 import requests
 import time
@@ -22,6 +24,7 @@ from mischbares.db.experiment import Experiments
 from mischbares.db.measurement import Measurements
 from mischbares.db.procedure import Procedure
 
+
 log = logger.setup_applevel_logger(file_name="mischbares.log")
 
 host_url = config['servers']['autolab']['host']
@@ -42,6 +45,10 @@ def run_server():
 def run_orchestrator():
     """Start the Autolab server."""
     orchestrator.main()
+
+def start_bokeh_visualizer():
+    visualizer_path = os.path.join('mischbares', 'visualizer', 'autolab_visualizer.py')
+    subprocess.Popen(["bokeh", "serve", visualizer_path, "--show"])
 
 
 def banana_instance():
@@ -104,23 +111,43 @@ def main():
 
     # start the orchestrator
     start_orchestrator_experimentation()
-    for i in range(1, 2):
+    curr = [0.0001, 0.0005]
+    for i in range(1, 3):
         #create an experiment object and get the experiment id
         #TODO create a procedure object with the measurement id and the experiment id and give it to the function
-        _, _, sequence = AutolabProcedures(measurement_num=i,
-                                save_dir=r"C:\Users\LaborRatte23-3\Documents\repositories\test_data_mischbares",
-                                user_id=users.user_id).eis_cv_staircase_measurement(start_value=0,
-                                                                                upper_vortex=0.1,
-                                                                                lower_vortex=-0.1,
-                                                                                stop_value=0.001,
-                                                                                measure_at_ocp=True)
+        _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2).cp_measurement(apply_current=curr[i-1])
+        # _, _, sequence = AutolabProcedures(measurement_num=i,
+        #                        save_dir=r"C:\Users\LaborRatte23-3\Documents\repositories\test_data_mischbares",
+        #                                 number_of_electrons=2, electrode_area=6.2, concentration_of_active_material=6.2,
+        #                                 mass_of_active_material=6.2,
+        #                        user_id=users.user_id, material="LFP").ocp_measurement()
         params = dict(experiment=json.dumps(sequence),thread=0)
         requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment", params=params, timeout=None).json()
-        time.sleep(300)
+        
+        # Wait for input from the user to continue
+        input("Press Enter to finish...")
 
     end_orchestrator_experimentation()
 
+def is_server_ready(url):
+    try:
+        response = requests.get(url)
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
 
+def wait_for_servers_to_be_ready():
+    server_urls = [f"http://{host_url}:{port_server}/health",
+                   f"http://{host_url}:{port_action}/health",
+                   f"http://{host_url}:{port_orchestrator}/health"]
+
+    while True:
+        if all(is_server_ready(url) for url in server_urls):
+            break
+        print("Waiting for servers to be ready...")
+        time.sleep(1)
 
 # main function
 if __name__ == "__main__":
@@ -129,11 +156,12 @@ if __name__ == "__main__":
                  Process(target=run_orchestrator)]
 
     for proc in processes:
-        try:
-            proc.start()
-            print("Waiting for processess to start...")
-        except RuntimeError as e:
-            print("Error starting server: ", e)
+        proc.start()
+    wait_for_servers_to_be_ready()
+    # Start the visualizer in a separate process
+    visualizer_process = Process(target=start_bokeh_visualizer)
+    visualizer_process.start()
+    print("Starting visualizer...")
     time.sleep(15)
     main()
     for proc in processes:

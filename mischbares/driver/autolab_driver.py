@@ -340,7 +340,7 @@ class Autolab:
 
     # This function needs to be modified to work with the bokeh visualizer properly
     # Todo
-    async def visualize_measurement(self, measurement_type):
+    async def visualize_measurement(self, measurement_type, measurement_id=None):
         """an async function to run while the instrument is measuring used for the visualizer.
 
         Args:
@@ -366,7 +366,7 @@ class Autolab:
                     modulus = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Modulus
                     log.info(f"frequency: {freq}, real: {hreal}, imaginary: {imag},\
                                 phase: {phase}, modulus: {modulus}")
-                    await self.queue.put([measure_time, freq, 0.0, 0.0, hreal, imag,
+                    await self.queue.put([measure_time, freq, 0.0, hreal, imag,
                                           phase, modulus, 0.0])
 
                 except:
@@ -382,7 +382,7 @@ class Autolab:
                             measured potential: {measured_potential}")
 
                 await self.queue.put([measure_time, 0.0, measured_potential,
-                                      0.0, 0.0, 0.0, 0.0, 0.0, measured_current])
+                                    0.0, 0.0, 0.0, 0.0, measured_current, measurement_id])
                 await asyncio.sleep(0.4)
 
 
@@ -492,7 +492,11 @@ class Autolab:
         self.proc.Measure()
         log.info("measuring the procedure")
         # visualize the measurement live while it is being measured
-        await self.visualize_measurement(plot_type)
+        await self.visualize_measurement(plot_type, measurement_id=measurement_id)
+        # Empty the queue
+        while not self.queue.empty():
+            self.queue.get_nowait()
+            self.queue.task_done()
         # cell status after measurement
         self.set_cell(on_off_status)
 

@@ -25,6 +25,8 @@ from mischbares.action import lang_action
 from mischbares.action import hamilton_action
 from mischbares.server import hamilton_server
 
+from mischbares.procedures.autolab_procedures import AutolabProcedures
+import mischbares.procedures.sequential_procedures as seq_exp
 
 log = logger.setup_applevel_logger(file_name="mischbares.log")
 
@@ -33,7 +35,33 @@ port_action = config['servers']['autolab']['port']
 port_server = config['servers']['autolabDriver']['port']
 port_orchestrator = config['servers']['orchestrator']['port']
 
+################################################################################
+# in the config should be paased: "test_username", "test_fisrt_name", "test_last_name", "test_email",
+#                                   "test_password",  material="LFP", user_id=2, number_of_electrons=2,
+                        # electrode_area=6.2, concentration_of_active_material=6.2,
+                        # mass_of_active_material=6.2
+                       # motor_pos = [(0,0,0), (1,1,0), (1,1,0), (2,2,0)]
+# dummy config :
+# how many batch of experiment you want?
+num_batch = 1
 
+# how many experiment in each batch and what procedure should be there
+number_exp_in_each_batch = 4
+duration = [i for i in range(10, 30, 5)]
+
+for batch in num_batch: # in each batch they are the same experiment
+    for exp in number_exp_in_each_batch:
+        if batch == 1:
+            experimental_info = {f"batch_{batch}": {exp: \
+                {'ocp_measurement':{'measurement_duration':duration[number_exp_in_each_batch]},
+                 'motor_pos': motor_pos[batch][exp]}}} # key is the number of experiment and value is the auto type procedure
+
+        if batch == 2:
+            experimental_info = {f"batch_{batch}": {exp: \
+                {'cv_staircase_measurement':{'start_value':0, 'upper_vortex': 0.2,
+                                             'lower_vortex': -0.2, 'stop_value': 0.1}}}}
+total_number_of_experiment = num_batch * number_exp_in_each_batch # can be different though : just the summation basically
+###############################################################################
 def run_lang_action():
     """Start the Autolab server."""
     lang_action.main()
@@ -106,8 +134,6 @@ def start_orchestrator_experimentation():
                             params=params, timeout=None).json()
 
 
-
-
 def end_orchestrator_experimentation():
     sequence = dict(soe=['orchestrator/finish'], params={'finish': None}, meta={})
     params = dict(experiment=json.dumps(sequence),thread=0)
@@ -115,7 +141,7 @@ def end_orchestrator_experimentation():
                             params=params, timeout=None).json()
     send_to_telegram(message=f"Experiment finished: \n Closing experiment", message_type="info")
 
-def main():
+def main(experimental_info, configuration_experiment, total_number_of_experiment=1, db_identification = None):
     """Main function."""
     log.info("Start to do one experiment")
     proc_values = {
@@ -138,30 +164,39 @@ def main():
     start_orchestrator_experimentation()
     curr = [0.0001, 0.0005]
 
-    amount_of_pump = [0, 600]
+    #amount_of_pump = [0, 600]
     
-
-    for i in range(1, 3):
-
+    i = 1
+    for batch in batch_num:
+        for exp in experiment_num :
         #requests.get(f"http://{lang_host_url}:{lang_port_action}/lang/moveWaste", timeout=None)
-        soe = ['lang/moveWaste_0', 'hamilton/pumpR_0']
-        params = {'moveWaste_0': {'x_pos': 0, 'y_pos':0, 'z_pos':0},
-                  'pumpR_0':{'volume': amount_of_pump[i-1]}}
-        sequence = dict(soe=soe,params=params,meta={})
-        parameters = dict(experiment=json.dumps(sequence),thread=0)
+        #soe = ['lang/moveWaste_0', 'hamilton/pumpR_0']
+        #params = {'moveWaste_0': {'x_pos': 0, 'y_pos':0, 'z_pos':0},
+        #          'pumpR_0':{'volume': amount_of_pump[i-1]}}
+        #sequence = dict(soe=soe,params=params,meta={})
+        #parameters = dict(experiment=json.dumps(sequence),thread=0)
         #create an experiment object and get the experiment id
         #TODO create a procedure object with the measurement id and the experiment id and give it to the function
-        # _, _, sequence = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
-        #                                 electrode_area=6.2, concentration_of_active_material=6.2,
-        #                                 mass_of_active_material=6.2).cp_measurement(apply_current=curr[i-1])
+        # configuration_experiment[material], ...
+        autolab_initialization = AutolabProcedures(measurement_num=0, material="LFP", user_id=2, number_of_electrons=2,
+                                        electrode_area=6.2, concentration_of_active_material=6.2,
+                                        mass_of_active_material=6.2)
+        #name_of_autolab_procedure = experimental_info[f'batch_{batch}'][f'exp_{exp}']
+        #procedure = getattr(name_of_autolab_procedure)
+        soe, params, sequence = autolab_initialization.procedure  #cp_measurement(apply_current=curr[i-1])
+        if sequence:
+            _,_,sequence = seq_exp.perfom_sequential_experiment(soe, params,
+                autolab_initialization.current_range_autolab,
+                experimental_info[f'batch_{batch}'][f'exp_{exp}']['motorpos'])
         # _, _, sequence = AutolabProcedures(measurement_num=i,
         #                        save_dir=r"C:\Users\LaborRatte23-3\Documents\repositories\test_data_mischbares",
         #                                 number_of_electrons=2, electrode_area=6.2, concentration_of_active_material=6.2,
         #                                 mass_of_active_material=6.2,
         #                        user_id=users.user_id, material="LFP").ocp_measurement()
-        # params = dict(experiment=json.dumps(sequence),thread=0)
-        requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment", params=parameters,
+        params = dict(experiment=json.dumps(sequence),thread=0)
+        requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment", params=params,
                       timeout=None).json()
+        i +=1
         #input("Press Enter to continue...")
 
 

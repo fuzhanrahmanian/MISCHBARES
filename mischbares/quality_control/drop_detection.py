@@ -12,6 +12,7 @@ class DropDetection:
     def __init__(self, timeout=None) -> None:
         self.drop_detected = False
         self.timeout = config["timeout"] if timeout is None else timeout
+        self.got_timeout_error = False
 
     def analyze_video_dynamic_roi(self):
         # Access the webcam
@@ -68,7 +69,8 @@ class DropDetection:
 
             cv2.putText(frame, annotation, (x1+40, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             cv2.rectangle(frame, (x1, y1), (x2, y2), roi_color, 2)
-
+            # Display remaing seconds to timeout
+            cv2.putText(frame, f"Timeout: {round(self.timeout - (time.time() - start_time), 1)} s", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             # Display frame
             cv2.imshow('Frame', frame)
 
@@ -77,7 +79,8 @@ class DropDetection:
                 break
 
             if not self.drop_detected and (time.time() - start_time) > self.timeout:
-                raise TimeoutError(f"Error: No drop detected within {self.timeout} seconds.")
+                self.got_timeout_error = True
+                break
 
             # Press 'q' to exit immediately
             if cv2.waitKey(frame_time) & 0xFF == ord('q'):
@@ -86,10 +89,12 @@ class DropDetection:
         cap.release()
         cv2.destroyAllWindows()
 
+
     def trigger_timeout_error(self):
+        """Trigger a timeout error."""
         raise TimeoutError("This is a test error.")
-    
-    # Get the drop detection status
+
+
     def get_drop_detection_status(self) -> bool:
         """Get the drop detection status"""
         return self.drop_detected

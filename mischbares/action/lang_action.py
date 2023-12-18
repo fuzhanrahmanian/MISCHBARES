@@ -111,9 +111,9 @@ def moveHome():
     """
 
     res = requests.get("{}/langDriver/moveAbsFar".format(DRIVER_URL),
-                       params=dict(dx=config[SERVERKEY]['safe_home_pos'][0],
-                                   dy=config[SERVERKEY]['safe_home_pos'][1],
-                                   dz=config[SERVERKEY]['safe_home_pos'][2])).json()
+                       params=dict(dx=config[SERVERKEY]['langAction']['safe_home_pos'][0],
+                                   dy=config[SERVERKEY]['langAction']['safe_home_pos'][1],
+                                   dz=config[SERVERKEY]['langAction']['safe_home_pos'][2])).json()
     retc = return_class(parameters={},data=res)
     return retc
 
@@ -129,9 +129,9 @@ def moveWaste(x_pos: float=0, y_pos: float=0, z_pos: float=0): #these three coor
         retc (return_class): return class with the parameters and the data
     """
     res = requests.get("{}/langDriver/moveAbsFar".format(DRIVER_URL),
-                       params=dict(dx=x_pos+config[SERVERKEY]['safe_waste_pos'][0],
-                                    dy=y_pos+config[SERVERKEY]['safe_waste_pos'][1],
-                                    dz=z_pos+config[SERVERKEY]['safe_waste_pos'][2])).json()
+                       params=dict(dx=x_pos+config[SERVERKEY]['langAction']['safe_waste_pos'][0],
+                                    dy=y_pos+config[SERVERKEY]['langAction']['safe_waste_pos'][1],
+                                    dz=z_pos+config[SERVERKEY]['langAction']['safe_waste_pos'][2])).json()
     retc = return_class(parameters= {"x": x_pos, "y": y_pos, "z": z_pos,'units':{'x':'mm','y':'mm','z':'mm'}},
                         data=res)
     return retc
@@ -149,9 +149,9 @@ def moveToSample(x_pos: float=0, y_pos: float=0, z_pos: float=0):
         retc (return_class): return class with the parameters and the data
     """
     res = requests.get("{}/langDriver/moveAbsFar".format(DRIVER_URL),
-                       params=dict(dx=x_pos+config[SERVERKEY]['safe_sample_pos'][0],
-                                   dy=y_pos+config[SERVERKEY]['safe_sample_pos'][1],
-                                   dz=z_pos+config[SERVERKEY]['safe_sample_pos'][2])).json()
+                       params=dict(dx=x_pos+config[SERVERKEY]['langAction']['safe_sample_pos'][0],
+                                   dy=y_pos+config[SERVERKEY]['langAction']['safe_sample_pos'][1],
+                                   dz=z_pos+config[SERVERKEY]['langAction']['safe_sample_pos'][2])).json()
     retc = return_class(parameters= {"x": x_pos, "y": y_pos, "z": z_pos,'units':{'x':'mm','y':'mm','z':'mm'}},
                         data=res)
     return retc
@@ -170,13 +170,13 @@ def removeDrop(x_pos: float=0, y_pos: float=0, z_pos: float=0):
     """
     raw = []
     raw.append(requests.get("{}/langDriver/moveAbsFar".format(DRIVER_URL),
-                            params= dict(dx = x_pos + config[SERVERKEY]['safe_waste_pos'][0],
-                                         dy = y_pos + config[SERVERKEY]['safe_waste_pos'][1],
-                                         dz = z_pos + config[SERVERKEY]['remove_drop'][2])).json()) # because referene will start from 2 
+                            params= dict(dx = x_pos + config[SERVERKEY]['langAction']['safe_clean_pos_1'][0],
+                                         dy = y_pos + config[SERVERKEY]['langAction']['safe_clean_pos_1'][1],
+                                         dz = z_pos + config[SERVERKEY]['langAction']['safe_clean_pos_1'][2])).json()) # because referene will start from 2 
     raw.append(requests.get("{}/langDriver/moveAbsFar".format(DRIVER_URL),
-                            params= dict(dx = x_pos + config[SERVERKEY]['remove_drop'][0],
-                                         dy = y_pos + config[SERVERKEY]['remove_drop'][1],
-                                         dz = z_pos + config[SERVERKEY]['remove_drop'][2])).json())
+                            params= dict(dx = x_pos + config[SERVERKEY]['langAction']['safe_clean_pos_2'][0],
+                                         dy = y_pos + config[SERVERKEY]['langAction']['safe_clean_pos_2'][1],
+                                         dz = z_pos + config[SERVERKEY]['langAction']['safe_clean_pos_2'][2])).json())
     res = requests.get("{}/langDriver/getPos".format(DRIVER_URL)).json()
     raw.append(res)
     retc = return_class(parameters= {"x": x_pos, "y": y_pos, "z": z_pos,'units':{'x':'mm','y':'mm','z':'mm'}},

@@ -7,6 +7,8 @@ from multiprocessing import Process
 import requests
 import pytest
 
+from mischbares.server import lang_server
+from mischbares.action import lang_action
 from mischbares.action import hamilton_action
 from mischbares.server import hamilton_server
 from mischbares.orchestrator import orchestrator
@@ -19,6 +21,19 @@ port_orchestrator = config['servers']['orchestrator']['port']
 host_url = config['servers']['hamilton']['host']
 port_action = config['servers']['hamilton']['port']
 port_server = config['servers']['hamiltonDriver']['port']
+
+lang_host_url = config['servers']['langDriver']['host']
+lang_port_server = config['servers']['langDriver']['port']
+lang_port_action = config['servers']['lang']['port']
+
+
+def run_lang_action():
+    """Start the Autolab server."""
+    lang_action.main()
+
+def run_lang_server():
+    """Start the Autolab server."""
+    lang_server.main()
 
 def run_action_hamilton():
     """Start the Autolab server."""
@@ -39,8 +54,10 @@ def run_orchestrator():
 def server_instance():
     """Start the server and action in a separate processes."""
     processes = [Process(target=run_server_hamilton),
-                 Process(target=run_action_hamilton),
-                 Process(target=run_orchestrator)]
+                Process(target=run_action_hamilton),
+                Process(target=run_lang_server),
+                Process(target=run_lang_action),
+                Process(target=run_orchestrator)]
 
     for proc in processes:
         try:
@@ -80,11 +97,23 @@ def test_start_orchestrator():
     #shutil.rmtree("data/test")
 
 
+def test_lang_server_connection():
+    """Test if the server is running."""
+    response = requests.get(f"http://{lang_host_url}:{lang_port_server}/docs", timeout=None)
+    assert response.status_code == 200
+
+
+def test_lang_action_connection():
+    """Test if the server is running."""
+    response = requests.get(f"http://{lang_host_url}:{lang_port_action}/docs", timeout=None)
+    assert response.status_code == 200
+
+
 def test_hamilton_pumpSingleR():
+    requests.get(f"http://{lang_host_url}:{lang_port_action}/lang/moveWaste", timeout=None)
     soe =[f'hamilton/pumpR_0']
     params = {'pumpR_0':{'volume': 600}}
     sequence = dict(soe=soe,params=params,meta={})
-
     parameters = dict(experiment=json.dumps(sequence),thread=0)
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=parameters, timeout=None)
@@ -100,4 +129,4 @@ def test_finish_orchestrator():
     response = requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None)
     assert response.status_code == 200
-    shutil.rmtree("data/test")
+    #shutil.rmtree("data/test")

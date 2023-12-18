@@ -15,8 +15,8 @@ config["servers"] = dict(autolabDriver = dict(host=ip_adress, port=15111), # aut
                          hamiltonDriver=dict(host=ip_adress, port=16049, qc_motor="langDriver",
                                                                          qc_motor_safe_pos=['lang', 'langAction', 'safe_waste_pos']),
                          hamilton=dict(host=ip_adress, port=16050),
-                         langDriver=dict(host=ip_adress, port=15211),
-                         lang=dict(host=ip_adress, port=15212))
+                         langDriver=dict(host=ip_adress, port=15231),
+                         lang=dict(host=ip_adress, port=15232))
 
 config['orchestrator'] = dict(path='data')#, kadiurl="http://127.0.0.1:13377")
 config['instrument'] = "SDC"
@@ -49,7 +49,7 @@ config['lang'] = dict(langDriver= dict(velocity_x=5, velocity_y=5, velocity_z=5,
                                         safe_clean_pos_2=[74.0, -35.0, 0.0],
                                         safe_sample_pos=[0.0, 0.0, 0.0]))
 
-config["QC"] = dict(waste_camera=dict(camera_num=0,offset_x=40, offset_y=120, delay=10, timeout=60),
+config["QC"] = dict(waste_camera=dict(camera_num=0,offset_x=40, offset_y=120, delay=10, timeout=30, kill_timeout=60),
                     telegram=dict(api_token="", chat_id=""))
 # TEST POISTION FOR THE LANG QC: [45.7, 27.2, 15.2]
 config.update(autolab_config)

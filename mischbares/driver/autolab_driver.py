@@ -13,6 +13,7 @@ from mischbares.driver.analysis_driver import AnalysisDriver
 from mischbares.logger import logger
 from mischbares.utils import utils
 from mischbares.db.procedure import Procedure
+from mischbares.utils.utils import send_to_telegram
 
 
 log = logger.get_logger("autolab_driver")
@@ -453,7 +454,6 @@ class Autolab:
         # Create procedure
         db_procedure = Procedure()
         db_procedure.procedure_name = procedure
-
         # assamble_information about the procedure
         #proc = {"ocp": [setpoints["recordsignal"]['Duration (s)'], 100, 0.0]}
         #db_procedure.add_procedure_information(*proc[procedure], db_procedure.measurement_id)
@@ -533,7 +533,10 @@ class Autolab:
         db_procedure.add_raw_procedure_data(data[parse_instruction[0]])
         await asyncio.sleep(2)
         log.info(f"finished measuring and saving procedure {procedure}")
-
+        # get the datetime now up until seconds
+        db_procedure.procedure_finished = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        send_to_telegram(message=f'Finished experiment {analyzed_data.madap_args.experiment_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}',
+                         message_type="info")
         return data
 
     def add_cv_cycle_data_to_db(self, analyzed_data, db_procedure):

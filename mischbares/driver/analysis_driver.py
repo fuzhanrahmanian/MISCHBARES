@@ -22,8 +22,8 @@ class MadapArgs:
 
 
     def __init__(self, db_procedure, measurement_id):
-        experiment_id = db_procedure.get_experiment_id_by_measurement_id(measurement_id)["experiment_id"][0]
-        experiment_args = db_procedure.get_experiment(int(experiment_id))
+        self.experiment_id = db_procedure.get_experiment_id_by_measurement_id(measurement_id)["experiment_id"][0]
+        experiment_args = db_procedure.get_experiment(int(self.experiment_id))
         self.procedure = None
         self.impedance_procedure= None
         self.file = None

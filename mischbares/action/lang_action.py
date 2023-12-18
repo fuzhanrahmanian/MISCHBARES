@@ -1,16 +1,22 @@
-import sys
 import time
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 import requests
 
+from mischbares.utils.utils import send_to_telegram
 from mischbares.config.main_config import config
 from mischbares.logger import logger
 
 SERVERKEY = "lang"
 DRIVER_KEY = "langDriver"
 DRIVER_URL = f"http://{config['servers'][DRIVER_KEY]['host']}:{config['servers'][DRIVER_KEY]['port']}"
+
+AUTOLAB_HOST = config['servers']['autolab']['host']
+AUTOLAB_PORT = config['servers']['autolab']['port']
+
+HAMILTON_HOST = config['servers']['hamilton']['host']
+HAMILTON_PORT = config['servers']['hamilton']['port']
 
 log = logger.get_logger("lang_action")
 
@@ -36,6 +42,7 @@ def getPos():
     retc = return_class(parameters= {}, data=res)
     return retc
 
+
 @app.get("/lang/moveRel")
 def moveRelFar( dx: float, dy: float, dz: float):
     """ move the lang motor relative to the current position
@@ -47,12 +54,13 @@ def moveRelFar( dx: float, dy: float, dz: float):
     retc = return_class(parameters= {"dx": dx, "dy": dy, "dz": dz,'units':{'dx':'mm','dy':'mm','dz':'mm'}},data={})
     return retc
 
+
 @app.get("/lang/moveDown") #24 is the maximum amount that it can go down (24 - 2(initial) = 22)
-def moveDown(dz: float, steps: float, threshold:float=0.26):
+def moveDown(dz: float, steps: int, threshold:float=0.20):
     """ move the lang motor down until the force is exceeded
     Args:
         dz (float): distance to move in z direction
-        steps (float): maximum steps to move down
+        steps (int): maximum steps to move down
         maxForce (float): maximum force to apply
         threshold (float): threshold to stop moving down
 
@@ -60,16 +68,82 @@ def moveDown(dz: float, steps: float, threshold:float=0.26):
         retc (return_class): return class with the parameters and the data
     """
     steps = int(steps)
+    breakdown_of_steps = dz / steps
+    if breakdown_of_steps > threshold:
+        breakdown_of_steps = threshold
+
     step = 0
+    potential_threshold = config["QC"]["lang"]["potential_threshold"]
+    contact_established = False
     while step < steps: # TODO: Add QC with the potentiostat to check if the contact is formed
-        if dz < threshold:
-            requests.get("{}/langDriver/moveRelFar".format(DRIVER_URL), params= dict(dx = 0, dy = 0, dz = dz)).json()
-            log.info(f"steps: {step}")
-            step += 1
-            time.sleep(0.7)
-        else:
-            log.info("Threshold exceeded")
+        requests.get("{}/langDriver/moveRelFar".format(DRIVER_URL),
+                        params= dict(dx = 0, dy = 0, dz = breakdown_of_steps)).json()
+        log.info(f"steps: {step}")
+        step += 1
+        time.sleep(1)
+        # Get potential from autolab
+        response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
+                        timeout=None)
+        potential = eval(response.content)["data"]["data"]["potential"]
+        if abs(potential) < potential_threshold:
+            log.info("Contact established")
+            contact_established = True
             break
+
+    if not contact_established:
+        for critical_step in range(config["QC"]["lang"]["max_critical_steps"]):
+            if abs(potential) > potential_threshold:
+                log.warning("No contact established, adding 15 micro-liter of solution")
+                # pump 15ml
+                params = dict(volume=int(15))
+                response = requests.get(f"http://{HAMILTON_HOST}:{HAMILTON_PORT}/hamilton/pumpR", timeout=None,
+                                params=params)
+                time.sleep(5)
+                # Get potential from autolab
+                response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
+                                timeout=None)
+                potential = eval(response.content)["data"]["data"]["potential"]
+                if abs(potential) > potential_threshold:
+                    # MoveRelFar by breakdown_of_steps
+                    requests.get("{}/langDriver/moveRelFar".format(DRIVER_URL),
+                                    params= dict(dx = 0, dy = 0, dz = breakdown_of_steps)).json()
+                    time.sleep(1)
+                    # Get potential from autolab
+                    response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
+                                    timeout=None)
+                    potential = eval(response.content)["data"]["data"]["potential"]
+            else:
+                log.info("Contact established")
+                contact_established = True
+                break
+
+    if not contact_established:
+        time_in = time.time()
+        time_out = config["QC"]["lang"]["time_out"]
+        send_to_telegram(message=f"No contact established, measuring every 20s for {time_out}s",
+                         message_type="info")
+        while time.time() - time_in < time_out:
+            # measure the potential every 30 seconds
+            time.sleep(20)
+            # Get potential from autolab
+            response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
+                            timeout=None)
+            potential = eval(response.content)["data"]["data"]["potential"]
+            if abs(potential) < potential_threshold:
+                contact_established = True
+                send_to_telegram(message="Contact established. Continuing with the experiment",
+                                 message_type="info")
+                break
+
+    if not contact_established:
+        # Pause orchestrator and send a message to telegram
+        send_to_telegram(message="No contact established. Pausing the experiment. Please check the cell.",
+                         message_type="error")
+        host_url = config['servers']['orchestrator']['host']
+        port_orchestrator = config['servers']['orchestrator']['port']
+        requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/pause", timeout=None)
+
+
     if step > steps: # TODO: Check if potential is 0. -> Die soon
         log.warning("Force exceeded the max and the force sensor will die soon (RIP)")
 
@@ -136,6 +210,7 @@ def moveWaste(x_pos: float=0, y_pos: float=0, z_pos: float=0): #these three coor
                         data=res)
     return retc
 
+
 @app.get("/lang/moveSample")
 def moveToSample(x_pos: float=0, y_pos: float=0, z_pos: float=0):
     """ move the lang motor to the sample position
@@ -155,6 +230,7 @@ def moveToSample(x_pos: float=0, y_pos: float=0, z_pos: float=0):
     retc = return_class(parameters= {"x": x_pos, "y": y_pos, "z": z_pos,'units':{'x':'mm','y':'mm','z':'mm'}},
                         data=res)
     return retc
+
 
 @app.get("/lang/RemoveDroplet")
 def removeDrop(x_pos: float=0, y_pos: float=0, z_pos: float=0):
@@ -182,6 +258,7 @@ def removeDrop(x_pos: float=0, y_pos: float=0, z_pos: float=0):
     retc = return_class(parameters= {"x": x_pos, "y": y_pos, "z": z_pos,'units':{'x':'mm','y':'mm','z':'mm'}},
                         data={'raw':raw,'res':res['data']})
     return retc
+
 
 @app.on_event("shutdown")
 def shutDown():

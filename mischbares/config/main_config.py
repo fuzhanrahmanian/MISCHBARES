@@ -48,5 +48,6 @@ config['lang'] = dict(langDriver= dict(velocity_x=5, velocity_y=5, velocity_z=5,
                                         safe_clean_pos_2=[74, -35, 0.0],
                                         safe_sample_pos=[0.0, 0.0, 0.0]))
 
+config["QC"] = dict(waste_camera=dict(camera_num=0,offset_x=40, offset_y=120, delay=10, timeout=60))
 # TEST POISTION FOR THE LANG QC: [45.7, 27.2, 15.2]
 config.update(autolab_config)

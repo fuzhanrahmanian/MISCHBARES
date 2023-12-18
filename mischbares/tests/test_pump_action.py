@@ -1,11 +1,10 @@
 """ Test file for the pump action """
 import time
-import shutil
+
 from multiprocessing import Process
 
-import json
 import requests
-import numpy as np
+
 
 import pytest
 

@@ -77,7 +77,7 @@ def server_instance():
             print("Waiting for processess to start...")
         except RuntimeError as e:
             print("Error starting server: ", e)
-    time.sleep(15)
+    time.sleep(60)
     yield processes
     for proc in processes:
         proc.kill()
@@ -114,3 +114,50 @@ def test_lang_action_connection():
     response = requests.get(f"http://{host}:{lang_port_action}/docs", timeout=None)
     assert response.status_code == 200
 
+def test_start_orchestrator():
+    """ Test if the experiment is added to the orchestrator. """
+    # Assuming the start fucniotns works
+    sequence = dict(soe=['orchestrator/start'],
+                  params={'start': {'collectionkey': "test"}}, meta={})
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None)
+    assert response.status_code == 200
+    time.sleep(5)
+    assert os.path.exists("data/test/SDC_test_session_0.h5") is True
+    #shutil.rmtree("data/test")
+
+# def test_moveDown_lang_no_contact():
+#     """Test function moveDown."""
+#     soe = ["lang/moveDown_0", "lang/moveAbsFar_0"]
+#     params = {"moveDown_0": {"dz":3, "steps":15},
+#               "moveAbsFar_0": {"dx":0, "dy":0, "dz":0}}
+#     sequence = dict(soe=soe,params=params,meta={})
+#     parameters = dict(experiment=json.dumps(sequence),thread=0)
+#     response = requests.post(f"http://{host}:{port_orchestrator}/orchestrator/addExperiment",
+#                             params=parameters, timeout=None)
+#     assert response.status_code == 200
+
+
+def test_moveDown_lang_contact():
+    """Test function moveDown."""
+    soe = ["lang/moveAbs_0", "lang/moveDown_0", "lang/moveAbs_1", "lang/moveAbs_2"]
+    params = {"moveAbs_0": {"dx":35.7, "dy":27.2, "dz":12},
+              "moveDown_0": {"dz":3, "steps":30},
+              "moveAbs_1": {"dx":35.7, "dy":27.2, "dz":0},
+              "moveAbs_2": {"dx":0, "dy":0, "dz":0}}
+    sequence = dict(soe=soe,params=params,meta={})
+    parameters = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=parameters, timeout=None)
+    assert response.status_code == 200
+
+def test_finish_orchestrator():
+    """ Test if the experiment is added to the orchestrator. """
+    # Assuming the start fucniotns works
+    sequence = dict(soe=['orchestrator/finish'],
+                  params={'finish': None}, meta={})
+    params = dict(experiment=json.dumps(sequence),thread=0)
+    response = requests.post(f"http://{host}:{port_orchestrator}/orchestrator/addExperiment",
+                            params=params, timeout=None)
+    assert response.status_code == 200

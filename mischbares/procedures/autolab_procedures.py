@@ -5,13 +5,15 @@ from mischbares.logger import logger
 
 from mischbares.db.experiment import Experiments
 from mischbares.db.measurement import Measurements
+from mischbares.db.motor import Motor
 
 log = logger.get_logger("autolab_procedures")
 class AutolabProcedures:
     """ General assembles autolab procedures for orchestrator and UI"""
 
-    def __init__(self, measurement_num, current_range = '10mA', save_dir = 'mischbares/tests', material=None, user_id=None,
-                 number_of_electrons=None, electrode_area=None, concentration_of_active_material=None, mass_of_active_material=None):
+    def __init__(self, measurement_num, current_range = '10mA', save_dir = 'mischbares/tests', material: float = None, user_id: int = None,
+                 number_of_electrons: int =None, electrode_area: float = None, concentration_of_active_material: float = None,
+                 mass_of_active_material: float = None, position: tuple = None):
         self.measurement_num = measurement_num
         self.current_range = current_range
         self.save_dir = save_dir
@@ -24,6 +26,9 @@ class AutolabProcedures:
                                     concentration_of_active_material=concentration_of_active_material,
                                     mass_of_active_material=mass_of_active_material):
             log.info(f"Experiment {material} added.")
+            if position is not None:
+                self.motor = Motor()
+                self.motor.add_motor_positions(position[0], position[1], position[2], self.experiment.experiment_id)
         else:
             raise Exception("Experiment could not be added to the database.")
         self.experiment.close()

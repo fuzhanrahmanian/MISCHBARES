@@ -10,7 +10,8 @@ class Motor(Experiments):
     def __init__(self):
         super().__init__()
 
-    def add_motor_positions(self, x_coordinate, y_coordinate):
+    def add_motor_positions(self, x_coordinate, y_coordinate,
+                            z_coordinate, experiment_id):
         """add a motor to the database
 
         Args:
@@ -18,9 +19,9 @@ class Motor(Experiments):
             y_coordinate (float): The y coordinate of the motor
         """
         commit_status = self.commit("INSERT INTO motor_positions \
-                (x_coordinate, y_coordinate, experiment_id)\
-                VALUES (%s, %s, %s)", \
-                (x_coordinate, y_coordinate, self.experiment_id))
+                (x_coordinate, y_coordinate, z_coordinate, experiment_id)\
+                VALUES (%s, %s, %s, %s)", \
+                (x_coordinate, y_coordinate, z_coordinate, experiment_id))
         if commit_status:
             log.info(f"Motor positions ({x_coordinate}, {y_coordinate}) added.")
         return commit_status

@@ -1,4 +1,8 @@
+import os
 import time
+import json
+import numpy as np
+from datetime import datetime
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -24,7 +28,7 @@ app = FastAPI(title="lang server",
     description="This is a fancy lang motor action server",
     version="1.0.0")
 
-
+QC_POTENTIAL_LIST = []
 
 class return_class(BaseModel):
     parameters :dict = None
@@ -75,6 +79,15 @@ def moveDown(dz: float, steps: int, threshold:float=0.20):
     step = 0
     potential_threshold = config["QC"]["lang"]["potential_threshold"]
     contact_established = False
+    # create a temporary folder called _temp
+    os.makedirs("_temp", exist_ok=True)
+
+    lang_params = dict(procedure='ocp', plot_type='tCV',
+                  parse_instruction= json.dumps(['recordsignal']),
+                  save_dir= "_temp",
+                  setpoints= json.dumps({'recordsignal':
+                                        {'Duration (s)': 2}}))
+
     while step < steps: # TODO: Add QC with the potentiostat to check if the contact is formed
         requests.get("{}/langDriver/moveRelFar".format(DRIVER_URL),
                         params= dict(dx = 0, dy = 0, dz = breakdown_of_steps)).json()
@@ -82,36 +95,44 @@ def moveDown(dz: float, steps: int, threshold:float=0.20):
         step += 1
         time.sleep(1)
         # Get potential from autolab
-        response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
-                        timeout=None)
-        potential = eval(response.content)["data"]["data"]["potential"]
-        if abs(potential) < potential_threshold:
-            log.info("Contact established")
-            contact_established = True
-            break
+        # just measure if steps is more than steps -3:
+        if step > steps - 3:
+            response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/measure",
+                                    params=lang_params,
+                                    timeout=None)
+            potential = _decode_potential(response)
+            QC_POTENTIAL_LIST.append(potential)
+            if abs(potential) < potential_threshold:
+                log.info("Contact established")
+                contact_established = True
+                break
 
     if not contact_established:
         for critical_step in range(config["QC"]["lang"]["max_critical_steps"]):
             if abs(potential) > potential_threshold:
-                log.warning("No contact established, adding 15 micro-liter of solution")
+                log.warning("No contact established, adding 20 micro-liter of solution")
                 # pump 15ml
-                params = dict(volume=int(15))
+                params = dict(volume=int(20))
                 response = requests.get(f"http://{HAMILTON_HOST}:{HAMILTON_PORT}/hamilton/pumpR", timeout=None,
                                 params=params)
                 time.sleep(5)
                 # Get potential from autolab
-                response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
-                                timeout=None)
-                potential = eval(response.content)["data"]["data"]["potential"]
+                response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/measure",
+                                        params=lang_params,
+                                        timeout=None)
+                potential = _decode_potential(response)
+                QC_POTENTIAL_LIST.append(potential)
                 if abs(potential) > potential_threshold:
                     # MoveRelFar by breakdown_of_steps
                     requests.get("{}/langDriver/moveRelFar".format(DRIVER_URL),
                                     params= dict(dx = 0, dy = 0, dz = breakdown_of_steps)).json()
                     time.sleep(1)
                     # Get potential from autolab
-                    response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
-                                    timeout=None)
-                    potential = eval(response.content)["data"]["data"]["potential"]
+                    response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/measure",
+                                            params=lang_params,
+                                            timeout=None)
+                    potential = _decode_potential(response)
+                    QC_POTENTIAL_LIST.append(potential)
             else:
                 log.info("Contact established")
                 contact_established = True
@@ -119,16 +140,18 @@ def moveDown(dz: float, steps: int, threshold:float=0.20):
 
     if not contact_established:
         time_in = time.time()
-        time_out = config["QC"]["lang"]["time_out"]
+        time_out = config["QC"]["lang"]["timeout"]
         send_to_telegram(message=f"No contact established, measuring every 20s for {time_out}s",
                          message_type="info")
         while time.time() - time_in < time_out:
             # measure the potential every 30 seconds
             time.sleep(20)
             # Get potential from autolab
-            response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/potential",
-                            timeout=None)
-            potential = eval(response.content)["data"]["data"]["potential"]
+            response = requests.get(f"http://{AUTOLAB_HOST}:{AUTOLAB_PORT}/autolab/measure",
+                                    params=lang_params,
+                                    timeout=None)
+            potential = _decode_potential(response)
+            QC_POTENTIAL_LIST.append(potential)
             if abs(potential) < potential_threshold:
                 contact_established = True
                 send_to_telegram(message="Contact established. Continuing with the experiment",
@@ -137,6 +160,11 @@ def moveDown(dz: float, steps: int, threshold:float=0.20):
 
     if not contact_established:
         # Pause orchestrator and send a message to telegram
+        # move abs to z = 0 and move to home
+        requests.get("{}/langDriver/moveRelFar".format(DRIVER_URL),
+                        params= dict(dx = 0, dy = 0, dz = -10)).json()
+        requests.get("{}/langDriver/moveAbsFar".format(DRIVER_URL),
+                        params= dict(dx = 0, dy = 0, dz = 0)).json()
         send_to_telegram(message="No contact established. Pausing the experiment. Please check the cell.",
                          message_type="error")
         host_url = config['servers']['orchestrator']['host']
@@ -153,8 +181,17 @@ def moveDown(dz: float, steps: int, threshold:float=0.20):
                                     'units':{'dz':'mm'}},
                         data= {'raw':pos, 'res':{
                               'units':{'pos':'mm'}}})
-
+    # Save the QC potential list
+    np.savetxt(f"QC_POTENTIAL_LIST_{datetime.now().strftime(('%m-%d-%H-%M'))}.csv",
+               QC_POTENTIAL_LIST, delimiter=",")
     return retc
+
+def _decode_potential(response):
+    evaluate_potential = eval(response.content.decode("utf-8").replace("null", "None")\
+                                .replace("false", "False"))
+    evaluate_potential = evaluate_potential['data']['data']['recordsignal']['WE(1).Potential']
+    evaluate_potential = np.mean(evaluate_potential)
+    return evaluate_potential
 
 @app.get("/lang/moveAbs")
 def moveAbsFar(dx: float, dy: float, dz: float):

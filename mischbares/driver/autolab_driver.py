@@ -521,22 +521,26 @@ class Autolab:
         #     import json
         #     data = json.load(f)
         # call madap , do data analysis : processed data
-        analyzed_data = AnalysisDriver(procedure_configuration=procedure_configuration,
-                        data=data, parse_instruction=parse_instruction, db_procedure=db_procedure, measurement_id=measurement_id)
-        # Add the measured data to the database
-        info = self.prepare_data_for_db(procedure_configuration, analyzed_data=analyzed_data)
-        db_procedure.add_procedure_information(*info, measurement_id)
-        if procedure == "cv_staircase":
-            self.add_cv_cycle_data_to_db(analyzed_data, db_procedure=db_procedure)
-        if procedure == "eis":
-            parse_instruction.pop(parse_instruction.index("FIAMeasurement"))
-        db_procedure.add_raw_procedure_data(data[parse_instruction[0]])
+        if measurement_id:
+            analyzed_data = AnalysisDriver(procedure_configuration=procedure_configuration,
+                            data=data, parse_instruction=parse_instruction, db_procedure=db_procedure, measurement_id=measurement_id)
+            # Add the measured data to the database
+            info = self.prepare_data_for_db(procedure_configuration, analyzed_data=analyzed_data)
+            db_procedure.add_procedure_information(*info, measurement_id)
+
+            if procedure == "cv_staircase":
+                self.add_cv_cycle_data_to_db(analyzed_data, db_procedure=db_procedure)
+            if procedure == "eis":
+                parse_instruction.pop(parse_instruction.index("FIAMeasurement"))
+            db_procedure.add_raw_procedure_data(data[parse_instruction[0]])
+            # get the datetime now up until seconds
+            db_procedure.procedure_finished = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            send_to_telegram(message=f'Finished experiment {analyzed_data.madap_args.experiment_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}',
+                         message_type="info")
+
         await asyncio.sleep(2)
         log.info(f"finished measuring and saving procedure {procedure}")
-        # get the datetime now up until seconds
-        db_procedure.procedure_finished = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        send_to_telegram(message=f'Finished experiment {analyzed_data.madap_args.experiment_id} at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}',
-                         message_type="info")
+
         return data
 
     def add_cv_cycle_data_to_db(self, analyzed_data, db_procedure):

@@ -1,0 +1,197 @@
+.general-settings {
+    border: 2px solid #007bff;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 5px;
+}
+
+.settings h2 {
+    color: #007bff;
+}
+
+.settings label, .settings input {
+    margin: 5px;
+}
+
+.experiment-settings {
+    display: none;
+    border: 2px solid #28a745;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 5px;
+}
+
+.experiment-settings h2 {
+    color: #28a745;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+}
+
+.button:hover {
+    opacity: 0.9;
+}
+
+.button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+.general-settings .button {
+    background-color: #007bff; /* Blue */
+}
+
+.general-settings .button:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+.experiment-settings .button {
+    background-color: #28a745; /* Green */
+}
+
+.experiment-settings .button:hover {
+    background-color: #218838; /* Darker green */
+}
+
+
+
+.login-form {
+    border: 2px solid #007bff;
+    padding: 20px;
+    margin: 20px auto; /* Center the form */
+    width: 300px;
+    border-radius: 5px;
+}
+
+.login-form h2 {
+    color: #007bff;
+    text-align: center;
+}
+
+.login-form label, .login-form input {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+}
+
+.login-form input[type='submit'] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.login-form input[type='submit']:hover {
+    background-color: #0056b3;
+}
+
+.batch-section {
+    border: 2px solid red;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.batch-title {
+    color: red;
+    margin-bottom: 15px;
+}
+
+.batch-section h3 {
+    color: red;
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-row label {
+    flex: 0 0 220px; /* Adjust the width as needed */
+    margin-right: 10px;
+}
+
+.form-row input, .form-row select {
+    flex: 0.2;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.experiment-container {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.experiment-dropdown {
+    width: 25%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.args-container {
+    display: flex; /* Aligns child elements (input fields) in a row */
+    flex-wrap: wrap; /* Allows fields to wrap to next line if space runs out */
+    gap: 10px; /* Space between fields */
+    margin-top: 10px; /* Space between dropdown and this container */
+}
+
+.arg-field {
+    flex: 1; /* Each field takes equal space */
+    min-width: 150px; /* Minimum width of each field to avoid too small fields */
+    max-width: 150px; /* Maximum width of each field to avoid too wide fields */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#saveBatchSettings.batch-save-button {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#saveBatchSettings.batch-save-button:hover {
+    background-color: darkred;
+}
+
+#saveBatchSettings.batch-load-button {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#saveBatchSettings.batch-load-button:hover {
+    background-color: darkred
+}
+
+.run-button {
+    background-color: olivedrab;
+    color: white;
+    padding: 15px 30px; /* Large button */
+    font-size: 20px; /* Bigger font */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

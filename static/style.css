@@ -5,11 +5,11 @@
     border-radius: 5px;
 }
 
-.settings h2 {
+.general-settings h2 {
     color: #007bff;
 }
 
-.settings label, .settings input {
+.general-settings label, .settings input {
     margin: 5px;
 }
 

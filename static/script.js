@@ -196,17 +196,26 @@ function saveBatchSettings() {
             var expId = 'experiment_' + (expIndex + 1);
             var selectedFunction = dropdown.value;
             var argsData = {};
-
+        
             // Find the container of argument inputs for this experiment
             var argsContainer = dropdown.closest('.experiment-container').querySelector('.args-container');
             if (argsContainer) {
                 argsContainer.querySelectorAll('.arg-field').forEach(input => {
                     var argName = input.getAttribute('data-arg-name'); // Retrieve the original argument name
-                    argsData[argName] = input.value || null; // Capture the value or null if empty
+        
+                    // Only save the arguments if they have a value
+                    if (input.value) {
+                        argsData[argName] = input.value; // Capture the value
+                    }
                 });
             }
-
-            batchData[batchId][expId] = { [selectedFunction]: argsData };
+        
+            if (Object.keys(argsData).length > 0) {
+                batchData[batchId][expId] = { [selectedFunction]: argsData };
+            } else {
+                // Optionally handle the case where there are no arguments for a function
+                batchData[batchId][expId] = { [selectedFunction]: {} };
+            }
         });
     });
 

@@ -238,7 +238,7 @@ if __name__ == "__main__":
     # TODO: check the db , if the user exists
     ParserExperimentConfigs(general_config=EXP_CONFIGS[2], experiment_config=EXP_CONFIGS[1],
                             batch_config=EXP_CONFIGS[0])
-
+    log.info("Starting servers, drivers and actions...")
     processes = [Process(target=run_server_hamilton),
                  Process(target=run_action_hamilton),
                  Process(target=run_lang_server),
@@ -253,7 +253,8 @@ if __name__ == "__main__":
     visualizer_process = Process(target=start_bokeh_visualizer)
     visualizer_process.start()
     log.info("Starting visualizer...")
-    time.sleep(15)
+    while not is_server_ready("http://localhost:5006/app_script"):
+        time.sleep(1)
     input("Press Enter to start the experiment...")
     main()
     for proc in processes:

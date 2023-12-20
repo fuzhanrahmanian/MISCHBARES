@@ -7,23 +7,32 @@ import subprocess
 from mischbares.procedures.autolab_procedures import AutolabProcedures
 from flask import jsonify
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
+
 app = Flask(__name__, template_folder='templates')  # Initialize the Flask app
 app.secret_key = 'mischbares2023'  # Set a secret key for session management
 app.config['TESTING'] = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.json.sort_keys = False
 
+SIGNED_IN_USER_ID = None
+
 # Initialize your Users class
 users_db = Users()
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global SIGNED_IN_USER_ID
     if request.method == 'POST':
         username = "test_username"#request.form['username']
         password = "test_password"#request.form['password']
         if users_db.login_user(username, password):
             # User authenticated
+            SIGNED_IN_USER_ID = users_db.user_id
             flash('Login successful!', 'success')
             return redirect(url_for('main'))  # Redirect to the main page or dashboard
+
         else:
             flash('Invalid username or password!', 'danger')
 
@@ -66,6 +75,12 @@ def load_experiment_settings():
 
 
 def load_all_settings():
+    """
+    Load general and experiment settings from JSON files.
+
+    Returns:
+        Tuple[Dict[str, Any], Dict[str, Any]]: A tuple containing the loaded general settings and experiment settings.
+    """
     try:
         with open('saved_config/general_config.json', 'r') as f:
             general_settings = json.load(f)
@@ -86,6 +101,13 @@ def load_all_settings():
 
 @app.route('/get-batch-settings', methods=['GET'])  # Adjusted route name
 def get_batch_settings():
+    """
+    Retrieves the batch settings from the 'batch_config.json' file and returns them as a JSON response.
+
+    Returns:
+        If the 'batch_config.json' file exists, the batch settings are returned as a JSON response.
+        If the 'batch_config.json' file does not exist, a JSON response with an error message and status code 404 is returned.
+    """
     try:
         with open('saved_config/batch_config.json', 'r') as f:
             batch_settings = json.load(f)
@@ -103,12 +125,17 @@ def save_batch_settings():
 
 @app.route('/run-mischbares', methods=['POST'])
 def run_mischbares():
+    # Perform user check
+    user_check_response = check_user()
+    if not user_check_response.get('success', True):
+        return user_check_response
+
     try:
-        # Replace the command with the correct way to execute your main.py
-        result = subprocess.run(['python', 'path/to/main.py'], check=True, stdout=subprocess.PIPE)
-        return jsonify({"message": "Mischbares run successfully", "output": result.stdout.decode()})
-    except subprocess.CalledProcessError as e:
-        return jsonify({"error": "Error running Mischbares", "details": str(e)}), 500
+        subprocess.Popen(['python', 'main.py', str(SIGNED_IN_USER_ID)])
+        return jsonify({'success': True, 'message': "Mischbares is running"})
+    except Exception as e:
+        # Handle any exceptions that occur
+        return jsonify({'success': False, 'message': f"Error running Mischbares: {str(e)}"}), 500
 
 def format_motor_positions(motor_pos_list):
     # Converts list of tuples back to the original input string format
@@ -145,6 +172,15 @@ def get_functions_args():
         if args and args[0] not in excluded_args:
             function_args[func] = args
     return function_args
+
+
+def check_user():
+    user_id = SIGNED_IN_USER_ID
+    user = users_db.get_user_by_id(user_id)
+    if user is None:
+        message = f"User with id {user_id} does not exist. Contact the administrator to add you to the database."
+        return {'success': False, 'message': message}
+    return {'success': True, 'message': "User is valid"}
 
 
 def get_function_names():

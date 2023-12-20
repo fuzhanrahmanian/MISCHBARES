@@ -7,8 +7,8 @@ import json
 import subprocess
 import inspect
 from multiprocessing import Process
-
-# postgres
+import sys
+from flask import jsonify
 
 from mischbares.logger import logger
 from mischbares.action import autolab_action
@@ -80,30 +80,6 @@ def start_bokeh_visualizer():
     subprocess.Popen(["bokeh", "serve", visualizer_path, "--show"])
 
 
-def banana_instance():
-    """Start the server and action in a separate processes."""
-    processes = [Process(target=run_server_hamilton),
-                 Process(target=run_action_hamilton),
-                 Process(target=run_lang_server),
-                 Process(target=run_lang_action),
-                 Process(target=run_server),
-                 Process(target=run_action),
-                 Process(target=run_orchestrator)]
-
-    for proc in processes:
-        try:
-            proc.start()
-            print("Waiting for processess to start...")
-        except RuntimeError as e:
-            print("Error starting server: ", e)
-    time.sleep(40)
-    yield processes
-    for proc in processes:
-        proc.kill()
-    shutil.rmtree('mischbares/tests/data', ignore_errors=True)
-    shutil.rmtree('data/test', ignore_errors=True)
-
-
 def start_orchestrator_experimentation():
     """ Intantiate the orchestrator scheduler. """
     # Assuming the start fucniotns works
@@ -115,12 +91,24 @@ def start_orchestrator_experimentation():
 
 
 def end_orchestrator_experimentation():
-    """ Intantiate the orchestrator scheduler.
+    """
+    Ends the orchestrator experimentation by sending a request to the orchestrator API
+    and sending a message to Telegram.
+
+    This function constructs a sequence dictionary, converts it to JSON, and sends it
+    as a parameter in a POST request to the orchestrator API. It also sends a message
+    to Telegram with information about the finished experiment.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
     sequence = dict(soe=['orchestrator/finish'], params={'finish': None}, meta={})
-    params = dict(experiment=json.dumps(sequence),thread=0)
+    params = dict(experiment=json.dumps(sequence), thread=0)
     requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
-                            params=params, timeout=None).json()
+                  params=params, timeout=None).json()
     send_to_telegram(message=f"Experiment finished: \n Closing experiment", message_type="info")
 
 
@@ -234,6 +222,7 @@ def call_method_with_dict(obj, method_name, arg_dict):
 
 
 def main(exp_config):
+    global USER_ID
     # Check if ["batch_config", experiment_config, general_config] exists in the folder saved_config
 
     # """Main function."""
@@ -295,6 +284,15 @@ def main(exp_config):
 
 
 def is_server_ready(url):
+    """
+    Checks if the server at the given URL is ready.
+
+    Args:
+        url (str): The URL of the server to check.
+
+    Returns:
+        bool: True if the server is ready and returns a 200 status code, False otherwise.
+    """
     try:
         response = requests.get(url)
         return response.status_code == 200
@@ -302,11 +300,26 @@ def is_server_ready(url):
         return False
 
 
+import time
+
 def wait_for_servers_to_be_ready():
-    # TODO : check if others need it or not
+    """
+    Waits for all servers to be ready by periodically checking their health endpoints.
+
+    This function continuously checks the health endpoints of multiple servers until all servers are ready.
+    It uses a list of server URLs to check their health status. The function will break out of the loop
+    and return when all servers are ready.
+
+    Returns:
+        None
+    """
     server_urls = [f"http://{host_url}:{port_server}/health",
-                   f"http://{host_url}:{port_action}/health",
-                   f"http://{host_url}:{port_orchestrator}/health"]
+                    f"http://{host_url}:{port_action}/health",
+                    f"http://{host_url}:{port_orchestrator}/health",
+                    f"http://{host_url}:{config['servers']['langDriver']['port']}/health",
+                    f"http://{host_url}:{config['servers']['lang']['port']}/health",
+                    f"http://{host_url}:{config['servers']['hamiltonDriver']['port']}/health",
+                    f"http://{host_url}:{config['servers']['hamilton']['port']}/health"]
 
     while True:
         if all(is_server_ready(url) for url in server_urls):
@@ -315,8 +328,13 @@ def wait_for_servers_to_be_ready():
         time.sleep(1)
 
 
-# main function
+
 if __name__ == "__main__":
+    global USER_ID
+    USER_ID = sys.argv[1]
+    log.info(f"Running MISCHBARES for user {USER_ID}")
+    # Get the first argument from the command line (user id)
+
     # Check if ["batch_config", "experiment_config", "general_config"] are files in saved_config folder
     # if not log and exit
     for file in ["batch_config.json", "experiment_config.json", "general_config.json"]:
@@ -335,14 +353,13 @@ if __name__ == "__main__":
                  Process(target=run_server),
                  Process(target=run_action),
                  Process(target=run_orchestrator)]
-
     for proc in processes:
         proc.start()
     wait_for_servers_to_be_ready()
     # Start the visualizer in a separate process
     visualizer_process = Process(target=start_bokeh_visualizer)
     visualizer_process.start()
-    print("Starting visualizer...")
+    log.info("Starting visualizer...")
     time.sleep(15)
     input("Press Enter to start the experiment...")
     main(exp_config)

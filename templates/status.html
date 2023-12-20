@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mischbares Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0; /* Adjust background color as needed */
+            color: #333333; /* Adjust text color as needed */
+            text-align: center;
+        }
+        .message {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="message">
+        <div id="statusMessage">Running Mischbares...</div>
+        <div class="loader"></div>
+    </div>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                document.getElementById('statusMessage').textContent = error;
+                document.querySelector('.loader').style.display = 'none'; // Hide loader in case of error
+            }
+        };
+    </script>
+</body>
+</html>

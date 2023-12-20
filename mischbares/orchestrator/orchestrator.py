@@ -112,6 +112,10 @@ class Experiment(BaseModel):
 
 @app.get("/health")
 def health_check():
+    """ health check to see if the server is up and running
+    Returns:
+        dict: status
+    """
     return {"status": "healthy"}
 
 @app.post("/orchestrator/addExperiment")

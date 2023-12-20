@@ -74,28 +74,47 @@ function createBatchSections() {
                     option.textContent = name;
                     select.appendChild(option);
                 });
-
+                
                 // Attach event listener to handle function selection
                 select.addEventListener('change', function() {
                     var selectedFunction = this.value;
                     var argsContainer = this.parentNode;
                     updateArgumentFields(argsContainer, functionArgs[selectedFunction]);
                 });
+
+                // Dispatch change event right after populating the dropdown
+                select.dispatchEvent(new Event('change'));
+
                 batchSection.appendChild(experimentContainer);
             }
 
             batchContainer.appendChild(batchSection);
         }
+
         // Trigger change event for each dropdown to create argument inputs
         document.querySelectorAll('.experiment-dropdown').forEach(dropdown => {
-            if (currentState[dropdown.id] && currentState[dropdown.id].selectedFunction) {
+        if (currentState[dropdown.id]) {
+            // Only update if there's a saved function for this dropdown
+            if (currentState[dropdown.id].selectedFunction) {
                 dropdown.value = currentState[dropdown.id].selectedFunction;
                 dropdown.dispatchEvent(new Event('change'));
             }
-        });
 
-        // After all dropdown change events are triggered, restore argument input values
-        restoreState(currentState, batchContainer);
+            // Restore argument input values if they exist
+            if (currentState[dropdown.id].arguments) {
+                let argsContainer = dropdown.closest('.experiment-container').querySelector('.args-container');
+                Object.entries(currentState[dropdown.id].arguments).forEach(([argName, argValue]) => {
+                    let input = argsContainer.querySelector(`[data-arg-name="${argName}"]`);
+                    if (input) {
+                        input.value = argValue;
+                    }
+                });
+            }
+        }
+    });
+
+    // After all dropdown change events are triggered, restore argument input values
+    restoreState(currentState, batchContainer);
 
     }).catch(error => console.error('Error fetching function names:', error));
 
@@ -167,7 +186,6 @@ function saveExperimentSettings() {
     var experimentSettingsData = {
         num_of_batch: document.getElementById('num_of_batch').value,
         num_of_experiment_in_each_batch: document.getElementById('num_of_experiment_in_each_batch').value,
-        duration: document.getElementById('duration').value,
     };
 
     // Send data to the server
@@ -196,20 +214,17 @@ function saveBatchSettings() {
             var expId = 'experiment_' + (expIndex + 1);
             var selectedFunction = dropdown.value;
             var argsData = {};
-        
             // Find the container of argument inputs for this experiment
             var argsContainer = dropdown.closest('.experiment-container').querySelector('.args-container');
             if (argsContainer) {
                 argsContainer.querySelectorAll('.arg-field').forEach(input => {
                     var argName = input.getAttribute('data-arg-name'); // Retrieve the original argument name
-        
                     // Only save the arguments if they have a value
                     if (input.value) {
                         argsData[argName] = input.value; // Capture the value
                     }
                 });
             }
-        
             if (Object.keys(argsData).length > 0) {
                 batchData[batchId][expId] = { [selectedFunction]: argsData };
             } else {
@@ -311,17 +326,20 @@ document.getElementById('generate_meshgrid').onclick = function() {
     document.getElementById('motor_pos').value = motorPos.trim();
 };
 
-document.getElementById('runMischbares').addEventListener('click', function() {
-    fetch('/run-mischbares', { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('Error:', data.error);
-            } else {
-                console.log('Mischbares output:', data.output);
-            }
-        })
-        .catch(error => console.error('Error running Mischbares:', error));
+document.getElementById('runMischbares').addEventListener('click', function() {{
+        fetch('/run-mischbares', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    window.location.href = '/status.html?error=' + encodeURIComponent(data.error);
+                } else {
+                    window.location.href = '/status.html';
+                }
+            })
+            .catch(error => {
+                window.location.href = '/status.html?error=' + encodeURIComponent('Error starting Mischbares.');
+            });
+    }
 });
 
 // function loadBatchSettings() {

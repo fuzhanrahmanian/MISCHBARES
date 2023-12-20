@@ -67,10 +67,6 @@
             <label for="num_of_experiment_in_each_batch">Number of Experiments in Each Batch:</label>
             <input type="number" id="num_of_experiment_in_each_batch" name="num_of_experiment_in_each_batch" value="{{ experiment_settings.get('num_of_experiment_in_each_batch', '') }}">
         </div>
-        <div class="form-row">
-            <label for="duration">Duration:</label>
-            <input type="text" id="duration" name="duration" placeholder="e.g., 10 or range(10,30,6)" value="{{ experiment_settings.get('duration', '') }}">
-        </div>
         <!-- Experiment Settings Section -->
         <!-- ... [form fields for experiment settings] ... -->
         <button type="button" id="saveExperimentSettings" class="button">Save Experiment Settings</button>
@@ -78,6 +74,11 @@
         <button id="saveBatchSettings" class="button batch-save-button">Save Batch Settings</button>
         <!-- <button id="loadBatchSettings" class="button batch-load-button">Load Batch Settings</button> -->
         <div id="batch-container"></div>
+    </div>
+
+    <div id="processStatus" style="display: none;">
+        <p>Running Mischbares...</p>
+        <div class="loader"></div>
     </div>
 
     <button id="runMischbares" class="run-button" style="display: none;">Run Mischbares</button>

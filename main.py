@@ -6,8 +6,8 @@ import time
 import shutil
 import json
 from multiprocessing import Process
-
-# postgres
+import sys
+from flask import jsonify
 
 from mischbares.logger import logger
 from mischbares.action import autolab_action
@@ -118,6 +118,7 @@ def end_orchestrator_experimentation():
     send_to_telegram(message=f"Experiment finished: \n Closing experiment", message_type="info")
 
 def main():
+    global USER_ID
     # Check if ["batch_config", experiment_config, general_config] exists in the folder saved_config
     
     
@@ -211,9 +212,13 @@ def wait_for_servers_to_be_ready():
         print("Waiting for servers to be ready...")
         time.sleep(1)
 
-
 # main function
 if __name__ == "__main__":
+    global USER_ID
+    USER_ID = sys.argv[1]
+    log.info(f"Running MISCHBARES for user {USER_ID}")
+    # Get the first argument from the command line (user id)
+
     # Check if ["batch_config", "experiment_config", "general_config"] are files in saved_config folder
     # if not log and exit
     for file in ["batch_config", "experiment_config", "general_config"]:
@@ -231,14 +236,13 @@ if __name__ == "__main__":
                  Process(target=run_server),
                  Process(target=run_action),
                  Process(target=run_orchestrator)]
-
     for proc in processes:
         proc.start()
     wait_for_servers_to_be_ready()
     # Start the visualizer in a separate process
     visualizer_process = Process(target=start_bokeh_visualizer)
     visualizer_process.start()
-    print("Starting visualizer...")
+    log.info("Starting visualizer...")
     time.sleep(15)
     input("Press Enter to start the experiment...")
     main()

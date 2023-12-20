@@ -33,6 +33,13 @@ class return_class(BaseModel):
     parameters: dict = None
     data: dict = None
 
+@app.get("/health")
+def health_check():
+    """ health check to see if the server is up and running
+    Returns:
+        dict: status
+    """
+    return {"status": "healthy"}
 
 @app.get("/hamilton/pumpL/")
 def pumpSingleL(volume: int=0, times:int=1):

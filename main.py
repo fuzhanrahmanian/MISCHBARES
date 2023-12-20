@@ -203,8 +203,12 @@ def is_server_ready(url):
 def wait_for_servers_to_be_ready():
     # TODO : check if others need it or not
     server_urls = [f"http://{host_url}:{port_server}/health",
-                   f"http://{host_url}:{port_action}/health",
-                   f"http://{host_url}:{port_orchestrator}/health"]
+                    f"http://{host_url}:{port_action}/health",
+                    f"http://{host_url}:{port_orchestrator}/health",
+                    f"http://{host_url}:{config['servers']['langDriver']['port']}/health",
+                    f"http://{host_url}:{config['servers']['lang']['port']}/health",
+                    f"http://{host_url}:{config['servers']['hamiltonDriver']['port']}/health",
+                    f"http://{host_url}:{config['servers']['hamilton']['port']}/health"]
 
     while True:
         if all(is_server_ready(url) for url in server_urls):

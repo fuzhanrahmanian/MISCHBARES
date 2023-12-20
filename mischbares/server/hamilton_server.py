@@ -22,6 +22,14 @@ class return_class(BaseModel):
 
 hamilton_pump = None
 
+@app.get("/health")
+def health_check():
+    """ health check to see if the server is up and running
+    Returns:
+        dict: status
+    """
+    return {"status": "healthy"}
+
 @app.get("/hamiltonDriver/pump")
 def pump(leftVol:int=0,rightVol:int=0,leftPort:int=0,rightPort:int=0,delayLeft:int=0,delayRight:int=0):
     """pump a certain volume from a certain port

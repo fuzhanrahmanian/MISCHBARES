@@ -13,6 +13,7 @@ from mischbares.logger import logger
 from mischbares.action import autolab_action
 from mischbares.server import autolab_server
 from mischbares.orchestrator import orchestrator
+from mischbares.config.parse_experiment_configs import ParserExperimentConfigs
 from mischbares.config.main_config import config
 
 from mischbares.utils.utils import send_to_telegram
@@ -33,6 +34,7 @@ port_action = config['servers']['autolab']['port']
 port_server = config['servers']['autolabDriver']['port']
 port_orchestrator = config['servers']['orchestrator']['port']
 
+EXP_CONFIGS = ["batch_config", "experiment_config", "general_config"]
 
 def run_lang_action():
     """Start the Autolab server."""
@@ -116,7 +118,11 @@ def end_orchestrator_experimentation():
     send_to_telegram(message=f"Experiment finished: \n Closing experiment", message_type="info")
 
 def main():
-    """Main function."""
+    # Check if ["batch_config", experiment_config, general_config] exists in the folder saved_config
+    
+    
+    
+    # """Main function."""
     log.info("Start to do one experiment")
     proc_values = {
     "ocp": [20,100,0.0], #duration, interval_time, ocp_potential,
@@ -166,7 +172,6 @@ def main():
 
 
     # Run a while loop for 200 seconds
-    start_time = time.time()
     time_in = time.time()
     time_out = 200*60
 
@@ -209,6 +214,16 @@ def wait_for_servers_to_be_ready():
 
 # main function
 if __name__ == "__main__":
+    # Check if ["batch_config", "experiment_config", "general_config"] are files in saved_config folder
+    # if not log and exit
+    for file in ["batch_config", "experiment_config", "general_config"]:
+        if not os.path.exists(os.path.join("saved_config", file)):
+            log.error(f"{file} does not exist in saved_config folder")
+            exit(1)
+    # TODO: check the db , if the user exists
+    ParserExperimentConfigs(general_config=EXP_CONFIGS[2], experiment_config=EXP_CONFIGS[1],
+                            batch_config=EXP_CONFIGS[0])
+
     processes = [Process(target=run_server_hamilton),
                  Process(target=run_action_hamilton),
                  Process(target=run_lang_server),

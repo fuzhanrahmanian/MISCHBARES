@@ -28,17 +28,20 @@ users_db = Users()
 def login():
     global SIGNED_IN_USER_ID
     if request.method == 'POST':
-        username = "test_username"#request.form['username']
-        password = "test_password"#request.form['password']
+        username = request.form['username']
+        password = request.form['password']
+        if username == '' or password == '':
+            flash('Please enter a username and password!', 'danger')
+            return redirect(url_for('login'))
         if users_db.login_user(username, password):
             # User authenticated
             SIGNED_IN_USER_ID = users_db.user_id
-            flash('Login successful!', 'success')
+            #flash('Login successful!', 'success')
             return redirect(url_for('main'))  # Redirect to the main page or dashboard
 
-    else:
-        flash('Invalid username or password! \n Contact your administrator', 'danger')
-        return render_template('login.html')
+        else:
+            flash('Invalid username or password! \n Contact your administrator', 'danger')
+    return render_template('login.html')
 
 
 @app.route('/main', methods=['GET', 'POST'])
@@ -125,6 +128,10 @@ def save_batch_settings():
         json.dump(batch_settings, f)
     return jsonify({'success': True})
 
+@app.route('/render-status', methods=['GET'])
+def render_status():
+    return render_template('status.html')
+
 
 @app.route('/run-mischbares', methods=['POST'])
 def run_mischbares():
@@ -135,10 +142,6 @@ def run_mischbares():
     except Exception as e:
         # Handle any exceptions that occur
         return jsonify({'success': False, 'message': f"Error running Mischbares: {str(e)}"}), 500
-
-def format_motor_positions(motor_pos_list):
-    # Converts list of tuples back to the original input string format
-    return '; '.join(','.join(map(str, pos)) for pos in motor_pos_list)
 
 def parse_motor_positions(motor_pos_str):
     # Converts string input to list of tuples

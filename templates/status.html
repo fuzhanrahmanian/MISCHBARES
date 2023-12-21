@@ -10,19 +10,12 @@
     <title>Mischbares Status</title>
 </head>
 <body>
+    <div class='message-container'>
     <div class="message">
         <div id="statusMessage">Running Mischbares...</div>
+        <br>
         <div class="loader"></div>
     </div>
-    <script>
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            if (error) {
-                document.getElementById('statusMessage').textContent = error;
-                document.querySelector('.loader').style.display = 'none'; // Hide loader in case of error
-            }
-        };
-    </script>
+    </div>
 </body>
 </html>

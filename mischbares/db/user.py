@@ -72,6 +72,9 @@ class Users(Database):
         """
         sql = "SELECT * FROM users WHERE username = %s"
         result = self.execute(sql, (username,))
+        if type(result) == type(None):
+            log.info(f"User {username} does not exist.")
+            return False
         if not result.empty:
             if checkpw(password.encode('utf-8'), result['password'].values[0].encode('utf-8')):
                 log.info(f"Password correct. User {username} logged in.")

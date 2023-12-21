@@ -332,7 +332,7 @@ document.getElementById('runMischbares').addEventListener('click', function() {{
                 if (data.error) {
                     window.location.href = '/status.html?error=' + encodeURIComponent(data.error);
                 } else {
-                    window.location.href = '/status.html';
+                    fetch('/render-status')
                 }
             })
             .catch(error => {

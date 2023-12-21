@@ -117,9 +117,9 @@ def moveDown(dz: float, steps: int, threshold:float=0.20):
     if not contact_established:
         for critical_step in range(config["QC"]["lang"]["max_critical_steps"]):
             if abs(potential) > potential_threshold:
-                log.warning("No contact established, adding 20 micro-liter of solution")
+                log.warning("No contact established, adding 25 micro-liter of solution")
                 # pump 15ml
-                params = dict(volume=int(20))
+                params = dict(volume=int(25))
                 response = requests.get(f"http://{HAMILTON_HOST}:{HAMILTON_PORT}/hamilton/pumpR", timeout=None,
                                 params=params)
                 time.sleep(5)

@@ -1,3 +1,6 @@
+
+from multiprocessing import Process
+import time
 import json
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from mischbares.db.user import Users  # Import your Users class
@@ -33,14 +36,15 @@ def login():
             flash('Login successful!', 'success')
             return redirect(url_for('main'))  # Redirect to the main page or dashboard
 
-        else:
-            flash('Invalid username or password!', 'danger')
-
-    return render_template('login.html')
+    else:
+        flash('Invalid username or password! \n Contact your administrator', 'danger')
+        return render_template('login.html')
 
 
 @app.route('/main', methods=['GET', 'POST'])
 def main():
+    if SIGNED_IN_USER_ID is None:
+        return redirect(url_for('login'))
     general_settings = {}
     experiment_settings = {}
     if request.method == 'GET':
@@ -84,7 +88,6 @@ def load_all_settings():
     try:
         with open('saved_config/general_config.json', 'r') as f:
             general_settings = json.load(f)
-            #general_settings['motor_pos'] = format_motor_positions(general_settings['motor_pos'])
     except (FileNotFoundError, json.JSONDecodeError):
         general_settings = {}
         flash('No saved general settings found or invalid file format.', 'warning')
@@ -126,10 +129,6 @@ def save_batch_settings():
 @app.route('/run-mischbares', methods=['POST'])
 def run_mischbares():
     # Perform user check
-    user_check_response = check_user()
-    if not user_check_response.get('success', True):
-        return user_check_response
-
     try:
         subprocess.Popen(['python', 'main.py', str(SIGNED_IN_USER_ID)])
         return jsonify({'success': True, 'message': "Mischbares is running"})
@@ -140,7 +139,6 @@ def run_mischbares():
 def format_motor_positions(motor_pos_list):
     # Converts list of tuples back to the original input string format
     return '; '.join(','.join(map(str, pos)) for pos in motor_pos_list)
-
 
 def parse_motor_positions(motor_pos_str):
     # Converts string input to list of tuples
@@ -174,15 +172,6 @@ def get_functions_args():
     return function_args
 
 
-def check_user():
-    user_id = SIGNED_IN_USER_ID
-    user = users_db.get_user_by_id(user_id)
-    if user is None:
-        message = f"User with id {user_id} does not exist. Contact the administrator to add you to the database."
-        return {'success': False, 'message': message}
-    return {'success': True, 'message': "User is valid"}
-
-
 def get_function_names():
     function_names = [func for func in dir(AutolabProcedures) if callable(getattr(AutolabProcedures, func)) and not func.startswith("_")][::-1]
     return function_names
@@ -197,4 +186,7 @@ def open_browser():
       webbrowser.open_new('http://127.0.0.1:5000/')
 
 if __name__ == '__main__':
+    # Create a folder for saving the config files
+    subprocess.Popen(['mkdir', '-p', 'saved_config'])
+    open_browser()
     app.run(debug=True)

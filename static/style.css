@@ -1,32 +1,116 @@
-.general-settings {
-    border: 2px solid #007bff;
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ECF1FA;
+    color: #333333;
+}
+
+/* Settings Container */
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* General and Experiment Settings */
+.general-settings, .experiment-settings {
+    border: 2px solid #440154;
     padding: 20px;
     margin: 20px;
     border-radius: 5px;
+    width: 80%; /* Adjust based on layout preference */
+    max-width: 800px; /* Maximum width */
+}
+
+.experiment-settings {
+    border-color: #4F4350;
+}
+
+.general-settings .form-row, .experiment-settings .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.general-settings .form-row label, .experiment-settings .form-row label {
+    flex: 0 0 250px; /* Fixed width for labels */
+    margin-right: 10px;
+}
+
+.general-settings .form-row input, 
+.general-settings .form-row select, 
+.experiment-settings .form-row input, 
+.experiment-settings .form-row select {
+    flex: 0.2; /* Adjust as needed for the input/select width */
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+}
+
+.message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #440154;
+    display: flex;
+    border: 2px solid #440154;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px;
+}
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #440154; /* Using the same blue as in .general-settings */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin: auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .general-settings h2 {
-    color: #007bff;
+    color: #440154;
 }
 
 .general-settings label, .settings input {
     margin: 5px;
 }
 
+#save_dir {
+    flex: 1;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
 .experiment-settings {
     display: none;
-    border: 2px solid #28a745;
+    border: 2px solid #4F4350;
     padding: 20px;
     margin: 20px;
     border-radius: 5px;
 }
 
 .experiment-settings h2 {
-    color: #28a745;
+    color: #4F4350;
 }
 
 .button {
-    display: inline-block;
+    font-size: 14px;
     padding: 10px 20px;
     margin: 5px;
     border: none;
@@ -48,7 +132,7 @@
 }
 
 .general-settings .button {
-    background-color: #007bff; /* Blue */
+    background-color: #440154; /* Blue */
 }
 
 .general-settings .button:hover {
@@ -56,17 +140,63 @@
 }
 
 .experiment-settings .button {
-    background-color: #28a745; /* Green */
+    background-color: #4F4350; /* Green */
 }
 
 .experiment-settings .button:hover {
-    background-color: #218838; /* Darker green */
+    background-color: #277f8e; /* Darker green */
 }
 
 
+/* Meshgrid Generator inside General Settings */
+.meshgrid-generator {
+    border: 2px solid #440154;
+    padding: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.meshgrid-generator h3 {
+    color: #440154;
+    margin-bottom: 15px;
+}
+
+.meshgrid-generator .form-row {
+    display: flex;
+    justify-content: space-between; /* Keeps items spaced out */
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.meshgrid-generator .form-row label {
+    flex: 0 0 80px; /* Fixed width for labels */
+    margin-right: 5px; /* Smaller margin for meshgrid labels */
+}
+
+.meshgrid-generator input[type='number'] {
+    width: auto; /* Allows input width to adjust to content */
+    margin-right: 20px; /* Spacing after input */
+}
+#generate_meshgrid{
+    background-color: #440154;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 40%;
+}
+#generate_meshgrid:disabled {
+    background-color: #cccccc;
+}
+
+button:disabled {
+    background-color: #cccccc;
+}
+
 
 .login-form {
-    border: 2px solid #007bff;
+    border: 2px solid #440154;
     padding: 20px;
     margin: 20px auto; /* Center the form */
     width: 300px;
@@ -74,7 +204,7 @@
 }
 
 .login-form h2 {
-    color: #007bff;
+    color: #440154;
     text-align: center;
 }
 
@@ -85,7 +215,7 @@
 }
 
 .login-form input[type='submit'] {
-    background-color: #007bff;
+    background-color: #440154;
     color: white;
     border: none;
     border-radius: 5px;
@@ -99,39 +229,23 @@
 }
 
 .batch-section {
-    border: 2px solid red;
+    border: 2px solid #540500;
     padding: 10px;
     margin-bottom: 20px;
     border-radius: 5px;
 }
 
 .batch-title {
-    color: red;
+    color: #540500;
     margin-bottom: 15px;
 }
 
 .batch-section h3 {
-    color: red;
+    color: #540500;
     margin-bottom: 15px;
 }
 
-.form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
 
-.form-row label {
-    flex: 0 0 220px; /* Adjust the width as needed */
-    margin-right: 10px;
-}
-
-.form-row input, .form-row select {
-    flex: 0.2;
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
 
 .experiment-container {
     margin-bottom: 10px;
@@ -163,7 +277,7 @@
 }
 
 #saveBatchSettings.batch-save-button {
-    background-color: red;
+    background-color: #a0da39;
     color: white;
     border: none;
     border-radius: 5px;
@@ -171,27 +285,27 @@
 }
 
 #saveBatchSettings.batch-save-button:hover {
-    background-color: darkred;
+    background-color: #fde725
 }
 
-#saveBatchSettings.batch-load-button {
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#saveBatchSettings.batch-load-button:hover {
-    background-color: darkred
-}
 
 .run-button {
-    background-color: olivedrab;
+    background-color: #2db27d;
     color: white;
     padding: 15px 30px; /* Large button */
     font-size: 20px; /* Bigger font */
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin: auto; /* Center the button */
+}
+
+.flash-message.danger {
+    color: #721c24; /* Dark #540500 text */
+    background-color: #f8d7da; /* Light #540500 background */
+    border-color: #f5c6cb;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
 }

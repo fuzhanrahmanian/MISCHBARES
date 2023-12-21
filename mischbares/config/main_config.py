@@ -45,12 +45,12 @@ config['lang'] = dict(langDriver= dict(velocity_x=5, velocity_y=5, velocity_z=5,
                             path_pylang=r"C:\Users\LaborRatte23-3\Documents\git\pyLang"),
                       langAction = dict(safe_home_pos=[0.0, 0.0, 0.0],
                                         safe_waste_pos=[0.0, -35.0, 0.0],
-                                        safe_clean_pos_1=[81.0, -35.0, 7],
-                                        safe_clean_pos_2=[74.0, -35.0, 7],
+                                        safe_clean_pos_1=[81.0, -35.0, 7.5],
+                                        safe_clean_pos_2=[71.0, -35.0, 7.5],
                                         safe_sample_pos=[0.0, 0.0, 0.0]))
 
 config["QC"] = dict(waste_camera=dict(camera_num=0,offset_x=40, offset_y=120, delay=10, timeout=30, kill_timeout=60),
                     telegram=dict(api_token="", chat_id=""),
-                    lang=dict(potential_threshold=0.1, max_critical_steps=5, timeout=60*1),)
+                    lang=dict(potential_threshold=0.8, max_critical_steps=5, timeout=60*1),)
 # TEST POISTION FOR THE LANG QC: [45.7, 27.2, 10] -> [45.7, 27.2, 13] -> [45.7, 27.2, 15.75]
 config.update(autolab_config)

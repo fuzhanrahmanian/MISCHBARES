@@ -11,9 +11,14 @@ log = logger.get_logger("autolab_procedures")
 class AutolabProcedures:
     """ General assembles autolab procedures for orchestrator and UI"""
 
-    def __init__(self, measurement_num, current_range = '10mA', save_dir = 'mischbares/tests', material: float = None, user_id: int = None,
-                 number_of_electrons: int =None, electrode_area: float = None, concentration_of_active_material: float = None,
-                 mass_of_active_material: float = None, position: tuple = None):
+
+    def __init__(self, measurement_num:int = 0, current_range:str = '10mA',
+                save_dir:str = 'mischbares/tests',
+                material:float = None, user_id:int = None,
+                number_of_electrons:int =None, electrode_area:float = None,
+                concentration_of_active_material:float = None,
+                mass_of_active_material:float = None,
+                position:tuple = None):
         self.measurement_num = measurement_num
         self.current_range = current_range
         self.save_dir = save_dir
@@ -21,10 +26,11 @@ class AutolabProcedures:
         self.measurements = Measurements()
 
         if self.experiment.add_experiment(material, datetime.now().strftime(("%Y-%m-%d")), \
-                                    user_id, datetime.now().strftime(("%H:%M:%S")),
-                                    number_of_electrons=number_of_electrons, electrode_area=electrode_area,
-                                    concentration_of_active_material=concentration_of_active_material,
-                                    mass_of_active_material=mass_of_active_material):
+                                user_id, datetime.now().strftime(("%H:%M:%S")),
+                                number_of_electrons=number_of_electrons,
+                                electrode_area=electrode_area,
+                                concentration_of_active_material=concentration_of_active_material,
+                                mass_of_active_material=mass_of_active_material):
             log.info(f"Experiment {material} added.")
             if position is not None:
                 self.motor = Motor()
@@ -41,7 +47,7 @@ class AutolabProcedures:
 
 
     # 1. currentRange_ocp
-    def ocp_measurement(self, measurement_duration = 10, interval_time = 0.05):
+    def ocp_measurement(self, measurement_duration:int = 10, interval_time:float = 0.05):
         """ocp measurement procedure from orchestrator level.
         Args:
             measurement_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -71,8 +77,8 @@ class AutolabProcedures:
 
 
     # 2. currentRange_ocp/ca
-    def ca_measurement(self, measurement_duration = 20, apply_potential = 0.1,
-                       interval_time = 0.5):
+    def ca_measurement(self, measurement_duration:int = 20, apply_potential:float = 0.1,
+                       interval_time:float = 0.5):
         """cyclic ammperometry measurement procedure from orchestrator level.
 
         Args:
@@ -108,8 +114,8 @@ class AutolabProcedures:
 
 
     # 3. currentRange_ocp/cp
-    def cp_measurement(self, measurement_duration = 20, apply_current = 0.00001,
-                       interval_time = 0.5):
+    def cp_measurement(self, measurement_duration:int = 20, apply_current:float = 0.00001,
+                       interval_time:float = 0.5):
         """cyclic potentiometric measurement procedure from orchestrator level.
 
         Args:
@@ -144,9 +150,11 @@ class AutolabProcedures:
 
 
     # 4. currentRange_ocp/cv
-    def cv_staircase_measurement(self, start_value, upper_vortex, lower_vortex, stop_value,
-                                step_size=0.0007, NrOfStopCrossings=2, scan_rate=0.5,
-                                measure_at_ocp=False):
+    def cv_staircase_measurement(self, start_value:float, upper_vortex:float,
+                                lower_vortex:float, stop_value:float,
+                                step_size:float=0.0007, NrOfStopCrossings:int=2,
+                                scan_rate:float=0.5,
+                                measure_at_ocp:bool=False):
         """cyclic voltammetry measurement procedure from orchestrator level.
 
         Args:
@@ -195,7 +203,7 @@ class AutolabProcedures:
 
 
     # 5. currentRange_ocp/eis
-    def eis_measurement(self, apply_potential = 0.1, measure_at_ocp = True):
+    def eis_measurement(self, apply_potential:float = 0.1, measure_at_ocp:bool = True):
         """electrochemical impedance spectroscopy measurement procedure from orchestrator level.
         Args:
             apply_potential (float, optional): potential in V. Defaults to 0.01.
@@ -236,9 +244,9 @@ class AutolabProcedures:
 
 
     # 6. currentRange_ocp/ca_ocp/eis
-    def ca_eis_measurement(self,measurement_duration = 10, ca_potential = 0.1,
-                           ca_interval_time = 0.5, eis_potential = 0.1,
-                           eis_measure_at_ocp = True):
+    def ca_eis_measurement(self,measurement_duration:int = 10, ca_potential:float = 0.1,
+                           ca_interval_time:float = 0.5, eis_potential:float = 0.1,
+                           eis_measure_at_ocp:bool = True):
         """sequence of cyclic amperometric and electrochemical impedance spectroscopy measurement
             from orchestrator level.
         Args:
@@ -273,8 +281,9 @@ class AutolabProcedures:
 
 
     # 7. currentRange_ocp/eis-ocp/ca
-    def eis_ca_measurement(self, measurement_duration = 10, ca_potential = 0.1,
-                           ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def eis_ca_measurement(self, measurement_duration:int = 10, ca_potential:float = 0.1,
+                        ca_interval_time:float = 0.5, eis_potential:float = 0.1,
+                        eis_measure_at_ocp:bool = True):
         """sequence of electrochemical impedance spectroscopy and cyclic amperometric measurement
             from orchestrator level.
         Args:
@@ -311,8 +320,9 @@ class AutolabProcedures:
 
 
     # 8. currentRange_ocp/cp-ocp/eis
-    def cp_eis_measurement(self, measurement_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def cp_eis_measurement(self, measurement_duration:int = 10, cp_current:float = 0.00001,
+                        cp_interval_time:float = 0.5, eis_potential:float = 0.1,
+                        eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and electrochemical impedance spectroscopy measurement
             from orchestrator level.
         Args:
@@ -351,8 +361,9 @@ class AutolabProcedures:
 
 
     # 9. currentRange_ocp/eis-ocp/cp
-    def eis_cp_measurement(self, measurement_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def eis_cp_measurement(self, measurement_duration:int = 10, cp_current:float = 0.00001,
+                        cp_interval_time:float = 0.5, eis_potential:float = 0.1,
+                        eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and electrochemical impedance spectroscopy measurement
             from orchestrator level.
         Args:
@@ -389,8 +400,11 @@ class AutolabProcedures:
 
 
     # 10. eis-ocp/cv
-    def eis_cv_staircase_measurement(self, start_value, upper_vortex, lower_vortex, stop_value, step_size=0.0007,
-                          NrOfStopCrossings=2, scan_rate=0.5, measure_at_ocp=False, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def eis_cv_staircase_measurement(self, start_value:float, upper_vortex:float,
+                        lower_vortex:float, stop_value:float, step_size:float=0.0007,
+                        NrOfStopCrossings:int=2, scan_rate:float=0.5,
+                        measure_at_ocp:bool=False, eis_potential:float = 0.1,
+                        eis_measure_at_ocp:bool = True):
         """cyclic voltammetry measurement procedure from orchestrator level.
         Args:
             start_value (float): start value in V. Usually it is the ocp value.
@@ -432,8 +446,11 @@ class AutolabProcedures:
 
 
     # 11. currentRange_cv-ocp/eis
-    def cv_stairstep_eis_measurement(self, start_value, upper_vortex, lower_vortex, stop_value, step_size=0.0007,
-                            NrOfStopCrossings=2, scan_rate=0.5, measure_at_ocp=False, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def cv_stairstep_eis_measurement(self, start_value:float, upper_vortex:float,
+                            lower_vortex:float, stop_value:float, step_size:float=0.0007,
+                            NrOfStopCrossings:int=2, scan_rate:float=0.5,
+                            measure_at_ocp:bool=False, eis_potential:float= 0.1,
+                            eis_measure_at_ocp:bool = True):
         """cyclic voltammetry and electrochemical impedance spectroscopy measurement procedure from orchestrator level.
         Args:
             start_value (float): start value in V. Usually it is the ocp value.
@@ -474,9 +491,10 @@ class AutolabProcedures:
         return soe, params, sequence
 
     # 12. currentRange_ocp/cp-threshold-ca (cccv)
-    def cp_ca_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5):
+    def cp_ca_measurement(self, cp_duration:float = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10,
+                           ca_potential:float = 0.0,
+                           ca_interval_time:float = 0.5):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -513,9 +531,10 @@ class AutolabProcedures:
 
 
     # 13. currentRange_ocp/ca-threshold-cp (cvcc)
-    def ca_cp_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5):
+    def ca_cp_measurement(self, cp_duration:int = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10,
+                           ca_potential:float = 0.0,
+                           ca_interval_time:float = 0.5):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -551,9 +570,10 @@ class AutolabProcedures:
 
 
     # 14. currentRange_ocp/cp-threshold-ca-ocp/eis
-    def cp_ca_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def cp_ca_eis_measurement(self, cp_duration:int = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10,
+                           ca_potential:float = 0.0, ca_interval_time:float = 0.5,
+                           eis_potential:float = 0.1, eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -599,9 +619,10 @@ class AutolabProcedures:
 
 
     # 15. currentRange_ocp/ca-threshold-cp-ocp/eis
-    def ca_cp_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def ca_cp_eis_measurement(self, cp_duration:int = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10,
+                           ca_potential:float = 0.0, ca_interval_time:float = 0.5,
+                           eis_potential:float = 0.1, eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -645,9 +666,10 @@ class AutolabProcedures:
 
 
     # 16. currentRange_ocp/eis-ocp/ca-threshold-cp
-    def eis_ca_cp_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def eis_ca_cp_measurement(self, cp_duration:int = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10,
+                           ca_potential:float = 0.0, ca_interval_time:float = 0.5,
+                           eis_potential:float = 0.1, eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -693,9 +715,10 @@ class AutolabProcedures:
 
 
     # 17. currentRange_ocp/eis-ocp/cp-threshold-ca
-    def eis_cp_ca_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5, eis_potential = 0.1, eis_measure_at_ocp = True):
+    def eis_cp_ca_measurement(self, cp_duration:int = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10,
+                           ca_potential:float = 0.0, ca_interval_time:float = 0.5,
+                           eis_potential:float = 0.1, eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -740,9 +763,12 @@ class AutolabProcedures:
 
 
     # 18. eis-ocp/cv_staircase/eis
-    def eis_cv_staircase_eis_measurement(self, start_value, upper_vortex, lower_vortex, stop_value, step_size=0.0007,
-                            NrOfStopCrossings=2, scan_rate=0.5, measure_at_ocp=False, first_eis_potential = 0.1,
-                            first_eis_measure_at_ocp = True, second_eis_potential = 0.1, second_eis_measure_at_ocp = True):
+    def eis_cv_staircase_eis_measurement(self, start_value:float, upper_vortex:float, lower_vortex:float,
+                                         stop_value:float, step_size:float=0.0007,
+                            NrOfStopCrossings:int=2, scan_rate:float=0.5, measure_at_ocp:bool=False,
+                            first_eis_potential:float = 0.1,
+                            first_eis_measure_at_ocp:bool = True, second_eis_potential:float = 0.1,
+                            second_eis_measure_at_ocp:bool = True):
         """electrochemical impedance spectroscopy and cyclic voltammetry and electrochemical impedance spectroscopy
             measurement procedure from orchestrator level.
         Args:
@@ -793,12 +819,12 @@ class AutolabProcedures:
         sequence = dict(soe = soe, params = params, meta={})
         return soe, params, sequence
 
-    # 18. currentRange_ocp/eis-ocp/cp-threshold-ca-ocp/eis (cccv)
-    def eis_cp_ca_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5, first_eis_potential = 0.1,
-                           first_eis_measure_at_ocp = True,
-                           second_eis_potential = 0.1, second_eis_measure_at_ocp = True):
+    # 19. currentRange_ocp/eis-ocp/cp-threshold-ca-ocp/eis (cccv)
+    def eis_cp_ca_eis_measurement(self, cp_duration:int = 10, cp_current:float = 0.00001,
+                           cp_interval_time:float = 0.5, ca_duration:int = 10, ca_potential:float = 0.0,
+                           ca_interval_time:float = 0.5, first_eis_potential:float = 0.1,
+                           first_eis_measure_at_ocp:bool = True,
+                           second_eis_potential:float = 0.1, second_eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.
@@ -852,12 +878,13 @@ class AutolabProcedures:
         return soe, params, sequence
 
 
-    # 19. currentRange_ocp/eis-ocp/ca-threshold-cp-ocp/eis (cvcc)
-    def eis_ca_cp_eis_measurement(self, cp_duration = 10, cp_current = 0.00001,
-                           cp_interval_time = 0.5, ca_duration = 10, ca_potential = 0.0,
-                           ca_interval_time = 0.5, first_eis_potential = 0.1,
-                           first_eis_measure_at_ocp = True,
-                           second_eis_potential = 0.1, second_eis_measure_at_ocp = True):
+    # 20. currentRange_ocp/eis-ocp/ca-threshold-cp-ocp/eis (cvcc)
+    def eis_ca_cp_eis_measurement(self, cp_duration:int = 10,
+                            cp_current:float = 0.00001, cp_interval_time:float = 0.5,
+                            ca_duration:int = 10, ca_potential:int = 0.0,
+                            ca_interval_time:float= 0.5, first_eis_potential:float = 0.1,
+                            first_eis_measure_at_ocp:bool = True,
+                            second_eis_potential:float = 0.1, second_eis_measure_at_ocp:bool = True):
         """sequence of cyclic potentiostatic and amperometric measurement from orchestrator level.
         Args:
             cp_duration (int, optional): measurement duration in seconds. Defaults to 10.

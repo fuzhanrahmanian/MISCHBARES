@@ -3,83 +3,87 @@
 <head>
     <title>Mischbares</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="general_settings", class="general-settings">
-        <h2>General Settings</h2>
-        <form method="post" action="/main">
-            <div class="form-row">
-                <label for="material">Material:</label>
-                <input type="text" id="material" name="material" value="{{ general_settings.get('material', '') }}"><br>
+    <div class="settings-container">
+        <div id="general_settings", class="general-settings">
+            <h2>General Settings</h2>
+            <form method="post" action="/main">
+                <div class="form-row">
+                    <label for="material">Material:</label>
+                    <input type="text" id="material" name="material" value="{{ general_settings.get('material', '') }}"><br>
 
-            </div>
-            <div class="form-row">
-                <label for="number_of_electrons">Number of Electrons:</label>
-                <input type="number" step="any" id="number_of_electrons" name="number_of_electrons" value="{{ general_settings.get('number_of_electrons', '') }}"><br>
-            </div>
-            <div class="form-row">
-                <label for="electrode_area">Electrode Area:</label>
-                <input type="number" step="any" id="electrode_area" name="electrode_area" value="{{ general_settings.get('electrode_area', '') }}"><br>
-            </div>
-            <div class="form-row">
-                <label for="concentration_of_active_material">Concentration of Active Material:</label>
-                <input type="number" step="any" id="concentration_of_active_material" name="concentration_of_active_material" value="{{ general_settings.get('concentration_of_active_material', '') }}"><br>
-            </div>
-            <div class="form-row">
-                <label for="mass_of_active_material">Mass of Active Material:</label>
-                <input type="number" step="any" id="mass_of_active_material" name="mass_of_active_material" value="{{ general_settings.get('mass_of_active_material', '') }}"><br>
-            </div>
-            <div class="form-row">
-                <label for="motor_pos">Motor Position:</label>
-                <input type="text" id="motor_pos" name="motor_pos" value="{{ general_settings.get('motor_pos', '') }}"><br>
-            </div>
-            <label for="row">Meshgrid Row:</label>
-                <input type="number" id="row" name="row">
-                <label for="column">Column:</label>
-                <input type="number" id="column" name="column">
-                <label for="height">Height:</label>
-                <input type="number" step="any" id="height" name="height">
-                <label for="stepsize">Step Size:</label>
-                <input type="number" step="any" id="stepsize" name="stepsize" value="1" style="width: 100px; display: inline-block;">
-                <input type="button" id="generate_meshgrid" value="Generate Meshgrid" style="display: inline-block;" disabled><br>
-            <! -- Add a bit of space -->
-            <br>
-            <div class="form-row">
-                <label for="save_dir">Save Directory:</label>
-                <input type="text" id="save_dir" name="save_dir" value="{{ general_settings.get('save_dir', '') }}"><br>
-            </div>
-            <br>
-            <!-- General Settings Section -->
-            <!-- ... [form fields for general settings] ... -->
-            <button type="button" id="saveGeneralSettings" class="button">Save General Settings</button>
-            <a href="{{ url_for('load_general_settings') }}" class="button">Load General Settings</a>
+                </div>
+                <div class="form-row">
+                    <label for="number_of_electrons">Number of Electrons:</label>
+                    <input type="number" step="any" id="number_of_electrons" name="number_of_electrons" value="{{ general_settings.get('number_of_electrons', '') }}"><br>
+                </div>
+                <div class="form-row">
+                    <label for="electrode_area">Electrode Area:</label>
+                    <input type="number" step="any" id="electrode_area" name="electrode_area" value="{{ general_settings.get('electrode_area', '') }}"><br>
+                </div>
+                <div class="form-row">
+                    <label for="concentration_of_active_material">Concentration of Active Material:</label>
+                    <input type="number" step="any" id="concentration_of_active_material" name="concentration_of_active_material" value="{{ general_settings.get('concentration_of_active_material', '') }}"><br>
+                </div>
+                <div class="form-row">
+                    <label for="mass_of_active_material">Mass of Active Material:</label>
+                    <input type="number" step="any" id="mass_of_active_material" name="mass_of_active_material" value="{{ general_settings.get('mass_of_active_material', '') }}"><br>
+                </div>
+                <div class="form-row">
+                    <label for="motor_pos">Motor Position:</label>
+                    <input type="text" id="motor_pos" name="motor_pos" value="{{ general_settings.get('motor_pos', '') }}"><br>
+                </div>
+                <div class="meshgrid-generator">
+                    <h3>Meshgrid Generator</h3>
+                    <div class="form-row">
+                        <label for="row">Row:</label>
+                        <input type="number" id="row" name="row">
+                        <label for="column">Columns:</label>
+                        <input type="number" id="column" name="column">
+                    </div>
+                    <div class="form-row">
+                        <label for="height">Height:</label>
+                        <input type="number" step="any" id="height" name="height">
+                        <label for="stepsize">Step Size:</label>
+                        <input type="number" step="any" id="stepsize" name="stepsize" value="1">
+                    </div>
+                    <button type="button" id="generate_meshgrid" disabled>Generate Meshgrid</button>
+                </div>                
+                <div class="form-row">
+                    <label for="save_dir">Save Directory:</label>
+                    <input type="text" id="save_dir" name="save_dir" value="{{ general_settings.get('save_dir', '') }}"><br>
+                </div>
+                <br>
+                <!-- General Settings Section -->
+                <!-- ... [form fields for general settings] ... -->
+                <button type="button" id="saveGeneralSettings" class="button">Save General Settings</button>
+                <a href="{{ url_for('load_general_settings') }}" class="button">Load General Settings</a>
 
-    </div>
-
-    <!-- Experiment Settings Section -->
-    <div id="experiment_settings" class="experiment-settings">
-        <h2>Experiment Settings</h2>
-        <div class="form-row">
-            <label for="num_of_batch">Number of Batches:</label>
-            <input type="number" id="num_of_batch" name="num_of_batch" value="{{ experiment_settings.get('num_of_batch', '') }}">
-        </div>
-        <div class="form-row">
-            <label for="num_of_experiment_in_each_batch">Number of Experiments in Each Batch:</label>
-            <input type="number" id="num_of_experiment_in_each_batch" name="num_of_experiment_in_each_batch" value="{{ experiment_settings.get('num_of_experiment_in_each_batch', '') }}">
-        </div>
-        <div class="form-row">
-            <label for="duration">Duration:</label>
-            <input type="text" id="duration" name="duration" placeholder="e.g., 10 or range(10,30,6)" value="{{ experiment_settings.get('duration', '') }}">
         </div>
         <!-- Experiment Settings Section -->
-        <!-- ... [form fields for experiment settings] ... -->
-        <button type="button" id="saveExperimentSettings" class="button">Save Experiment Settings</button>
-        <a href="{{ url_for('load_experiment_settings') }}" class="button">Load Experiment Settings</a>
-        <button id="saveBatchSettings" class="button batch-save-button">Save Batch Settings</button>
-        <!-- <button id="loadBatchSettings" class="button batch-load-button">Load Batch Settings</button> -->
-        <div id="batch-container"></div>
+        <div id="experiment_settings" class="experiment-settings">
+            <h2>Experiment Settings</h2>
+            <div class="form-row">
+                <label for="num_of_batch">Number of Batches:</label>
+                <input type="number" id="num_of_batch" name="num_of_batch" value="{{ experiment_settings.get('num_of_batch', '') }}">
+            </div>
+            <div class="form-row">
+                <label for="num_of_experiment_in_each_batch">Number of Experiments in Each Batch:</label>
+                <input type="number" id="num_of_experiment_in_each_batch" name="num_of_experiment_in_each_batch" value="{{ experiment_settings.get('num_of_experiment_in_each_batch', '') }}">
+            </div>
+            <!-- Experiment Settings Section -->
+            <!-- ... [form fields for experiment settings] ... -->
+            <button type="button" id="saveExperimentSettings" class="button">Save Experiment Settings</button>
+            <a href="{{ url_for('load_experiment_settings') }}" class="button">Load Experiment Settings</a>
+            <button id="saveBatchSettings" class="button batch-save-button">Save Batch Settings</button>
+            <!-- <button id="loadBatchSettings" class="button batch-load-button">Load Batch Settings</button> -->
+            <div id="batch-container"></div>
+        </div>
     </div>
-
-    <button id="runMischbares" class="run-button" style="display: none;">Run Mischbares</button>
+    <button id="runMischbares" class="run-button">Run Mischbares</button>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>

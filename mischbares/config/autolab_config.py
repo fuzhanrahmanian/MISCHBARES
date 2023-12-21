@@ -6,8 +6,6 @@ import os
 import socket
 
 config_path, _ = os.path.split(__file__)
-print(f"config path is {config_path}")
-
 autolab_config = {}
 
 ip_adress = socket.gethostbyname(socket.gethostname())

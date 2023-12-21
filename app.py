@@ -1,3 +1,6 @@
+
+from multiprocessing import Process
+import time
 import json
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from mischbares.db.user import Users  # Import your Users class
@@ -7,31 +10,44 @@ import subprocess
 from mischbares.procedures.autolab_procedures import AutolabProcedures
 from flask import jsonify
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
+
 app = Flask(__name__, template_folder='templates')  # Initialize the Flask app
 app.secret_key = 'mischbares2023'  # Set a secret key for session management
 app.config['TESTING'] = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.json.sort_keys = False
 
+SIGNED_IN_USER_ID = None
+
 # Initialize your Users class
 users_db = Users()
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global SIGNED_IN_USER_ID
     if request.method == 'POST':
-        username = "test_username"#request.form['username']
-        password = "test_password"#request.form['password']
+        username = request.form['username']
+        password = request.form['password']
+        if username == '' or password == '':
+            flash('Please enter a username and password!', 'danger')
+            return redirect(url_for('login'))
         if users_db.login_user(username, password):
             # User authenticated
-            flash('Login successful!', 'success')
+            SIGNED_IN_USER_ID = users_db.user_id
+            #flash('Login successful!', 'success')
             return redirect(url_for('main'))  # Redirect to the main page or dashboard
-        else:
-            flash('Invalid username or password!', 'danger')
 
+        else:
+            flash('Invalid username or password! \n Contact your administrator', 'danger')
     return render_template('login.html')
 
 
 @app.route('/main', methods=['GET', 'POST'])
 def main():
+    if SIGNED_IN_USER_ID is None:
+        return redirect(url_for('login'))
     general_settings = {}
     experiment_settings = {}
     if request.method == 'GET':
@@ -66,10 +82,15 @@ def load_experiment_settings():
 
 
 def load_all_settings():
+    """
+    Load general and experiment settings from JSON files.
+
+    Returns:
+        Tuple[Dict[str, Any], Dict[str, Any]]: A tuple containing the loaded general settings and experiment settings.
+    """
     try:
         with open('saved_config/general_config.json', 'r') as f:
             general_settings = json.load(f)
-            #general_settings['motor_pos'] = format_motor_positions(general_settings['motor_pos'])
     except (FileNotFoundError, json.JSONDecodeError):
         general_settings = {}
         flash('No saved general settings found or invalid file format.', 'warning')
@@ -86,6 +107,13 @@ def load_all_settings():
 
 @app.route('/get-batch-settings', methods=['GET'])  # Adjusted route name
 def get_batch_settings():
+    """
+    Retrieves the batch settings from the 'batch_config.json' file and returns them as a JSON response.
+
+    Returns:
+        If the 'batch_config.json' file exists, the batch settings are returned as a JSON response.
+        If the 'batch_config.json' file does not exist, a JSON response with an error message and status code 404 is returned.
+    """
     try:
         with open('saved_config/batch_config.json', 'r') as f:
             batch_settings = json.load(f)
@@ -100,20 +128,20 @@ def save_batch_settings():
         json.dump(batch_settings, f)
     return jsonify({'success': True})
 
+@app.route('/render-status', methods=['GET'])
+def render_status():
+    return render_template('status.html')
+
 
 @app.route('/run-mischbares', methods=['POST'])
 def run_mischbares():
+    # Perform user check
     try:
-        # Replace the command with the correct way to execute your main.py
-        result = subprocess.run(['python', 'path/to/main.py'], check=True, stdout=subprocess.PIPE)
-        return jsonify({"message": "Mischbares run successfully", "output": result.stdout.decode()})
-    except subprocess.CalledProcessError as e:
-        return jsonify({"error": "Error running Mischbares", "details": str(e)}), 500
-
-def format_motor_positions(motor_pos_list):
-    # Converts list of tuples back to the original input string format
-    return '; '.join(','.join(map(str, pos)) for pos in motor_pos_list)
-
+        subprocess.Popen(['python', 'main.py', str(SIGNED_IN_USER_ID)])
+        return jsonify({'success': True, 'message': "Mischbares is running"})
+    except Exception as e:
+        # Handle any exceptions that occur
+        return jsonify({'success': False, 'message': f"Error running Mischbares: {str(e)}"}), 500
 
 def parse_motor_positions(motor_pos_str):
     # Converts string input to list of tuples
@@ -161,4 +189,7 @@ def open_browser():
       webbrowser.open_new('http://127.0.0.1:5000/')
 
 if __name__ == '__main__':
+    # Create a folder for saving the config files
+    #subprocess.Popen(['mkdir', '-p', 'saved_config'])
+    open_browser()
     app.run(debug=True)

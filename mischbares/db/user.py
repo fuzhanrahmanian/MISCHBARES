@@ -14,6 +14,16 @@ class Users(Database):
         super().__init__()
         self.user_id = None
 
+    def get_user_by_id(self, user_id):
+        """get a user from the database
+
+        Args:
+            user_id (int): The id of the user
+        Returns:
+            user (tuple): A tuple containing the user's data
+        """
+        sql = "SELECT * FROM users WHERE user_id = %s"
+        return self.execute(sql, (user_id,))
 
     def get_user(self, username):
         """get a user from the database
@@ -62,6 +72,9 @@ class Users(Database):
         """
         sql = "SELECT * FROM users WHERE username = %s"
         result = self.execute(sql, (username,))
+        if type(result) == type(None):
+            log.info(f"User {username} does not exist.")
+            return False
         if not result.empty:
             if checkpw(password.encode('utf-8'), result['password'].values[0].encode('utf-8')):
                 log.info(f"Password correct. User {username} logged in.")

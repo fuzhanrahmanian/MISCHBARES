@@ -190,6 +190,6 @@ def open_browser():
 
 if __name__ == '__main__':
     # Create a folder for saving the config files
-    subprocess.Popen(['mkdir', '-p', 'saved_config'])
+    #subprocess.Popen(['mkdir', '-p', 'saved_config'])
     open_browser()
     app.run(debug=True)

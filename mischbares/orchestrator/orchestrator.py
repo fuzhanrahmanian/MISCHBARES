@@ -187,7 +187,7 @@ async def do_measurement(experiment: dict, thread: int):
             TRACKING[thread]['path'] = TRACKING[thread-1]['path']
             TRACKING[thread]['run'] = TRACKING[thread-1]['run']
             TRACKING[thread]['experiment'] = 0
-            print(f"thread {thread} bound to thread {thread-1}")
+            log.info(f"thread {thread} bound to thread {thread-1}")
         else:
             experiment = {'soe':[],'params':{},'meta':{}}
             log.info("experiment has been blanked")

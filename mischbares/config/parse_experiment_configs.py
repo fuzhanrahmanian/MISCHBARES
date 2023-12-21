@@ -36,7 +36,7 @@ class ParserExperimentConfigs():
         # create a list of tuple from motor_pos
         motor_tuple = self.general_configs['motor_pos'].split(';')
         motor_tuple = [tuple(map(float, motor.split(','))) for motor in motor_tuple]
-
+        self.general_configs['motor_pos'] = motor_tuple
 
     def parse_experiment_config(self):
         """This function will parse the experiment config file. The following keys will be parsed:

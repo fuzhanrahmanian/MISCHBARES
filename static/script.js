@@ -245,7 +245,6 @@ function saveBatchSettings() {
     .then(response => response.json())
     .then(data => {
         console.log('Batch settings saved:', data);
-        document.getElementById('runMischbares').style.display = 'block';
     })
     .catch(error => console.error('Error saving batch settings:', error));
 }
@@ -341,6 +340,7 @@ document.getElementById('runMischbares').addEventListener('click', function() {{
             });
     }
 });
+
 
 // function loadBatchSettings() {
 //     fetch('/get-batch-settings')

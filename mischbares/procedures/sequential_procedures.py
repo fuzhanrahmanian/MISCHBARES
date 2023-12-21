@@ -14,7 +14,7 @@ def perfom_sequential_experiment(soe_autolab, params_autolab,
     sample_y_pos = sample_position[1]
     sample_height = sample_position[2]
     initial_height = sample_height - 3.0
-    cleaning_pos = config['lang']['lanAction']['safe_clean_pos_2']
+    cleaning_pos = config['lang']['langAction']['safe_clean_pos_2']
     # move to waste/ dispense / go a bit to right / asipirate a little bit back /
     # go and clean yourself / go up first / gohome / go to sample until its heigh -3 /
     # move down to the substrate / set the range of autolab
@@ -42,6 +42,5 @@ def perfom_sequential_experiment(soe_autolab, params_autolab,
 
     soe = soe_preparation + soe_autolab + soe_post_up
     params = {**params_preparation, **params_autolab, **params_post_up}
-    sequence = dict(soe, params, sequence)
-
+    sequence = dict(soe=soe, params=params, meta={})
     return soe, params, sequence

@@ -9,7 +9,7 @@ import collections
 from functools import partial
 import socket
 
-from bokeh.models import ColumnDataSource, CheckboxButtonGroup, RadioButtonGroup, Div, MathText
+from bokeh.models import ColumnDataSource, CheckboxButtonGroup, RadioButtonGroup, Div
 from bokeh.plotting import figure, curdoc
 from tornado.ioloop import IOLoop
 

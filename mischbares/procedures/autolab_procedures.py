@@ -11,6 +11,7 @@ log = logger.get_logger("autolab_procedures")
 class AutolabProcedures:
     """ General assembles autolab procedures for orchestrator and UI"""
 
+
     def __init__(self, measurement_num:int = 0, current_range:str = '10mA',
                 save_dir:str = 'mischbares/tests',
                 material:float = None, user_id:int = None,
@@ -18,7 +19,6 @@ class AutolabProcedures:
                 concentration_of_active_material:float = None,
                 mass_of_active_material:float = None,
                 position:tuple = None):
-
         self.measurement_num = measurement_num
         self.current_range = current_range
         self.save_dir = save_dir

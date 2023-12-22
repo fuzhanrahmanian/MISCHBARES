@@ -12,6 +12,19 @@ window.onload = function() {
     createBatchSections();
 };
 
+// Function to handle showing flash messages
+function showFlashMessage(message, category) {
+    var flashMessageDiv = document.createElement('div');
+    flashMessageDiv.id = 'flashMessage';
+    flashMessageDiv.className = 'flash-message ' + category;
+    flashMessageDiv.textContent = message;
+
+    document.body.appendChild(flashMessageDiv);
+
+    setTimeout(function() {
+        flashMessageDiv.remove();
+    }, 5000); // Adjust the time as needed
+}
 
 
 function updateExperimentSettingsVisibility() {
@@ -178,8 +191,13 @@ function saveGeneralSettings() {
         body: JSON.stringify(generalSettingsData)
     })
     .then(response => response.json())
-    .then(data => console.log('General settings saved:', data))
-    .catch(error => console.error('Error saving general settings:', error));
+    .then(data => {
+        console.log('General settings saved:', data)
+        showFlashMessage(data.message, data.category);}
+    )
+    .catch(error =>{
+        showFlashMessage('An error occurred. Please try again.', 'error');
+        console.error('Error saving general settings:', error)});
 }
 
 function saveExperimentSettings() {
@@ -196,6 +214,17 @@ function saveExperimentSettings() {
         },
         body: JSON.stringify(experimentSettingsData)
     })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            // Show the flash message
+            showFlashMessage(data.message, data.category);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showFlashMessage('An error occurred. Please try again.', 'error');
+    });
 }
 
 document.getElementById('saveGeneralSettings').addEventListener('click', saveGeneralSettings);
@@ -245,6 +274,8 @@ function saveBatchSettings() {
     .then(response => response.json())
     .then(data => {
         console.log('Batch settings saved:', data);
+        showFlashMessage(data.message, data.category);
+        document.getElementById('runMischbares').style.display = 'block';
     })
     .catch(error => console.error('Error saving batch settings:', error));
 }
@@ -325,20 +356,20 @@ document.getElementById('generate_meshgrid').onclick = function() {
     document.getElementById('motor_pos').value = motorPos.trim();
 };
 
-document.getElementById('runMischbares').addEventListener('click', function() {{
-        fetch('/run-mischbares', { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    window.location.href = '/status.html?error=' + encodeURIComponent(data.error);
-                } else {
-                    fetch('/render-status')
-                }
-            })
-            .catch(error => {
-                window.location.href = '/status.html?error=' + encodeURIComponent('Error starting Mischbares.');
-            });
-    }
+document.getElementById('runMischbares').addEventListener('click', function(event) {
+    event.preventDefault();
+    fetch('/run-mischbares', { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/render-status'; // Redirect to the status page
+            } else {
+                showFlashMessage(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showFlashMessage('Error starting Mischbares: ' + error, 'error');
+        });
 });
 
 

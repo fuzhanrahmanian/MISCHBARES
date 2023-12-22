@@ -17,7 +17,7 @@ body {
 
 /* General and Experiment Settings */
 .general-settings, .experiment-settings {
-    border: 2px solid #440154;
+    border: 5px solid #440154;
     padding: 20px;
     margin: 20px;
     border-radius: 5px;
@@ -26,7 +26,7 @@ body {
 }
 
 .experiment-settings {
-    border-color: #4F4350;
+    border-color: #38588c;
 }
 
 .general-settings .form-row, .experiment-settings .form-row {
@@ -54,28 +54,32 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
     height: 100vh;
-}
 
+}
 .message {
-    font-size: 24px;
+    text-align: center;
+    font-size: 32px;
     font-weight: bold;
-    color: #440154;
-    display: flex;
-    border: 2px solid #440154;
     border-radius: 5px;
     padding: 20px;
     margin: 20px;
+    border: 5px solid #440154;
+    border-radius: 5px;
 }
+
+#statusMessage {
+    margin-bottom: 20px;
+}
+
 .loader {
     border: 5px solid #f3f3f3;
-    border-top: 5px solid #440154; /* Using the same blue as in .general-settings */
+    border-top: 5px solid #440154; /* Blue color */
     border-radius: 50%;
     width: 40px;
     height: 40px;
+    margin: 0 auto; /* Centering the loader */
     animation: spin 2s linear infinite;
-    margin: auto;
 }
 @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -99,14 +103,14 @@ body {
 
 .experiment-settings {
     display: none;
-    border: 2px solid #4F4350;
+    border: 5px solid #38588c;
     padding: 20px;
     margin: 20px;
     border-radius: 5px;
 }
 
 .experiment-settings h2 {
-    color: #4F4350;
+    color: #38588c;
 }
 
 .button {
@@ -132,15 +136,15 @@ body {
 }
 
 .general-settings .button {
-    background-color: #440154; /* Blue */
+    background-color: #440154;
 }
 
 .general-settings .button:hover {
-    background-color: #0056b3; /* Darker blue */
+    background-color: #433e85;
 }
 
 .experiment-settings .button {
-    background-color: #4F4350; /* Green */
+    background-color: #38588c;
 }
 
 .experiment-settings .button:hover {
@@ -150,7 +154,7 @@ body {
 
 /* Meshgrid Generator inside General Settings */
 .meshgrid-generator {
-    border: 2px solid #440154;
+    border: 5px solid #440154;
     padding: 15px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -179,6 +183,8 @@ body {
     margin-right: 20px; /* Spacing after input */
 }
 #generate_meshgrid{
+    font-size: 12px;
+    padding: 8px 18px;
     background-color: #440154;
     color: white;
     border: none;
@@ -196,7 +202,7 @@ button:disabled {
 
 
 .login-form {
-    border: 2px solid #440154;
+    border: 5px solid #440154;
     padding: 20px;
     margin: 20px auto; /* Center the form */
     width: 300px;
@@ -229,7 +235,7 @@ button:disabled {
 }
 
 .batch-section {
-    border: 2px solid #540500;
+    border: 5px solid #540500;
     padding: 10px;
     margin-bottom: 20px;
     border-radius: 5px;
@@ -277,35 +283,63 @@ button:disabled {
 }
 
 #saveBatchSettings.batch-save-button {
-    background-color: #a0da39;
+    background-color: #1e9b8a;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 20%;
 }
 
 #saveBatchSettings.batch-save-button:hover {
-    background-color: #fde725
+    background-color: #2ab07f
 }
 
 
 .run-button {
-    background-color: #2db27d;
+    background-color:#3E4756;
     color: white;
     padding: 15px 30px; /* Large button */
     font-size: 20px; /* Bigger font */
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin: auto; /* Center the button */
+    margin: auto;
+    margin-bottom: 20px;
 }
+.run-button:hover {
+    background-color: #4E5866;
+}
+
+
+.flash-message {
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    position: fixed;
+    top: 0; /* Position at the top */
+    left: 0; /* Align to the left edge */
+    right: 0; /* Stretch across the full width */
+    z-index: 1000; /* Ensures it appears above other elements */
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1); /* Optional: adds a shadow for better visibility */
+}
+
+
+.flash-message.success {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+.flash-message.error {
+    color: black;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
 
 .flash-message.danger {
     color: #721c24; /* Dark #540500 text */
     background-color: #f8d7da; /* Light #540500 background */
     border-color: #f5c6cb;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 10px;
 }

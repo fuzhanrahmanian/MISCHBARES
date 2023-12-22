@@ -8,6 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Flash Message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
     <div class="settings-container">
         <div id="general_settings", class="general-settings">
             <h2>General Settings</h2>
@@ -79,11 +87,11 @@
             <!-- ... [form fields for experiment settings] ... -->
             <button type="button" id="saveExperimentSettings" class="button">Save Experiment Settings</button>
             <a href="{{ url_for('load_experiment_settings') }}" class="button">Load Experiment Settings</a>
-            <button id="saveBatchSettings" class="button batch-save-button">Save Batch Settings</button>
+            <button id="saveBatchSettings" class="button batch-save-button",>Save Batch Settings</button>
             <!-- <button id="loadBatchSettings" class="button batch-load-button">Load Batch Settings</button> -->
             <div id="batch-container"></div>
         </div>
     </div>
-    <button id="runMischbares" class="run-button">Run Mischbares</button>
+    <button id="runMischbares" class="run-button", style="display: none;">Run Mischbares</button>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>

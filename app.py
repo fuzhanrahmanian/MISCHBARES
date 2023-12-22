@@ -1,8 +1,8 @@
-
+import os
 from multiprocessing import Process
 import time
 import json
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
 from mischbares.db.user import Users  # Import your Users class
 import webbrowser
 import inspect
@@ -44,6 +44,11 @@ def login():
     return render_template('login.html')
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                          'icon.ico')
+
 @app.route('/main', methods=['GET', 'POST'])
 def main():
     if SIGNED_IN_USER_ID is None:
@@ -61,23 +66,25 @@ def save_experiment_settings():
     experiment_settings = request.json
     with open('saved_config/experiment_config.json', 'w') as f:
         json.dump(experiment_settings, f)
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'message': 'Experiment settings saved successfully!', 'category': 'success'})
 
 @app.route('/save-general-settings', methods=['POST'])
 def save_general_settings():
     general_settings = request.json
     with open('saved_config/general_config.json', 'w') as f:
         json.dump(general_settings, f)
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'message': 'General settings saved successfully!', 'category': 'success'})
 
 @app.route('/load-general-settings', methods=['GET'])
 def load_general_settings():
     general_settings, experiment_settings = load_all_settings()
+    flash('General settings loaded successfully!', 'success')
     return render_template('main.html', general_settings=general_settings, experiment_settings=experiment_settings)
 
 @app.route('/load-experiment-settings', methods=['GET'])
 def load_experiment_settings():
     general_settings, experiment_settings = load_all_settings()
+    flash('Experiment settings loaded successfully!', 'success')
     return render_template('main.html', general_settings =general_settings, experiment_settings=experiment_settings)
 
 
@@ -126,21 +133,19 @@ def save_batch_settings():
     batch_settings = request.json
     with open('saved_config/batch_config.json', 'w') as f:
         json.dump(batch_settings, f)
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'message': 'Batch settings saved successfully!', 'category': 'success'})
 
 @app.route('/render-status', methods=['GET'])
 def render_status():
     return render_template('status.html')
 
-
-@app.route('/run-mischbares', methods=['POST'])
+@app.route('/run-mischbares', methods=['GET'])
 def run_mischbares():
-    # Perform user check
+    print("Starting Mischbares...")
     try:
         subprocess.Popen(['python', 'main.py', str(SIGNED_IN_USER_ID)])
-        return jsonify({'success': True, 'message': "Mischbares is running"})
+        return jsonify({'success': True, 'message': "Starting Mischbares..."})
     except Exception as e:
-        # Handle any exceptions that occur
         return jsonify({'success': False, 'message': f"Error running Mischbares: {str(e)}"}), 500
 
 def parse_motor_positions(motor_pos_str):
@@ -192,4 +197,4 @@ if __name__ == '__main__':
     # Create a folder for saving the config files
     #subprocess.Popen(['mkdir', '-p', 'saved_config'])
     open_browser()
-    app.run(debug=True)
+    app.run()

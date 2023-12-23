@@ -21,7 +21,7 @@ def perfom_sequential_experiment(soe_autolab, params_autolab,
     soe_preparation = ['lang/moveWaste_0', 'hamilton/pumpR_0','lang/moveWaste_1',
                        'hamilton/pumpR_1', 'lang/RemoveDroplet_0', 'lang/moveAbs_0',
                        'lang/moveAbs_1','lang/moveAbs_2', 'lang/moveAbs_3',
-                       'lang/moveDown_0', 'autolab/setcurrentrange_0']
+                       'lang/moveDown_0', 'hamilton/pumpR_2','autolab/setcurrentrange_0']
     params_preparation = {'moveWaste_0': {'x_pos':0, 'y_pos':0, 'z_pos':0},
                         'pumpR_0': {'volume':600},
                         'moveWaste_1': {'x_pos':5, 'y_pos':0, 'z_pos':0},
@@ -32,11 +32,12 @@ def perfom_sequential_experiment(soe_autolab, params_autolab,
                         'moveAbs_2': {'dx': sample_x_pos, 'dy': sample_y_pos, 'dz': 0},
                         'moveAbs_3': {'dx': sample_x_pos, 'dy': sample_y_pos, 'dz': initial_height},
                         'moveDown_0': {'dz': 3.0, 'steps': 20},
+                        'pumpR_2': {'volume': 20},
                         'setcurrentrange_0': {'crange': current_range_autolab}}
 
     # pump back a bit, go up, move home
-    soe_post_up = ['hamilton/pumpR_2', 'lang/moveAbs_4', 'lang/moveAbs_5']
-    params_post_up = {'pumpR_2': {'volume': -20},
+    soe_post_up = ['hamilton/pumpR_3', 'lang/moveAbs_4', 'lang/moveAbs_5']
+    params_post_up = {'pumpR_3': {'volume': -20},
                       'moveAbs_4': {'dx': sample_x_pos, 'dy': sample_y_pos, 'dz': 0},
                       'moveAbs_5': {'dx': 0, 'dy': 0, 'dz': 0}}
 

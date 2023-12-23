@@ -15,10 +15,10 @@ log = logger.get_logger("autolab_driver")
 class MadapArgs:
     # pylint: disable=too-many-instance-attributes
     """This class implements the arguments"""
-    eis_plots = ["nyquist" ,"nyquist_fit", "residual", "bode"]
+    eis_plots = ["nyquist", "residual", "bode"]
     ca_plots = ["CA", "Log_CA", "CC", "Cottrell", "Anson", "Voltage"]
-    cp_plots = ["CP", "CC", "Cottrell", "Voltage_Profile", "Potential_Rate", "Differential_Capacity"]
-    cv_plots = ["E-t", "I-t", "Peak Scan", "CV"] #"Tafel"
+    cp_plots = ["CP", "CC", "Cottrell", "Potential_Rate"]#,"Voltage_Profile","Differential_Capacity"]
+    cv_plots = ["E-t", "I-t", "Peak Scan", "CV", "Tafel"]
 
 
     def __init__(self, db_procedure, measurement_id):
@@ -114,11 +114,13 @@ class AnalysisDriver():
             self.lower_frequency = min(self.data["FIAMeasPotentiostatic"]["Frequency"])
             self.upper_frequency = max(self.data["FIAMeasPotentiostatic"]["Frequency"])
 
-        #     impedance = e_impedance.EImpedance(frequency=da.format_data(self.data["FIAMeasPotentiostatic"]["Frequency"]),
-        #                                        real_impedance=da.format_data(self.data["FIAMeasPotentiostatic"]["Z'"]),
-        #                                        imaginary_impedance=da.format_data(self.data["FIAMeasPotentiostatic"]["-Z''"]))
-        #     return e_impedance.EIS(impedance=impedance,
-        #                            voltage=self.procedure_configuration["setpoints"]["Set potential"]["Setpoint value"])
+            # impedance = e_impedance.EImpedance(frequency=da.format_data(self.data["FIAMeasPotentiostatic"]["Frequency"]),
+            #                                    real_impedance=da.format_data(self.data["FIAMeasPotentiostatic"]["Z'"]),
+            #                                    # negative because of the definition of the imaginary impedance
+            #                                    imaginary_impedance=da.format_data([-1 * x for x in self.data["FIAMeasPotentiostatic"]["-Z''"]]))
+            # return e_impedance.EIS(impedance=impedance,suggested_circuit="R0,p(R1,CPE1)",
+            #     initial_value = [100, 1000000,1e-6,0.9],
+            #     voltage=self.procedure_configuration["setpoints"]["Set potential"]["Setpoint value"])
         else:
             log.error("Procedure %s not supported", self.procedure)
             return None

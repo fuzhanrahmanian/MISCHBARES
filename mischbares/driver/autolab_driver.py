@@ -360,20 +360,21 @@ class Autolab:
             if measurement_type == 'impedance':
                 try:
                     # get the parameters of the measurement
-                    freq = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().Frequency
-                    hreal = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Real
-                    imag = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Imaginary
-                    phase = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Phase
-                    modulus = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Modulus
+                    freq = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().Frequency[0]
+                    hreal = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Real[0]
+                    imag = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Imaginary[0]
+                    phase = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Phase[0]
+                    modulus = self.proc.FraCommands['FIAScan'].get_FIAMeasurement().H_Modulus[0]
                     log.info(f"frequency: {freq}, real: {hreal}, imaginary: {imag},\
                                 phase: {phase}, modulus: {modulus}")
                     await self.queue.put([measure_time, freq, 0.0, hreal, imag,
-                                          phase, modulus, 0.0])
+                                          phase, modulus, 0.0, measurement_id])
+                    await asyncio.sleep(0.4)
 
                 except:
                     log.info("no measurement yet")
 
-                await asyncio.sleep(0.6)
+                #await asyncio.sleep(0.6)
 
             elif measurement_type == 'tCV':
 
@@ -517,7 +518,7 @@ class Autolab:
 
         data = self.parse_nox(parse_instruction = parse_instruction,
                              save_dir = save_dir, optional_name = name)
-        # with open(r"mischbares\tests\test_files\eis_finalized.json", "rb") as f:
+        # with open(r"mischbares\tests\test_files\cv_staircase_finalized.json", "rb") as f:
         #     import json
         #     data = json.load(f)
         # call madap , do data analysis : processed data
@@ -542,6 +543,7 @@ class Autolab:
         log.info(f"finished measuring and saving procedure {procedure}")
 
         return data
+
 
     def add_cv_cycle_data_to_db(self, analyzed_data, db_procedure):
         for cycle in analyzed_data.analysis_cls.E_half_params:

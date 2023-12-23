@@ -84,7 +84,7 @@ def start_orchestrator_experimentation():
     """ Intantiate the orchestrator scheduler. """
     # Assuming the start fucniotns works
     sequence = dict(soe=['orchestrator/start'],
-                  params={'start': {'collectionkey': "qc_drop_test"}}, meta={})
+                  params={'start': {'collectionkey': "test"}}, meta={})
     params = dict(experiment=json.dumps(sequence),thread=0)
     requests.post(f"http://{host_url}:{port_orchestrator}/orchestrator/addExperiment",
                             params=params, timeout=None).json()
@@ -170,11 +170,15 @@ def main(exp_config):
                     electrode_area=exp_config.general_configs["electrode_area"],
                     concentration_of_active_material=\
                         exp_config.general_configs["concentration_of_active_material"],
-                    mass_of_active_material=exp_config.general_configs["mass_of_active_material"])
-
+                    mass_of_active_material=exp_config.general_configs["mass_of_active_material"],
+                    current_range="1µA")
+            # soe = ['lang/moveWaste_0', 'hamilton/pumpR_0']
+            # params = {'moveWaste_0': {'x_pos':0, 'y_pos':0, 'z_pos':0},
+            #             'pumpR_0': {'volume':700}}
+            # sequence = dict(soe=soe, params=params, meta={})
             for method_name, args in exp_config.batch_configs[f"batch_{batch_num+1}"][f"experiment_{exp_num+1}"].items():
-                soe_autolab, params_autolab, _ =\
-                    call_method_with_dict(autolab_instantiation, method_name, args)
+               soe_autolab, params_autolab, _ =\
+                   call_method_with_dict(autolab_instantiation, method_name, args)
             _, _, sequence = seq_exp.perfom_sequential_experiment(soe_autolab=soe_autolab,
                             params_autolab=params_autolab,
                             current_range_autolab= autolab_instantiation.current_range,
@@ -186,7 +190,7 @@ def main(exp_config):
 
     # Run a while loop for 200 minutes
     time_in = time.time()
-    time_out = 200*60
+    time_out = 30*60
 
     while True:
         # check the orchestrator is on pause every 10 seconds
@@ -283,7 +287,7 @@ if __name__ == "__main__":
     visualizer_process.start()
     log.info("Starting visualizer...")
     while not is_server_ready("http://localhost:5006/autolab_visualizer"):
-        time.sleep(1)
+         time.sleep(1)
     input("Press Enter to start the experiment...\n")
     main(exp_config)
     for proc in processes:

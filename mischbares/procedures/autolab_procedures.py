@@ -203,7 +203,7 @@ class AutolabProcedures:
 
 
     # 5. currentRange_ocp/eis
-    def eis_measurement(self, apply_potential:float = 0.1, measure_at_ocp:bool = True):
+    def eis_measurement(self, apply_potential:float = 0, measure_at_ocp:bool = True):
         """electrochemical impedance spectroscopy measurement procedure from orchestrator level.
         Args:
             apply_potential (float, optional): potential in V. Defaults to 0.01.
@@ -217,7 +217,7 @@ class AutolabProcedures:
             params (dict): dictionary of the parameters.
             sequence (dict): dict of the sequence of events with parameters.
         """
-        
+
         self.measurements.add_measurement("eis", self.experiment.experiment_id)
         soe = [f'autolab/measure_{self.measurement_num}']
 

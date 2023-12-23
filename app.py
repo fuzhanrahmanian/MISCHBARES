@@ -1,6 +1,4 @@
 import os
-from multiprocessing import Process
-import time
 import json
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
 from mischbares.db.user import Users  # Import your Users class
@@ -23,24 +21,25 @@ app.json.sort_keys = False
 SIGNED_IN_USER_ID = None
 
 # Initialize your Users class
-users_db = Users()
+#users_db = Users()
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     global SIGNED_IN_USER_ID
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if username == '' or password == '':
-            flash('Please enter a username and password!', 'danger')
-            return redirect(url_for('login'))
-        if users_db.login_user(username, password):
-            # User authenticated
-            SIGNED_IN_USER_ID = users_db.user_id
-            #flash('Login successful!', 'success')
-            return redirect(url_for('main'))  # Redirect to the main page or dashboard
+        # username = request.form['username']
+        # password = request.form['password']
+        # if username == '' or password == '':
+        #     flash('Please enter a username and password!', 'danger')
+        #     return redirect(url_for('login'))
+        #if users_db.login_user(username, password):
+        #     # User authenticated
+        #     SIGNED_IN_USER_ID = users_db.user_id
+        #     #flash('Login successful!', 'success')
+        SIGNED_IN_USER_ID = 1	
+        return redirect(url_for('main'))  # Redirect to the main page or dashboard
 
-        else:
-            flash('Invalid username or password! \n Contact your administrator', 'danger')
+        #else:
+        #    flash('Invalid username or password! \n Contact your administrator', 'danger')
     return render_template('login.html')
 
 
@@ -68,6 +67,14 @@ def save_experiment_settings():
         json.dump(experiment_settings, f)
     return jsonify({'success': True, 'message': 'Experiment settings saved successfully!', 'category': 'success'})
 
+
+@app.route('/load-experiment-settings', methods=['GET'])
+def load_experiment_settings():
+    general_settings, experiment_settings = load_all_settings()
+    flash('Experiment settings loaded successfully!', 'success')
+    return render_template('main.html', general_settings =general_settings, experiment_settings=experiment_settings)
+
+
 @app.route('/save-general-settings', methods=['POST'])
 def save_general_settings():
     general_settings = request.json
@@ -81,11 +88,7 @@ def load_general_settings():
     flash('General settings loaded successfully!', 'success')
     return render_template('main.html', general_settings=general_settings, experiment_settings=experiment_settings)
 
-@app.route('/load-experiment-settings', methods=['GET'])
-def load_experiment_settings():
-    general_settings, experiment_settings = load_all_settings()
-    flash('Experiment settings loaded successfully!', 'success')
-    return render_template('main.html', general_settings =general_settings, experiment_settings=experiment_settings)
+
 
 
 def load_all_settings():
@@ -112,21 +115,28 @@ def load_all_settings():
     return general_settings, experiment_settings
 
 
-@app.route('/get-batch-settings', methods=['GET'])  # Adjusted route name
-def get_batch_settings():
-    """
-    Retrieves the batch settings from the 'batch_config.json' file and returns them as a JSON response.
+@app.route('/load-batch-settings', methods=['GET'])
+def load_batch_settings():
+    with open('saved_config/batch_config.json', 'r') as file:
+        batch_config = json.load(file)
 
-    Returns:
-        If the 'batch_config.json' file exists, the batch settings are returned as a JSON response.
-        If the 'batch_config.json' file does not exist, a JSON response with an error message and status code 404 is returned.
-    """
-    try:
-        with open('saved_config/batch_config.json', 'r') as f:
-            batch_settings = json.load(f)
-        return jsonify(batch_settings)
-    except FileNotFoundError:
-        return jsonify({"error": "Batch config file not found."}), 404
+    prepared_batch_data = prepare_batch_data(batch_config)
+    num_batches = len(batch_config)
+    num_experiments_per_batch = {batch: len(experiments) for batch, experiments in batch_config.items()}
+    
+    return jsonify({'num_batches': num_batches, 
+                    'num_experiments_per_batch': num_experiments_per_batch, 
+                    'batch_data': prepared_batch_data})
+
+def prepare_batch_data(batch_config):
+    prepared_data = {}
+    for batch, experiments in batch_config.items():
+        experiment_data = {}
+        for exp_id, settings in experiments.items():
+            experiment_data[exp_id] = settings
+        prepared_data[batch] = experiment_data
+    return prepared_data
+
 
 @app.route('/save-batch-settings', methods=['POST'])
 def save_batch_settings():
@@ -134,6 +144,9 @@ def save_batch_settings():
     with open('saved_config/batch_config.json', 'w') as f:
         json.dump(batch_settings, f)
     return jsonify({'success': True, 'message': 'Batch settings saved successfully!', 'category': 'success'})
+
+
+
 
 @app.route('/render-status', methods=['GET'])
 def render_status():
@@ -196,5 +209,9 @@ def open_browser():
 if __name__ == '__main__':
     # Create a folder for saving the config files
     #subprocess.Popen(['mkdir', '-p', 'saved_config'])
-    open_browser()
-    app.run()
+    try:
+        os.mkdir('saved_config', exist_ok=True)
+    except:
+        pass
+    #open_browser()
+    app.run(debug=True)

@@ -1,16 +1,24 @@
 var functionArgs = {};
 
-window.onload = function() {
+window.onload = function () {
     // Fetch function arguments
     fetch('/get-function-args')
         .then(response => response.json())
         .then(args => {
             functionArgs = args;
+            createBatchSections(); // Move createBatchSections call here, after functionArgs are set
         })
         .catch(error => console.error('Error fetching function arguments:', error));
 
-    createBatchSections();
+    // Hide flash messages after 3 seconds
+    var flashMessages = document.querySelectorAll('.flash-message');
+    flashMessages.forEach(function(flashMessage) {
+        setTimeout(function () {
+            flashMessage.style.display = 'none';
+        }, 3000);
+    });
 };
+
 
 // Function to handle showing flash messages
 function showFlashMessage(message, category) {
@@ -21,9 +29,9 @@ function showFlashMessage(message, category) {
 
     document.body.appendChild(flashMessageDiv);
 
-    setTimeout(function() {
+    setTimeout(function () {
         flashMessageDiv.remove();
-    }, 5000); // Adjust the time as needed
+    }, 3000); // Adjust the time as needed
 }
 
 
@@ -42,102 +50,106 @@ function updateExperimentSettingsVisibility() {
     }
 }
 
-
 function createBatchSections() {
-    var numBatches = parseInt(document.getElementById('num_of_batch').value) || 0;
-    var numExperiments = parseInt(document.getElementById('num_of_experiment_in_each_batch').value) || 0;
-    var batchContainer = document.getElementById('batch-container');
+    return new Promise((resolve, reject) => {
+        var numBatches = parseInt(document.getElementById('num_of_batch').value) || 0;
+        var numExperiments = parseInt(document.getElementById('num_of_experiment_in_each_batch').value) || 0;
+        var batchContainer = document.getElementById('batch-container');
 
-    // Preserve current state before clearing content
-    var currentState = preserveCurrentState(batchContainer);
+        // Preserve current state before clearing content
+        var currentState = preserveCurrentState(batchContainer);
 
-    batchContainer.innerHTML = ''; // Clear previous content
+        batchContainer.innerHTML = ''; // Clear previous content
 
-    fetch('/get-function-names')
-    .then(response => response.json())
-    .then(functionNames => {
-        for (var i = 0; i < numBatches; i++) {
-            var batchSection = document.createElement('div');
-            batchSection.className = 'batch-section';
+        fetch('/get-function-names')
+            .then(response => response.json())
+            .then(functionNames => {
+                for (var i = 0; i < numBatches; i++) {
+                    var batchSection = document.createElement('div');
+                    batchSection.className = 'batch-section';
 
-            var batchTitle = document.createElement('h3');
-            batchTitle.className = 'batch-title';
-            batchTitle.textContent = 'Batch ' + (i + 1);
-            batchSection.appendChild(batchTitle);
+                    var batchTitle = document.createElement('h3');
+                    batchTitle.className = 'batch-title';
+                    batchTitle.textContent = 'Batch ' + (i + 1);
+                    batchSection.appendChild(batchTitle);
 
-            for (var j = 0; j < numExperiments; j++) {
-                var experimentContainer = document.createElement('div');
-                experimentContainer.className = 'experiment-container';
+                    for (var j = 0; j < numExperiments; j++) {
+                        var experimentContainer = document.createElement('div');
+                        experimentContainer.className = 'experiment-container';
 
-                var label = document.createElement('label');
-                label.textContent = 'Experiment ' + (j + 1) + ':';
-                label.setAttribute('for', 'batch_' + (i + 1) + '_experiment_' + (j + 1));
+                        var label = document.createElement('label');
+                        label.textContent = 'Experiment ' + (j + 1) + ':';
+                        label.setAttribute('for', 'batch_' + (i + 1) + '_experiment_' + (j + 1));
 
-                var select = document.createElement('select');
-                select.id = 'batch_' + (i + 1) + '_experiment_' + (j + 1);
-                select.name = 'batch_' + (i + 1) + '_experiment_' + (j + 1);
-                select.className = 'experiment-dropdown';
+                        var select = document.createElement('select');
+                        select.id = 'batch_' + (i + 1) + '_experiment_' + (j + 1);
+                        select.name = 'batch_' + (i + 1) + '_experiment_' + (j + 1);
+                        select.className = 'experiment-dropdown';
 
-                experimentContainer.appendChild(label);
-                experimentContainer.appendChild(select);
+                        experimentContainer.appendChild(label);
+                        experimentContainer.appendChild(select);
 
-                functionNames.forEach(name => {
-                    var option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    select.appendChild(option);
-                });
-                
-                // Attach event listener to handle function selection
-                select.addEventListener('change', function() {
-                    var selectedFunction = this.value;
-                    var argsContainer = this.parentNode;
-                    updateArgumentFields(argsContainer, functionArgs[selectedFunction]);
-                });
+                        functionNames.forEach(name => {
+                            var option = document.createElement('option');
+                            option.value = name;
+                            option.textContent = name;
+                            select.appendChild(option);
+                        });
 
-                // Dispatch change event right after populating the dropdown
-                select.dispatchEvent(new Event('change'));
+                        // Attach event listener to handle function selection
+                        select.addEventListener('change', function() {
+                            var selectedFunction = this.value;
+                            var argsContainer = this.parentNode;
+                            updateArgumentFields(argsContainer, functionArgs[selectedFunction]);
+                        });
 
-                batchSection.appendChild(experimentContainer);
-            }
+                        // Dispatch change event right after populating the dropdown
+                        select.dispatchEvent(new Event('change'));
 
-            batchContainer.appendChild(batchSection);
-        }
+                        batchSection.appendChild(experimentContainer);
+                    }
 
-        // Trigger change event for each dropdown to create argument inputs
-        document.querySelectorAll('.experiment-dropdown').forEach(dropdown => {
-        if (currentState[dropdown.id]) {
-            // Only update if there's a saved function for this dropdown
-            if (currentState[dropdown.id].selectedFunction) {
-                dropdown.value = currentState[dropdown.id].selectedFunction;
-                dropdown.dispatchEvent(new Event('change'));
-            }
+                    batchContainer.appendChild(batchSection);
+                }
 
-            // Restore argument input values if they exist
-            if (currentState[dropdown.id].arguments) {
-                let argsContainer = dropdown.closest('.experiment-container').querySelector('.args-container');
-                Object.entries(currentState[dropdown.id].arguments).forEach(([argName, argValue]) => {
-                    let input = argsContainer.querySelector(`[data-arg-name="${argName}"]`);
-                    if (input) {
-                        input.value = argValue;
+                // Trigger change event for each dropdown to create argument inputs
+                document.querySelectorAll('.experiment-dropdown').forEach(dropdown => {
+                    if (currentState[dropdown.id]) {
+                        // Only update if there's a saved function for this dropdown
+                        if (currentState[dropdown.id].selectedFunction) {
+                            dropdown.value = currentState[dropdown.id].selectedFunction;
+                            dropdown.dispatchEvent(new Event('change'));
+                        }
+
+                        // Restore argument input values if they exist
+                        if (currentState[dropdown.id].arguments) {
+                            let argsContainer = dropdown.closest('.experiment-container').querySelector('.args-container');
+                            Object.entries(currentState[dropdown.id].arguments).forEach(([argName, argValue]) => {
+                                let input = argsContainer.querySelector(`[data-arg-name="${argName}"]`);
+                                if (input) {
+                                    input.value = argValue;
+                                }
+                            });
+                        }
                     }
                 });
-            }
-        }
+
+                // After all dropdown change events are triggered, restore argument input values
+                restoreState(currentState, batchContainer);
+
+                resolve();
+            }).catch(error => {
+                console.error('Error in createBatchSections:', error);
+                reject(error);
+            });
     });
-
-    // After all dropdown change events are triggered, restore argument input values
-    restoreState(currentState, batchContainer);
-
-    }).catch(error => console.error('Error fetching function names:', error));
-
 }
 
 function preserveCurrentState(container) {
     var state = {};
     container.querySelectorAll('.experiment-dropdown').forEach(dropdown => {
         var args = Array.from(dropdown.closest('.experiment-container').querySelectorAll('.arg-field'))
-                        .map(input => input.value);
+            .map(input => input.value);
         state[dropdown.id] = {
             selectedFunction: dropdown.value,
             arguments: args
@@ -190,14 +202,16 @@ function saveGeneralSettings() {
         },
         body: JSON.stringify(generalSettingsData)
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('General settings saved:', data)
-        showFlashMessage(data.message, data.category);}
-    )
-    .catch(error =>{
-        showFlashMessage('An error occurred. Please try again.', 'error');
-        console.error('Error saving general settings:', error)});
+        .then(response => response.json())
+        .then(data => {
+            console.log('General settings saved:', data)
+            showFlashMessage(data.message, data.category);
+        }
+        )
+        .catch(error => {
+            showFlashMessage('An error occurred. Please try again.', 'error');
+            console.error('Error saving general settings:', error)
+        });
 }
 
 function saveExperimentSettings() {
@@ -214,17 +228,17 @@ function saveExperimentSettings() {
         },
         body: JSON.stringify(experimentSettingsData)
     })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            // Show the flash message
-            showFlashMessage(data.message, data.category);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showFlashMessage('An error occurred. Please try again.', 'error');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show the flash message
+                showFlashMessage(data.message, data.category);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showFlashMessage('An error occurred. Please try again.', 'error');
+        });
 }
 
 document.getElementById('saveGeneralSettings').addEventListener('click', saveGeneralSettings);
@@ -271,13 +285,13 @@ function saveBatchSettings() {
         },
         body: JSON.stringify(batchData)
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Batch settings saved:', data);
-        showFlashMessage(data.message, data.category);
-        document.getElementById('runMischbares').style.display = 'block';
-    })
-    .catch(error => console.error('Error saving batch settings:', error));
+        .then(response => response.json())
+        .then(data => {
+            console.log('Batch settings saved:', data);
+            showFlashMessage(data.message, data.category);
+            document.getElementById('runMischbares').style.display = 'block';
+        })
+        .catch(error => console.error('Error saving batch settings:', error));
 }
 
 
@@ -342,7 +356,7 @@ document.addEventListener('input', function() {
     }
 });
 
-document.getElementById('generate_meshgrid').onclick = function() {
+document.getElementById('generate_meshgrid').onclick = function () {
     var row = parseInt(document.getElementById('row').value);
     var column = parseInt(document.getElementById('column').value);
     var height = parseFloat(document.getElementById('height').value);
@@ -356,7 +370,7 @@ document.getElementById('generate_meshgrid').onclick = function() {
     document.getElementById('motor_pos').value = motorPos.trim();
 };
 
-document.getElementById('runMischbares').addEventListener('click', function(event) {
+document.getElementById('runMischbares').addEventListener('click', function (event) {
     event.preventDefault();
     fetch('/run-mischbares', { method: 'GET' })
         .then(response => response.json())
@@ -373,58 +387,69 @@ document.getElementById('runMischbares').addEventListener('click', function(even
 });
 
 
-// function loadBatchSettings() {
-//     fetch('/get-batch-settings')
-//         .then(response => response.json())
-//         .then(batchData => {
-//             if (batchData.error) {
-//                 console.error(batchData.error);
-//                 return;
-//             }
+document.getElementById('loadBatchSettings').addEventListener('click', function (event) {
+    event.preventDefault();
+    fetch('/load-batch-settings', { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('num_of_batch').value = data.num_batches;
+            document.getElementById('num_of_experiment_in_each_batch').value = Object.values(data.num_experiments_per_batch)[0];
 
-//             console.log("Loaded batch data:", batchData);
+            createBatchSections().then(() => {
+                fillExperimentInputs(data.batch_data);
+            });
+            document.getElementById('runMischbares').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error loading batch settings:', error);
+        });
+});
 
-//             Object.entries(batchData).forEach(([batchId, experiments]) => {
-//                 Object.entries(experiments).forEach(([expId, funcData]) => {
-//                     let dropdownId = batchId + '_' + expId;
-//                     let dropdown = document.getElementById(dropdownId);
+function fillExperimentInputs(batchData) {
+    for (const [batchId, experiments] of Object.entries(batchData)) {
+        for (const [expId, settings] of Object.entries(experiments)) {
+            const selectId = batchId + '_' + expId;
+            const selectElement = document.getElementById(selectId);
 
-//                     console.log("Updating dropdown:", dropdownId);
+            if (selectElement) {
+                // Assuming each experiment has a single setting representing the selected function name
+                const selectedFunction = Object.keys(settings)[0];
+                selectElement.value = selectedFunction;
+                selectElement.dispatchEvent(new Event('change'));
 
-//                     if (dropdown) {
-//                         let functionName = Object.keys(funcData)[0];
-//                         dropdown.value = functionName;
-//                         dropdown.dispatchEvent(new Event('change'));
-
-//                         let argsContainer = dropdown.closest('.experiment-container').querySelector('.args-container');
-//                         Object.entries(funcData[functionName]).forEach(([argName, argValue]) => {
-//                             let input = argsContainer.querySelector(`[data-arg-name="${argName}"]`);
-//                             if (input) {
-//                                 input.value = argValue;
-//                             }
-//                         });
-//                     }
-//                 });
-//             });
-//         })
-//         .catch(error => console.error('Error loading batch settings:', error));
-// }
+                // Assuming settings[selectedFunction] contains arguments to be filled
+                const args = settings[selectedFunction];
+                const argsContainer = selectElement.closest('.experiment-container').querySelector('.args-container');
+                if (argsContainer) {
+                    Object.entries(args).forEach(([argName, argValue]) => {
+                        const input = argsContainer.querySelector(`[data-arg-name="${argName}"]`);
+                        if (input) {
+                            input.value = argValue;
+                        }
+                    });
+                }
+            }
+        }
+    }
+}
 
 
 // document.getElementById('loadBatchSettings').addEventListener('click', loadBatchSettings);
 document.addEventListener('DOMContentLoaded', updateExperimentSettingsVisibility);
 document.addEventListener('input', updateExperimentSettingsVisibility);
+isProgrammaticChange = true;
 document.getElementById('num_of_batch').addEventListener('change', createBatchSections);
 document.getElementById('num_of_experiment_in_each_batch').addEventListener('change', createBatchSections);
-document.getElementById('saveBatchSettings').addEventListener('click', function(event) {
+isProgrammaticChange = false;
+document.getElementById('saveBatchSettings').addEventListener('click', function (event) {
     event.preventDefault();
     saveBatchSettings();
 });
-document.getElementById('saveExperimentSettings').addEventListener('click', function(event) {
+document.getElementById('saveExperimentSettings').addEventListener('click', function (event) {
     event.preventDefault();
     saveExperimentSettings();
 });
-document.getElementById('saveGeneralSettings').addEventListener('click', function(event) {
+document.getElementById('saveGeneralSettings').addEventListener('click', function (event) {
     event.preventDefault();
     saveGeneralSettings();
 });

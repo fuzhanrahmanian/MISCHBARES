@@ -27,19 +27,19 @@
                 </div>
                 <div class="form-row">
                     <label for="number_of_electrons">Number of Electrons:</label>
-                    <input type="number" step="any" id="number_of_electrons" name="number_of_electrons" value="{{ general_settings.get('number_of_electrons', '') }}"><br>
+                    <input type="number" step="any" id="number_of_electrons" name="number_of_electrons" min="0" value="{{ general_settings.get('number_of_electrons', '') }}"><br>
                 </div>
                 <div class="form-row">
                     <label for="electrode_area">Electrode Area:</label>
-                    <input type="number" step="any" id="electrode_area" name="electrode_area" value="{{ general_settings.get('electrode_area', '') }}"><br>
+                    <input type="number" step="any" id="electrode_area" name="electrode_area" min="0" value="{{ general_settings.get('electrode_area', '') }}"><br>
                 </div>
                 <div class="form-row">
                     <label for="concentration_of_active_material">Concentration of Active Material:</label>
-                    <input type="number" step="any" id="concentration_of_active_material" name="concentration_of_active_material" value="{{ general_settings.get('concentration_of_active_material', '') }}"><br>
+                    <input type="number" step="any" id="concentration_of_active_material" name="concentration_of_active_material" min="0" value="{{ general_settings.get('concentration_of_active_material', '') }}"><br>
                 </div>
                 <div class="form-row">
                     <label for="mass_of_active_material">Mass of Active Material:</label>
-                    <input type="number" step="any" id="mass_of_active_material" name="mass_of_active_material" value="{{ general_settings.get('mass_of_active_material', '') }}"><br>
+                    <input type="number" step="any" id="mass_of_active_material" name="mass_of_active_material" min="0", value="{{ general_settings.get('mass_of_active_material', '') }}"><br>
                 </div>
                 <div class="form-row">
                     <label for="motor_pos">Motor Position:</label>
@@ -49,15 +49,15 @@
                     <h3>Meshgrid Generator</h3>
                     <div class="form-row">
                         <label for="row">Row:</label>
-                        <input type="number" id="row" name="row">
+                        <input type="number" id="row" name="row", min="0">
                         <label for="column">Columns:</label>
-                        <input type="number" id="column" name="column">
+                        <input type="number" id="column" name="column", min="0">
                     </div>
                     <div class="form-row">
                         <label for="height">Height:</label>
-                        <input type="number" step="any" id="height" name="height">
+                        <input type="number" step="any" id="height" name="height", min="0">
                         <label for="stepsize">Step Size:</label>
-                        <input type="number" step="any" id="stepsize" name="stepsize" value="1">
+                        <input type="number" step="any" id="stepsize" name="stepsize" value="1", min="0">
                     </div>
                     <button type="button" id="generate_meshgrid" disabled>Generate Meshgrid</button>
                 </div>                
@@ -77,18 +77,18 @@
             <h2>Experiment Settings</h2>
             <div class="form-row">
                 <label for="num_of_batch">Number of Batches:</label>
-                <input type="number" id="num_of_batch" name="num_of_batch" value="{{ experiment_settings.get('num_of_batch', '') }}">
+                <input type="number" id="num_of_batch" name="num_of_batch" min="0" max="100" value="{{ experiment_settings.get('num_of_batch', '') }}">
             </div>
             <div class="form-row">
                 <label for="num_of_experiment_in_each_batch">Number of Experiments in Each Batch:</label>
-                <input type="number" id="num_of_experiment_in_each_batch" name="num_of_experiment_in_each_batch" value="{{ experiment_settings.get('num_of_experiment_in_each_batch', '') }}">
+                <input type="number" id="num_of_experiment_in_each_batch" name="num_of_experiment_in_each_batch" min="0" max="100" value="{{ experiment_settings.get('num_of_experiment_in_each_batch', '') }}">
             </div>
             <!-- Experiment Settings Section -->
             <!-- ... [form fields for experiment settings] ... -->
             <button type="button" id="saveExperimentSettings" class="button">Save Experiment Settings</button>
             <a href="{{ url_for('load_experiment_settings') }}" class="button">Load Experiment Settings</a>
             <button id="saveBatchSettings" class="button batch-save-button",>Save Batch Settings</button>
-            <!-- <button id="loadBatchSettings" class="button batch-load-button">Load Batch Settings</button> -->
+            <button id="loadBatchSettings" class="button batch-load-button">Load Batch Settings</button>
             <div id="batch-container"></div>
         </div>
     </div>

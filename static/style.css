@@ -288,10 +288,21 @@ button:disabled {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: 20%;
 }
 
 #saveBatchSettings.batch-save-button:hover {
+    background-color: #2ab07f
+}
+
+#loadBatchSettings.batch-load-button {
+    background-color: #1e9b8a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#loadBatchSettings.batch-load-button:hover {
     background-color: #2ab07f
 }
 

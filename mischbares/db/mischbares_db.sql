@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.0
 
--- Started on 2023-12-21 23:33:12
+-- Started on 2023-12-31 00:29:38
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -23,7 +23,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 215 (class 1259 OID 16566)
+-- TOC entry 215 (class 1259 OID 25813)
 -- Name: ca_procedure; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -43,7 +43,7 @@ CREATE TABLE public.ca_procedure (
 ALTER TABLE public.ca_procedure OWNER TO postgres;
 
 --
--- TOC entry 216 (class 1259 OID 16569)
+-- TOC entry 216 (class 1259 OID 25816)
 -- Name: ca_procedure_ca_measurment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -58,7 +58,7 @@ CREATE SEQUENCE public.ca_procedure_ca_measurment_id_seq
 ALTER SEQUENCE public.ca_procedure_ca_measurment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4935 (class 0 OID 0)
+-- TOC entry 4970 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: ca_procedure_ca_measurment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -67,7 +67,7 @@ ALTER SEQUENCE public.ca_procedure_ca_measurment_id_seq OWNED BY public.ca_proce
 
 
 --
--- TOC entry 217 (class 1259 OID 16570)
+-- TOC entry 217 (class 1259 OID 25817)
 -- Name: ca_procedure_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -82,7 +82,7 @@ CREATE SEQUENCE public.ca_procedure_procedure_id_seq
 ALTER SEQUENCE public.ca_procedure_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4936 (class 0 OID 0)
+-- TOC entry 4971 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: ca_procedure_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -91,7 +91,7 @@ ALTER SEQUENCE public.ca_procedure_procedure_id_seq OWNED BY public.ca_procedure
 
 
 --
--- TOC entry 218 (class 1259 OID 16571)
+-- TOC entry 218 (class 1259 OID 25818)
 -- Name: ca_raw; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -114,7 +114,7 @@ CREATE TABLE public.ca_raw (
 ALTER TABLE public.ca_raw OWNER TO postgres;
 
 --
--- TOC entry 219 (class 1259 OID 16574)
+-- TOC entry 219 (class 1259 OID 25821)
 -- Name: ca_raw_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -129,7 +129,7 @@ CREATE SEQUENCE public.ca_raw_procedure_id_seq
 ALTER SEQUENCE public.ca_raw_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4937 (class 0 OID 0)
+-- TOC entry 4972 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: ca_raw_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -138,7 +138,7 @@ ALTER SEQUENCE public.ca_raw_procedure_id_seq OWNED BY public.ca_raw.procedure_i
 
 
 --
--- TOC entry 220 (class 1259 OID 16575)
+-- TOC entry 220 (class 1259 OID 25822)
 -- Name: ca_raw_raw_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -153,7 +153,7 @@ CREATE SEQUENCE public.ca_raw_raw_id_seq
 ALTER SEQUENCE public.ca_raw_raw_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4938 (class 0 OID 0)
+-- TOC entry 4973 (class 0 OID 0)
 -- Dependencies: 220
 -- Name: ca_raw_raw_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -162,7 +162,7 @@ ALTER SEQUENCE public.ca_raw_raw_id_seq OWNED BY public.ca_raw.raw_id;
 
 
 --
--- TOC entry 221 (class 1259 OID 16576)
+-- TOC entry 221 (class 1259 OID 25823)
 -- Name: cp_procedure; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -180,7 +180,7 @@ CREATE TABLE public.cp_procedure (
 ALTER TABLE public.cp_procedure OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 16579)
+-- TOC entry 222 (class 1259 OID 25826)
 -- Name: cp_procedure_cp_measurment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -195,7 +195,7 @@ CREATE SEQUENCE public.cp_procedure_cp_measurment_id_seq
 ALTER SEQUENCE public.cp_procedure_cp_measurment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4939 (class 0 OID 0)
+-- TOC entry 4974 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: cp_procedure_cp_measurment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -204,7 +204,7 @@ ALTER SEQUENCE public.cp_procedure_cp_measurment_id_seq OWNED BY public.cp_proce
 
 
 --
--- TOC entry 223 (class 1259 OID 16580)
+-- TOC entry 223 (class 1259 OID 25827)
 -- Name: cp_procedure_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -219,7 +219,7 @@ CREATE SEQUENCE public.cp_procedure_procedure_id_seq
 ALTER SEQUENCE public.cp_procedure_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4940 (class 0 OID 0)
+-- TOC entry 4975 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: cp_procedure_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -228,7 +228,7 @@ ALTER SEQUENCE public.cp_procedure_procedure_id_seq OWNED BY public.cp_procedure
 
 
 --
--- TOC entry 224 (class 1259 OID 16581)
+-- TOC entry 224 (class 1259 OID 25828)
 -- Name: cp_raw; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -251,7 +251,7 @@ CREATE TABLE public.cp_raw (
 ALTER TABLE public.cp_raw OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 16584)
+-- TOC entry 225 (class 1259 OID 25831)
 -- Name: cp_raw_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -266,7 +266,7 @@ CREATE SEQUENCE public.cp_raw_procedure_id_seq
 ALTER SEQUENCE public.cp_raw_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4941 (class 0 OID 0)
+-- TOC entry 4976 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: cp_raw_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -275,7 +275,7 @@ ALTER SEQUENCE public.cp_raw_procedure_id_seq OWNED BY public.cp_raw.procedure_i
 
 
 --
--- TOC entry 226 (class 1259 OID 16585)
+-- TOC entry 226 (class 1259 OID 25832)
 -- Name: cp_raw_raw_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -290,7 +290,7 @@ CREATE SEQUENCE public.cp_raw_raw_id_seq
 ALTER SEQUENCE public.cp_raw_raw_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4942 (class 0 OID 0)
+-- TOC entry 4977 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: cp_raw_raw_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -299,7 +299,7 @@ ALTER SEQUENCE public.cp_raw_raw_id_seq OWNED BY public.cp_raw.raw_id;
 
 
 --
--- TOC entry 256 (class 1259 OID 16756)
+-- TOC entry 227 (class 1259 OID 25833)
 -- Name: cv_cycle; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -322,7 +322,7 @@ CREATE TABLE public.cv_cycle (
 ALTER TABLE public.cv_cycle OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1259 OID 16764)
+-- TOC entry 228 (class 1259 OID 25838)
 -- Name: cv_cycle_cycle_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -338,8 +338,8 @@ CREATE SEQUENCE public.cv_cycle_cycle_id_seq
 ALTER SEQUENCE public.cv_cycle_cycle_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4943 (class 0 OID 0)
--- Dependencies: 257
+-- TOC entry 4978 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: cv_cycle_cycle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -347,7 +347,7 @@ ALTER SEQUENCE public.cv_cycle_cycle_id_seq OWNED BY public.cv_cycle.cycle_id;
 
 
 --
--- TOC entry 255 (class 1259 OID 16755)
+-- TOC entry 229 (class 1259 OID 25839)
 -- Name: cv_cycle_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -362,8 +362,8 @@ CREATE SEQUENCE public.cv_cycle_procedure_id_seq
 ALTER SEQUENCE public.cv_cycle_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4944 (class 0 OID 0)
--- Dependencies: 255
+-- TOC entry 4979 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: cv_cycle_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -371,7 +371,7 @@ ALTER SEQUENCE public.cv_cycle_procedure_id_seq OWNED BY public.cv_cycle.procedu
 
 
 --
--- TOC entry 227 (class 1259 OID 16586)
+-- TOC entry 230 (class 1259 OID 25840)
 -- Name: cv_staircase_procedure_cv_measurment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -386,7 +386,7 @@ CREATE SEQUENCE public.cv_staircase_procedure_cv_measurment_id_seq
 ALTER SEQUENCE public.cv_staircase_procedure_cv_measurment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 228 (class 1259 OID 16587)
+-- TOC entry 231 (class 1259 OID 25841)
 -- Name: cv_staircase_procedure_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -401,7 +401,7 @@ CREATE SEQUENCE public.cv_staircase_procedure_procedure_id_seq
 ALTER SEQUENCE public.cv_staircase_procedure_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1259 OID 16588)
+-- TOC entry 232 (class 1259 OID 25842)
 -- Name: cv_staircase_procedure; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -421,7 +421,7 @@ CREATE TABLE public.cv_staircase_procedure (
 ALTER TABLE public.cv_staircase_procedure OWNER TO postgres;
 
 --
--- TOC entry 230 (class 1259 OID 16593)
+-- TOC entry 233 (class 1259 OID 25847)
 -- Name: cv_staircase_raw_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -436,7 +436,7 @@ CREATE SEQUENCE public.cv_staircase_raw_procedure_id_seq
 ALTER SEQUENCE public.cv_staircase_raw_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 16594)
+-- TOC entry 234 (class 1259 OID 25848)
 -- Name: cv_staircase_raw_raw_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -451,7 +451,7 @@ CREATE SEQUENCE public.cv_staircase_raw_raw_id_seq
 ALTER SEQUENCE public.cv_staircase_raw_raw_id_seq OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1259 OID 16595)
+-- TOC entry 235 (class 1259 OID 25849)
 -- Name: cv_staircase_raw; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -474,7 +474,7 @@ CREATE TABLE public.cv_staircase_raw (
 ALTER TABLE public.cv_staircase_raw OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 16600)
+-- TOC entry 236 (class 1259 OID 25854)
 -- Name: eis_procedure; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -492,7 +492,7 @@ CREATE TABLE public.eis_procedure (
 ALTER TABLE public.eis_procedure OWNER TO postgres;
 
 --
--- TOC entry 234 (class 1259 OID 16603)
+-- TOC entry 237 (class 1259 OID 25857)
 -- Name: eis_procedure_eis_measurment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -507,8 +507,8 @@ CREATE SEQUENCE public.eis_procedure_eis_measurment_id_seq
 ALTER SEQUENCE public.eis_procedure_eis_measurment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4945 (class 0 OID 0)
--- Dependencies: 234
+-- TOC entry 4980 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: eis_procedure_eis_measurment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -516,7 +516,7 @@ ALTER SEQUENCE public.eis_procedure_eis_measurment_id_seq OWNED BY public.eis_pr
 
 
 --
--- TOC entry 235 (class 1259 OID 16604)
+-- TOC entry 238 (class 1259 OID 25858)
 -- Name: eis_procedure_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -531,8 +531,8 @@ CREATE SEQUENCE public.eis_procedure_procedure_id_seq
 ALTER SEQUENCE public.eis_procedure_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4946 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4981 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: eis_procedure_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -540,7 +540,7 @@ ALTER SEQUENCE public.eis_procedure_procedure_id_seq OWNED BY public.eis_procedu
 
 
 --
--- TOC entry 236 (class 1259 OID 16605)
+-- TOC entry 239 (class 1259 OID 25859)
 -- Name: eis_raw; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -559,7 +559,7 @@ CREATE TABLE public.eis_raw (
 ALTER TABLE public.eis_raw OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 16608)
+-- TOC entry 240 (class 1259 OID 25862)
 -- Name: eis_raw_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -574,8 +574,8 @@ CREATE SEQUENCE public.eis_raw_procedure_id_seq
 ALTER SEQUENCE public.eis_raw_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4947 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 4982 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: eis_raw_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -583,7 +583,7 @@ ALTER SEQUENCE public.eis_raw_procedure_id_seq OWNED BY public.eis_raw.procedure
 
 
 --
--- TOC entry 238 (class 1259 OID 16609)
+-- TOC entry 241 (class 1259 OID 25863)
 -- Name: eis_raw_raw_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -598,8 +598,8 @@ CREATE SEQUENCE public.eis_raw_raw_id_seq
 ALTER SEQUENCE public.eis_raw_raw_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4948 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 4983 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: eis_raw_raw_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -607,7 +607,7 @@ ALTER SEQUENCE public.eis_raw_raw_id_seq OWNED BY public.eis_raw.raw_id;
 
 
 --
--- TOC entry 239 (class 1259 OID 16610)
+-- TOC entry 242 (class 1259 OID 25864)
 -- Name: experiments; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -628,7 +628,7 @@ CREATE TABLE public.experiments (
 ALTER TABLE public.experiments OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 16613)
+-- TOC entry 243 (class 1259 OID 25867)
 -- Name: experiment_experiment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -644,8 +644,8 @@ CREATE SEQUENCE public.experiment_experiment_id_seq
 ALTER SEQUENCE public.experiment_experiment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4949 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 4984 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: experiment_experiment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -653,7 +653,7 @@ ALTER SEQUENCE public.experiment_experiment_id_seq OWNED BY public.experiments.e
 
 
 --
--- TOC entry 241 (class 1259 OID 16614)
+-- TOC entry 244 (class 1259 OID 25868)
 -- Name: experiment_user_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -669,8 +669,8 @@ CREATE SEQUENCE public.experiment_user_seq
 ALTER SEQUENCE public.experiment_user_seq OWNER TO postgres;
 
 --
--- TOC entry 4950 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 4985 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: experiment_user_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -678,7 +678,7 @@ ALTER SEQUENCE public.experiment_user_seq OWNED BY public.experiments.user_id;
 
 
 --
--- TOC entry 242 (class 1259 OID 16615)
+-- TOC entry 245 (class 1259 OID 25869)
 -- Name: measurements; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -692,7 +692,7 @@ CREATE TABLE public.measurements (
 ALTER TABLE public.measurements OWNER TO postgres;
 
 --
--- TOC entry 243 (class 1259 OID 16618)
+-- TOC entry 246 (class 1259 OID 25872)
 -- Name: measurment_experiment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -707,8 +707,8 @@ CREATE SEQUENCE public.measurment_experiment_id_seq
 ALTER SEQUENCE public.measurment_experiment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4951 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 4986 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: measurment_experiment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -716,7 +716,7 @@ ALTER SEQUENCE public.measurment_experiment_id_seq OWNED BY public.measurements.
 
 
 --
--- TOC entry 244 (class 1259 OID 16619)
+-- TOC entry 247 (class 1259 OID 25873)
 -- Name: measurment_measurment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -731,8 +731,8 @@ CREATE SEQUENCE public.measurment_measurment_id_seq
 ALTER SEQUENCE public.measurment_measurment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4952 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 4987 (class 0 OID 0)
+-- Dependencies: 247
 -- Name: measurment_measurment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -740,7 +740,7 @@ ALTER SEQUENCE public.measurment_measurment_id_seq OWNED BY public.measurements.
 
 
 --
--- TOC entry 245 (class 1259 OID 16620)
+-- TOC entry 248 (class 1259 OID 25874)
 -- Name: motor_positions; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -755,7 +755,7 @@ CREATE TABLE public.motor_positions (
 ALTER TABLE public.motor_positions OWNER TO postgres;
 
 --
--- TOC entry 246 (class 1259 OID 16623)
+-- TOC entry 249 (class 1259 OID 25877)
 -- Name: motor_experiment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -771,8 +771,8 @@ CREATE SEQUENCE public.motor_experiment_id_seq
 ALTER SEQUENCE public.motor_experiment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4953 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 4988 (class 0 OID 0)
+-- Dependencies: 249
 -- Name: motor_experiment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -780,7 +780,7 @@ ALTER SEQUENCE public.motor_experiment_id_seq OWNED BY public.motor_positions.ex
 
 
 --
--- TOC entry 247 (class 1259 OID 16624)
+-- TOC entry 250 (class 1259 OID 25878)
 -- Name: ocp_procedure; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -795,7 +795,7 @@ CREATE TABLE public.ocp_procedure (
 ALTER TABLE public.ocp_procedure OWNER TO postgres;
 
 --
--- TOC entry 248 (class 1259 OID 16627)
+-- TOC entry 251 (class 1259 OID 25881)
 -- Name: ocp_procedure_ocp_measurment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -810,8 +810,8 @@ CREATE SEQUENCE public.ocp_procedure_ocp_measurment_id_seq
 ALTER SEQUENCE public.ocp_procedure_ocp_measurment_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4954 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 4989 (class 0 OID 0)
+-- Dependencies: 251
 -- Name: ocp_procedure_ocp_measurment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -819,7 +819,7 @@ ALTER SEQUENCE public.ocp_procedure_ocp_measurment_id_seq OWNED BY public.ocp_pr
 
 
 --
--- TOC entry 249 (class 1259 OID 16628)
+-- TOC entry 252 (class 1259 OID 25882)
 -- Name: ocp_procedure_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -835,8 +835,8 @@ CREATE SEQUENCE public.ocp_procedure_procedure_id_seq
 ALTER SEQUENCE public.ocp_procedure_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4955 (class 0 OID 0)
--- Dependencies: 249
+-- TOC entry 4990 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: ocp_procedure_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -844,7 +844,7 @@ ALTER SEQUENCE public.ocp_procedure_procedure_id_seq OWNED BY public.ocp_procedu
 
 
 --
--- TOC entry 250 (class 1259 OID 16629)
+-- TOC entry 253 (class 1259 OID 25883)
 -- Name: ocp_raw; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -866,7 +866,7 @@ CREATE TABLE public.ocp_raw (
 ALTER TABLE public.ocp_raw OWNER TO postgres;
 
 --
--- TOC entry 251 (class 1259 OID 16632)
+-- TOC entry 254 (class 1259 OID 25886)
 -- Name: ocp_raw_ocp_procedure_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -882,8 +882,8 @@ CREATE SEQUENCE public.ocp_raw_ocp_procedure_id_seq
 ALTER SEQUENCE public.ocp_raw_ocp_procedure_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4956 (class 0 OID 0)
--- Dependencies: 251
+-- TOC entry 4991 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: ocp_raw_ocp_procedure_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -891,7 +891,7 @@ ALTER SEQUENCE public.ocp_raw_ocp_procedure_id_seq OWNED BY public.ocp_raw.proce
 
 
 --
--- TOC entry 252 (class 1259 OID 16633)
+-- TOC entry 255 (class 1259 OID 25887)
 -- Name: ocp_raw_raw_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -906,8 +906,8 @@ CREATE SEQUENCE public.ocp_raw_raw_id_seq
 ALTER SEQUENCE public.ocp_raw_raw_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4957 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 4992 (class 0 OID 0)
+-- Dependencies: 255
 -- Name: ocp_raw_raw_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -915,7 +915,7 @@ ALTER SEQUENCE public.ocp_raw_raw_id_seq OWNED BY public.ocp_raw.raw_id;
 
 
 --
--- TOC entry 253 (class 1259 OID 16634)
+-- TOC entry 256 (class 1259 OID 25888)
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -932,7 +932,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
--- TOC entry 254 (class 1259 OID 16639)
+-- TOC entry 257 (class 1259 OID 25893)
 -- Name: user_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -948,8 +948,8 @@ CREATE SEQUENCE public.user_user_id_seq
 ALTER SEQUENCE public.user_user_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4958 (class 0 OID 0)
--- Dependencies: 254
+-- TOC entry 4993 (class 0 OID 0)
+-- Dependencies: 257
 -- Name: user_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -957,7 +957,105 @@ ALTER SEQUENCE public.user_user_id_seq OWNED BY public.users.user_id;
 
 
 --
--- TOC entry 4717 (class 2604 OID 16640)
+-- TOC entry 259 (class 1259 OID 26027)
+-- Name: xps_c1s_raw; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.xps_c1s_raw (
+    "c=c" double precision,
+    "c-c" double precision,
+    "c-o" double precision,
+    "c=o" double precision,
+    "o-c=o" double precision,
+    co3 double precision,
+    background_cps double precision,
+    envelope_cps double precision,
+    cps double precision,
+    raw_id bigint NOT NULL,
+    procedure_id bigint
+);
+
+
+ALTER TABLE public.xps_c1s_raw OWNER TO postgres;
+
+--
+-- TOC entry 260 (class 1259 OID 26037)
+-- Name: xps_f1s_raw; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.xps_f1s_raw (
+    cps double precision,
+    lif double precision,
+    lipf6 double precision,
+    background_cps double precision,
+    envelope_cps double precision,
+    raw_id bigint NOT NULL,
+    procedure_id bigint,
+    lixpfyoz double precision
+);
+
+
+ALTER TABLE public.xps_f1s_raw OWNER TO postgres;
+
+--
+-- TOC entry 261 (class 1259 OID 26047)
+-- Name: xps_li1s_raw; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.xps_li1s_raw (
+    cps double precision,
+    lif double precision,
+    background_cps double precision,
+    envelope_cps double precision,
+    raw_id bigint NOT NULL,
+    procedure_id bigint
+);
+
+
+ALTER TABLE public.xps_li1s_raw OWNER TO postgres;
+
+--
+-- TOC entry 262 (class 1259 OID 26062)
+-- Name: xps_o1s_raw; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.xps_o1s_raw (
+    cps double precision,
+    "c-o" double precision,
+    lixpfyoz double precision,
+    background_cps double precision,
+    envelope_cps double precision,
+    raw_id bigint NOT NULL,
+    procedure_id bigint
+);
+
+
+ALTER TABLE public.xps_o1s_raw OWNER TO postgres;
+
+--
+-- TOC entry 258 (class 1259 OID 26017)
+-- Name: xps_procedure; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.xps_procedure (
+    ds_pass_energy double precision,
+    ds_dwell_time double precision,
+    ds_step_size double precision,
+    ss_pass_energy double precision,
+    ss_dwell_time double precision,
+    ss_step_size double precision,
+    emission double precision,
+    power double precision,
+    source_energy double precision,
+    procedure_id bigint NOT NULL,
+    xps_measurement_id bigint
+);
+
+
+ALTER TABLE public.xps_procedure OWNER TO postgres;
+
+--
+-- TOC entry 4737 (class 2604 OID 25894)
 -- Name: ca_procedure procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -965,7 +1063,7 @@ ALTER TABLE ONLY public.ca_procedure ALTER COLUMN procedure_id SET DEFAULT nextv
 
 
 --
--- TOC entry 4718 (class 2604 OID 16641)
+-- TOC entry 4738 (class 2604 OID 25895)
 -- Name: ca_procedure ca_measurment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -973,7 +1071,7 @@ ALTER TABLE ONLY public.ca_procedure ALTER COLUMN ca_measurment_id SET DEFAULT n
 
 
 --
--- TOC entry 4719 (class 2604 OID 16642)
+-- TOC entry 4739 (class 2604 OID 25896)
 -- Name: ca_raw procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -981,7 +1079,7 @@ ALTER TABLE ONLY public.ca_raw ALTER COLUMN procedure_id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 4720 (class 2604 OID 16643)
+-- TOC entry 4740 (class 2604 OID 25897)
 -- Name: ca_raw raw_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -989,7 +1087,7 @@ ALTER TABLE ONLY public.ca_raw ALTER COLUMN raw_id SET DEFAULT nextval('public.c
 
 
 --
--- TOC entry 4721 (class 2604 OID 16644)
+-- TOC entry 4741 (class 2604 OID 25898)
 -- Name: cp_procedure procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -997,7 +1095,7 @@ ALTER TABLE ONLY public.cp_procedure ALTER COLUMN procedure_id SET DEFAULT nextv
 
 
 --
--- TOC entry 4722 (class 2604 OID 16645)
+-- TOC entry 4742 (class 2604 OID 25899)
 -- Name: cp_procedure cp_measurment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1005,7 +1103,7 @@ ALTER TABLE ONLY public.cp_procedure ALTER COLUMN cp_measurment_id SET DEFAULT n
 
 
 --
--- TOC entry 4723 (class 2604 OID 16646)
+-- TOC entry 4743 (class 2604 OID 25900)
 -- Name: cp_raw procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1013,7 +1111,7 @@ ALTER TABLE ONLY public.cp_raw ALTER COLUMN procedure_id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 4724 (class 2604 OID 16647)
+-- TOC entry 4744 (class 2604 OID 25901)
 -- Name: cp_raw raw_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1021,7 +1119,7 @@ ALTER TABLE ONLY public.cp_raw ALTER COLUMN raw_id SET DEFAULT nextval('public.c
 
 
 --
--- TOC entry 4743 (class 2604 OID 16759)
+-- TOC entry 4745 (class 2604 OID 25902)
 -- Name: cv_cycle procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1029,7 +1127,7 @@ ALTER TABLE ONLY public.cv_cycle ALTER COLUMN procedure_id SET DEFAULT nextval('
 
 
 --
--- TOC entry 4744 (class 2604 OID 16765)
+-- TOC entry 4746 (class 2604 OID 25903)
 -- Name: cv_cycle cycle_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1037,7 +1135,7 @@ ALTER TABLE ONLY public.cv_cycle ALTER COLUMN cycle_id SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 4729 (class 2604 OID 16648)
+-- TOC entry 4751 (class 2604 OID 25904)
 -- Name: eis_procedure procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1045,7 +1143,7 @@ ALTER TABLE ONLY public.eis_procedure ALTER COLUMN procedure_id SET DEFAULT next
 
 
 --
--- TOC entry 4730 (class 2604 OID 16649)
+-- TOC entry 4752 (class 2604 OID 25905)
 -- Name: eis_procedure eis_measurment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1053,7 +1151,7 @@ ALTER TABLE ONLY public.eis_procedure ALTER COLUMN eis_measurment_id SET DEFAULT
 
 
 --
--- TOC entry 4731 (class 2604 OID 16650)
+-- TOC entry 4753 (class 2604 OID 25906)
 -- Name: eis_raw procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1061,7 +1159,7 @@ ALTER TABLE ONLY public.eis_raw ALTER COLUMN procedure_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4732 (class 2604 OID 16651)
+-- TOC entry 4754 (class 2604 OID 25907)
 -- Name: eis_raw raw_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1069,7 +1167,7 @@ ALTER TABLE ONLY public.eis_raw ALTER COLUMN raw_id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 4733 (class 2604 OID 16652)
+-- TOC entry 4755 (class 2604 OID 25908)
 -- Name: experiments experiment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1077,7 +1175,7 @@ ALTER TABLE ONLY public.experiments ALTER COLUMN experiment_id SET DEFAULT nextv
 
 
 --
--- TOC entry 4734 (class 2604 OID 16653)
+-- TOC entry 4756 (class 2604 OID 25909)
 -- Name: experiments user_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1085,7 +1183,7 @@ ALTER TABLE ONLY public.experiments ALTER COLUMN user_id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 4735 (class 2604 OID 16654)
+-- TOC entry 4757 (class 2604 OID 25910)
 -- Name: measurements measurement_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1093,7 +1191,7 @@ ALTER TABLE ONLY public.measurements ALTER COLUMN measurement_id SET DEFAULT nex
 
 
 --
--- TOC entry 4736 (class 2604 OID 16655)
+-- TOC entry 4758 (class 2604 OID 25911)
 -- Name: measurements experiment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1101,7 +1199,7 @@ ALTER TABLE ONLY public.measurements ALTER COLUMN experiment_id SET DEFAULT next
 
 
 --
--- TOC entry 4737 (class 2604 OID 16656)
+-- TOC entry 4759 (class 2604 OID 25912)
 -- Name: motor_positions experiment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1109,7 +1207,7 @@ ALTER TABLE ONLY public.motor_positions ALTER COLUMN experiment_id SET DEFAULT n
 
 
 --
--- TOC entry 4738 (class 2604 OID 16657)
+-- TOC entry 4760 (class 2604 OID 25913)
 -- Name: ocp_procedure procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1117,7 +1215,7 @@ ALTER TABLE ONLY public.ocp_procedure ALTER COLUMN procedure_id SET DEFAULT next
 
 
 --
--- TOC entry 4739 (class 2604 OID 16658)
+-- TOC entry 4761 (class 2604 OID 25914)
 -- Name: ocp_procedure ocp_measurment_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1125,7 +1223,7 @@ ALTER TABLE ONLY public.ocp_procedure ALTER COLUMN ocp_measurment_id SET DEFAULT
 
 
 --
--- TOC entry 4740 (class 2604 OID 16659)
+-- TOC entry 4762 (class 2604 OID 25915)
 -- Name: ocp_raw procedure_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1133,7 +1231,7 @@ ALTER TABLE ONLY public.ocp_raw ALTER COLUMN procedure_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4741 (class 2604 OID 16660)
+-- TOC entry 4763 (class 2604 OID 25916)
 -- Name: ocp_raw raw_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1141,7 +1239,7 @@ ALTER TABLE ONLY public.ocp_raw ALTER COLUMN raw_id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 4742 (class 2604 OID 16661)
+-- TOC entry 4764 (class 2604 OID 25917)
 -- Name: users user_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1149,7 +1247,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 
 
 --
--- TOC entry 4746 (class 2606 OID 16663)
+-- TOC entry 4766 (class 2606 OID 25919)
 -- Name: ca_procedure ca_procedure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1158,7 +1256,7 @@ ALTER TABLE ONLY public.ca_procedure
 
 
 --
--- TOC entry 4748 (class 2606 OID 16665)
+-- TOC entry 4768 (class 2606 OID 25921)
 -- Name: ca_raw ca_raw_to_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1167,7 +1265,7 @@ ALTER TABLE ONLY public.ca_raw
 
 
 --
--- TOC entry 4750 (class 2606 OID 16667)
+-- TOC entry 4770 (class 2606 OID 25923)
 -- Name: cp_procedure cp_procedure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1176,7 +1274,7 @@ ALTER TABLE ONLY public.cp_procedure
 
 
 --
--- TOC entry 4752 (class 2606 OID 16669)
+-- TOC entry 4772 (class 2606 OID 25925)
 -- Name: cp_raw cp_raw_to_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1185,7 +1283,7 @@ ALTER TABLE ONLY public.cp_raw
 
 
 --
--- TOC entry 4772 (class 2606 OID 16772)
+-- TOC entry 4774 (class 2606 OID 25927)
 -- Name: cv_cycle cv_cycle_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1194,7 +1292,7 @@ ALTER TABLE ONLY public.cv_cycle
 
 
 --
--- TOC entry 4754 (class 2606 OID 16671)
+-- TOC entry 4776 (class 2606 OID 25929)
 -- Name: cv_staircase_procedure cv_procedure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1203,7 +1301,7 @@ ALTER TABLE ONLY public.cv_staircase_procedure
 
 
 --
--- TOC entry 4756 (class 2606 OID 16673)
+-- TOC entry 4778 (class 2606 OID 25931)
 -- Name: cv_staircase_raw cv_raw_to_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1212,7 +1310,7 @@ ALTER TABLE ONLY public.cv_staircase_raw
 
 
 --
--- TOC entry 4758 (class 2606 OID 16675)
+-- TOC entry 4780 (class 2606 OID 25933)
 -- Name: eis_procedure eis_procedure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1221,7 +1319,7 @@ ALTER TABLE ONLY public.eis_procedure
 
 
 --
--- TOC entry 4760 (class 2606 OID 16677)
+-- TOC entry 4782 (class 2606 OID 25935)
 -- Name: eis_raw eis_raw_to_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1230,7 +1328,7 @@ ALTER TABLE ONLY public.eis_raw
 
 
 --
--- TOC entry 4762 (class 2606 OID 16679)
+-- TOC entry 4784 (class 2606 OID 25937)
 -- Name: experiments experiment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1239,7 +1337,7 @@ ALTER TABLE ONLY public.experiments
 
 
 --
--- TOC entry 4764 (class 2606 OID 16681)
+-- TOC entry 4786 (class 2606 OID 25939)
 -- Name: measurements measurment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1248,7 +1346,7 @@ ALTER TABLE ONLY public.measurements
 
 
 --
--- TOC entry 4766 (class 2606 OID 16683)
+-- TOC entry 4788 (class 2606 OID 25941)
 -- Name: ocp_procedure ocp_procedure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1257,7 +1355,7 @@ ALTER TABLE ONLY public.ocp_procedure
 
 
 --
--- TOC entry 4768 (class 2606 OID 16685)
+-- TOC entry 4790 (class 2606 OID 25943)
 -- Name: ocp_raw ocp_raw_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1266,7 +1364,7 @@ ALTER TABLE ONLY public.ocp_raw
 
 
 --
--- TOC entry 4770 (class 2606 OID 16687)
+-- TOC entry 4792 (class 2606 OID 25945)
 -- Name: users user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1275,7 +1373,52 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 4773 (class 2606 OID 16688)
+-- TOC entry 4796 (class 2606 OID 26031)
+-- Name: xps_c1s_raw xps_c1s_raw_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_c1s_raw
+    ADD CONSTRAINT xps_c1s_raw_id_pkey PRIMARY KEY (raw_id);
+
+
+--
+-- TOC entry 4798 (class 2606 OID 26041)
+-- Name: xps_f1s_raw xps_f1s_raw_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_f1s_raw
+    ADD CONSTRAINT xps_f1s_raw_id_pkey PRIMARY KEY (raw_id);
+
+
+--
+-- TOC entry 4800 (class 2606 OID 26051)
+-- Name: xps_li1s_raw xps_li1s_raw_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_li1s_raw
+    ADD CONSTRAINT xps_li1s_raw_id_pkey PRIMARY KEY (raw_id);
+
+
+--
+-- TOC entry 4802 (class 2606 OID 26066)
+-- Name: xps_o1s_raw xps_o1s_raw_id_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_o1s_raw
+    ADD CONSTRAINT xps_o1s_raw_id_pkey PRIMARY KEY (raw_id);
+
+
+--
+-- TOC entry 4794 (class 2606 OID 26021)
+-- Name: xps_procedure xps_procedure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_procedure
+    ADD CONSTRAINT xps_procedure_pkey PRIMARY KEY (procedure_id);
+
+
+--
+-- TOC entry 4803 (class 2606 OID 25946)
 -- Name: ca_procedure ca_measrument_to_measurment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1284,7 +1427,7 @@ ALTER TABLE ONLY public.ca_procedure
 
 
 --
--- TOC entry 4774 (class 2606 OID 16693)
+-- TOC entry 4804 (class 2606 OID 25951)
 -- Name: ca_raw ca_raw_to_ca_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1293,7 +1436,7 @@ ALTER TABLE ONLY public.ca_raw
 
 
 --
--- TOC entry 4775 (class 2606 OID 16698)
+-- TOC entry 4805 (class 2606 OID 25956)
 -- Name: cp_procedure cp_measrument_to_measurment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1302,7 +1445,7 @@ ALTER TABLE ONLY public.cp_procedure
 
 
 --
--- TOC entry 4776 (class 2606 OID 16703)
+-- TOC entry 4806 (class 2606 OID 25961)
 -- Name: cp_raw cp_raw_to_cp_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1311,7 +1454,7 @@ ALTER TABLE ONLY public.cp_raw
 
 
 --
--- TOC entry 4786 (class 2606 OID 16773)
+-- TOC entry 4807 (class 2606 OID 25966)
 -- Name: cv_cycle cv_cycle_to_cv_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1320,7 +1463,7 @@ ALTER TABLE ONLY public.cv_cycle
 
 
 --
--- TOC entry 4777 (class 2606 OID 16708)
+-- TOC entry 4808 (class 2606 OID 25971)
 -- Name: cv_staircase_procedure cv_measrument_to_measurment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1329,7 +1472,7 @@ ALTER TABLE ONLY public.cv_staircase_procedure
 
 
 --
--- TOC entry 4778 (class 2606 OID 16713)
+-- TOC entry 4809 (class 2606 OID 25976)
 -- Name: cv_staircase_raw cv_raw_to_cv_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1338,7 +1481,7 @@ ALTER TABLE ONLY public.cv_staircase_raw
 
 
 --
--- TOC entry 4779 (class 2606 OID 16718)
+-- TOC entry 4810 (class 2606 OID 25981)
 -- Name: eis_procedure eis_measrument_to_measurment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1347,7 +1490,7 @@ ALTER TABLE ONLY public.eis_procedure
 
 
 --
--- TOC entry 4780 (class 2606 OID 16723)
+-- TOC entry 4811 (class 2606 OID 25986)
 -- Name: eis_raw eis_raw_to_eis_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1356,7 +1499,7 @@ ALTER TABLE ONLY public.eis_raw
 
 
 --
--- TOC entry 4783 (class 2606 OID 16728)
+-- TOC entry 4814 (class 2606 OID 25991)
 -- Name: motor_positions experiment; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1365,7 +1508,7 @@ ALTER TABLE ONLY public.motor_positions
 
 
 --
--- TOC entry 4782 (class 2606 OID 16733)
+-- TOC entry 4813 (class 2606 OID 25996)
 -- Name: measurements measurment_id_to_experiment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1374,7 +1517,7 @@ ALTER TABLE ONLY public.measurements
 
 
 --
--- TOC entry 4784 (class 2606 OID 16738)
+-- TOC entry 4815 (class 2606 OID 26001)
 -- Name: ocp_procedure ocp_measrument_to_measurment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1383,7 +1526,7 @@ ALTER TABLE ONLY public.ocp_procedure
 
 
 --
--- TOC entry 4785 (class 2606 OID 16743)
+-- TOC entry 4816 (class 2606 OID 26006)
 -- Name: ocp_raw ocp_raw_to_ocp_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1392,7 +1535,7 @@ ALTER TABLE ONLY public.ocp_raw
 
 
 --
--- TOC entry 4781 (class 2606 OID 16748)
+-- TOC entry 4812 (class 2606 OID 26011)
 -- Name: experiments user_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1400,7 +1543,52 @@ ALTER TABLE ONLY public.experiments
     ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES public.users(user_id) NOT VALID;
 
 
--- Completed on 2023-12-21 23:33:12
+--
+-- TOC entry 4818 (class 2606 OID 26032)
+-- Name: xps_c1s_raw xps_c1s_raw_to_xps_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_c1s_raw
+    ADD CONSTRAINT xps_c1s_raw_to_xps_procedure FOREIGN KEY (procedure_id) REFERENCES public.xps_procedure(procedure_id);
+
+
+--
+-- TOC entry 4819 (class 2606 OID 26042)
+-- Name: xps_f1s_raw xps_f1s_raw_to_xps_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_f1s_raw
+    ADD CONSTRAINT xps_f1s_raw_to_xps_procedure FOREIGN KEY (procedure_id) REFERENCES public.xps_procedure(procedure_id);
+
+
+--
+-- TOC entry 4820 (class 2606 OID 26052)
+-- Name: xps_li1s_raw xps_li1s_raw_to_xps_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_li1s_raw
+    ADD CONSTRAINT xps_li1s_raw_to_xps_procedure FOREIGN KEY (procedure_id) REFERENCES public.xps_procedure(procedure_id);
+
+
+--
+-- TOC entry 4817 (class 2606 OID 26022)
+-- Name: xps_procedure xps_measrument_to_measurment_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_procedure
+    ADD CONSTRAINT xps_measrument_to_measurment_id FOREIGN KEY (xps_measurement_id) REFERENCES public.measurements(measurement_id) NOT VALID;
+
+
+--
+-- TOC entry 4821 (class 2606 OID 26067)
+-- Name: xps_o1s_raw xps_o1s_raw_to_xps_procedure; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.xps_o1s_raw
+    ADD CONSTRAINT xps_o1s_raw_to_xps_procedure FOREIGN KEY (procedure_id) REFERENCES public.xps_procedure(procedure_id);
+
+
+-- Completed on 2023-12-31 00:29:38
 
 --
 -- PostgreSQL database dump complete

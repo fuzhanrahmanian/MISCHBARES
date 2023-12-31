@@ -6,6 +6,11 @@ Auto-MISCHBARES
     :align: center
     :width: 300px
 
+
+.. image:: https://zenodo.org/badge/546603657.svg
+  :target: https://zenodo.org/doi/10.5281/zenodo.10447746
+  :align: center
+
 Overview
 --------
 
@@ -57,6 +62,14 @@ Database Setup
      psql -U [username] -d [database_name] -a -f mischbares_db.sql
 
 Replace `[username]` and `[database_name]` with your PostgreSQL credentials.
+
+
+Information
+-----------
+
+Tutorial and demonstration can be find at `<https://doi.org/10.5281/zenodo.10445749>`_.
+
+The data related to this study is available at `<https://doi.org/10.5281/zenodo.10444324>`_.
 
 Cite this work
 --------------

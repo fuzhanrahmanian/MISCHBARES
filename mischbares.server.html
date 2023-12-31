@@ -102,8 +102,256 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
-<section id="mischbares-server-autolab-server-module">
-<h2>mischbares.server.autolab_server module<a class="headerlink" href="#mischbares-server-autolab-server-module" title="Permalink to this headline"></a></h2>
+<section id="module-mischbares.server.autolab_server">
+<span id="mischbares-server-autolab-server-module"></span><h2>mischbares.server.autolab_server module<a class="headerlink" href="#module-mischbares.server.autolab_server" title="Permalink to this headline"></a></h2>
+<p>autolab dirver</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.ReturnClass">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">ReturnClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#ReturnClass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.ReturnClass" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<p>define a return class for returning the result with pydantic</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.ReturnClass.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#mischbares.server.autolab_server.ReturnClass.data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.ReturnClass.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mischbares.server.autolab_server.ReturnClass.model_config" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.ReturnClass.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'data':</span> <span class="pre">FieldInfo(annotation=dict,</span> <span class="pre">required=False),</span> <span class="pre">'parameters':</span> <span class="pre">FieldInfo(annotation=dict,</span> <span class="pre">required=False)}</span></em><a class="headerlink" href="#mischbares.server.autolab_server.ReturnClass.model_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.ReturnClass.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#mischbares.server.autolab_server.ReturnClass.parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.abort">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">abort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#abort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.abort" title="Permalink to this definition"></a></dt>
+<dd><p>abort the current procedure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return class with the parameters and the data.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.applied_potential">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">applied_potential</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#applied_potential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.applied_potential" title="Permalink to this definition"></a></dt>
+<dd><p>get the applied potential of the instrument vs. reference electrode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return class with the parameters and the data.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.current">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">current</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#current"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.current" title="Permalink to this definition"></a></dt>
+<dd><p>get the current of the instrument vs. reference electrode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>current value.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>current (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.disconnect">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.disconnect" title="Permalink to this definition"></a></dt>
+<dd><p>disconnect from the instrument.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.health_check">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">health_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#health_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.health_check" title="Permalink to this definition"></a></dt>
+<dd><p>health check to see if the server is up and running
+:returns: status
+:rtype: dict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.main">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.main" title="Permalink to this definition"></a></dt>
+<dd><p>main function to run the server.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.measure_status">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">measure_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#measure_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.measure_status" title="Permalink to this definition"></a></dt>
+<dd><p>check if the instrument is measuring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return class with the parameters and the data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.perform_measurement">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">perform_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">procedure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parse_instruction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setpoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1mA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_off_status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'off'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_at_ocp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#perform_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.perform_measurement" title="Permalink to this definition"></a></dt>
+<dd><p>perform the measurement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>procedure</strong> (<em>str</em>) – the procedure to be performed.</p></li>
+<li><p><strong>plot_type</strong> (<em>str</em>) – the type of plot.</p></li>
+<li><p><strong>parse_instruction</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – the instruction for parsing the data.</p></li>
+<li><p><strong>save_dir</strong> (<em>str</em>) – save directory.</p></li>
+<li><p><strong>setpoints</strong> (<em>dict</em>) – the setpoints of the procedure. Defaults to None.</p></li>
+<li><p><strong>current_range</strong> (<em>str</em>) – the current range of the instrument. Defaults to “1mA”.</p></li>
+<li><p><strong>on_off_status</strong> (<em>str</em>) – the status of the instrument. Defaults to “off”.</p></li>
+<li><p><strong>optional_name</strong> (<em>str</em>) – optional file name. Defaults to None.</p></li>
+<li><p><strong>measure_at_ocp</strong> (<em>bool</em>) – measure at ocp. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return class with the parameters and the data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.potential">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">potential</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#potential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.potential" title="Permalink to this definition"></a></dt>
+<dd><p>get the current of the instrument vs. reference electrode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return class with the parameters and the data.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.reset">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.reset" title="Permalink to this definition"></a></dt>
+<dd><p>reset the autolab driver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return class with the parameters and the data.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.retrieve">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">retrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#retrieve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.retrieve" title="Permalink to this definition"></a></dt>
+<dd><p>retrieve the data from the nox file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>safepath</strong> (<em>str</em>) – the path of the nox file.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – the name of the nox file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return class with the parameters and the data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.set_cell">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">set_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#set_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.set_cell" title="Permalink to this definition"></a></dt>
+<dd><p>turn the cell on or off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>onoff</strong> (<em>str</em>) – “on” or “off” for the cell.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return class with the parameters and the data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.set_current_range">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">set_current_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#set_current_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.set_current_range" title="Permalink to this definition"></a></dt>
+<dd><p>set the current range of the instrument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>return class with the parameters and the data</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.set_stability">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">set_stability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#set_stability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.set_stability" title="Permalink to this definition"></a></dt>
+<dd><p>set the stability of the instrument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stability</strong> (<em>str</em>) – “high”, “low”.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return class with the parameters and the data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>retc (<a class="reference internal" href="#mischbares.server.autolab_server.ReturnClass" title="mischbares.server.autolab_server.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.startup_event">
+<span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">startup_event</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#startup_event"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.startup_event" title="Permalink to this definition"></a></dt>
+<dd><p>startup event for initializing the autolab driver</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.server.autolab_server.websocket_messages">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.server.autolab_server.</span></span><span class="sig-name descname"><span class="pre">websocket_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">starlette.websockets.WebSocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/server/autolab_server.html#websocket_messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.server.autolab_server.websocket_messages" title="Permalink to this definition"></a></dt>
+<dd><p>websocket for the autolab driver and visualise the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>websocket</strong> (<em>WebSocket</em>) – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-mischbares.server">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mischbares.server" title="Permalink to this headline"></a></h2>

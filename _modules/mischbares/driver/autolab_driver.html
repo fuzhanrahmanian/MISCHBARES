@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mischbares.driver.autolab_driver &mdash; MISCHBARES 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MISCHBARES
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Auto-MISCHBARES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Mischbares</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MISCHBARES</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mischbares.driver.autolab_driver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mischbares.driver.autolab_driver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;autolab dirver&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">clr</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">mischbares.driver.analysis_driver</span> <span class="kn">import</span> <span class="n">AnalysisDriver</span>
+<span class="kn">from</span> <span class="nn">mischbares.logger</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">mischbares.utils</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">mischbares.db.procedure</span> <span class="kn">import</span> <span class="n">Procedure</span>
+<span class="kn">from</span> <span class="nn">mischbares.utils.utils</span> <span class="kn">import</span> <span class="n">send_to_telegram</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;autolab_driver&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Autolab"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab">[docs]</a><span class="k">class</span> <span class="nc">Autolab</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;autolab class for defining the base functions of Metrohm instrument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autolab_conf</span><span class="p">):</span>
+        <span class="c1">#init a Queue for the visualizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span> <span class="c1"># loop=asyncio.get_event_loop()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basep</span> <span class="o">=</span> <span class="n">autolab_conf</span><span class="p">[</span><span class="s2">&quot;basep&quot;</span><span class="p">]</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procp</span> <span class="o">=</span> <span class="n">autolab_conf</span><span class="p">[</span><span class="s2">&quot;procp&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hwsetupf</span> <span class="o">=</span> <span class="n">autolab_conf</span><span class="p">[</span><span class="s2">&quot;hwsetupf&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">micsetupf</span> <span class="o">=</span> <span class="n">autolab_conf</span><span class="p">[</span><span class="s2">&quot;micsetupf&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proceduresd</span> <span class="o">=</span> <span class="n">autolab_conf</span><span class="p">[</span><span class="s2">&quot;proceuduresd&quot;</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># pylint: disable=E1101, E0401, C0415</span>
+            <span class="n">clr</span><span class="o">.</span><span class="n">AddReference</span><span class="p">(</span><span class="s2">&quot;EcoChemie.Autolab.Sdk&quot;</span><span class="p">)</span>
+            <span class="kn">from</span> <span class="nn">EcoChemie.Autolab</span> <span class="kn">import</span> <span class="n">Sdk</span> <span class="k">as</span> <span class="n">sdk</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find the autolab SDK. With error </span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">sdk</span><span class="o">.</span><span class="n">Instrument</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optional_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_procedure</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_range_procedure_setting</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ca</span> <span class="o">=</span> <span class="s2">&quot;switchpotentiostatic&quot;</span><span class="p">,</span>
+                                                    <span class="n">cp</span> <span class="o">=</span> <span class="s2">&quot;switchgalvanostatic&quot;</span><span class="p">,</span>
+                                                    <span class="n">eis</span> <span class="o">=</span> <span class="s2">&quot;Autolab control&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ocp_procedure_setting</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ca</span> <span class="o">=</span> <span class="s2">&quot;applypotential0&quot;</span><span class="p">,</span>
+                                          <span class="n">cp</span> <span class="o">=</span> <span class="s2">&quot;applycurrent0&quot;</span><span class="p">,</span>
+                                          <span class="n">eis</span> <span class="o">=</span> <span class="s2">&quot;Set potential&quot;</span><span class="p">,</span>
+                                          <span class="n">cv_staircase</span> <span class="o">=</span> <span class="s2">&quot;FHSetSetpointPotential&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">save_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the save directory.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: save directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_dir</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">optional_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the optional name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: optional name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optional_name</span>
+
+
+    <span class="nd">@save_dir</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">save_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set the save directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            save_dir (str): save directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_dir</span> <span class="o">=</span> <span class="n">save_dir</span>
+
+
+    <span class="nd">@optional_name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">optional_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optional_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set the optional name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            optional_name (str): optional name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optional_name</span> <span class="o">=</span> <span class="n">optional_name</span>
+
+
+<div class="viewcode-block" id="Autolab.connect"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;connect to the instrument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">HardwareSetupFile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hwsetupf</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">AutolabConnection</span><span class="o">.</span><span class="n">EmbeddedExeFileToStart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">micsetupf</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Connect</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connected to Autolab&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Autolab.set_cell"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.set_cell">[docs]</a>    <span class="k">def</span> <span class="nf">set_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onoff</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;turn the cell on or off.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            onoff (str): &quot;on&quot; or &quot;off&quot; for the cell.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">onoff</span> <span class="o">==</span> <span class="s1">&#39;on&#39;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;turning cell on&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CellOnOff</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">elif</span> <span class="n">onoff</span> <span class="o">==</span> <span class="s1">&#39;off&#39;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;turning cell off&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CellOnOff</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">elif</span> <span class="n">onoff</span> <span class="o">==</span> <span class="s1">&#39;na&#39;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;no action for cell&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># reset the instrument</span>
+<div class="viewcode-block" id="Autolab.reset"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;reset the instrument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="s2">&quot;on&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;instrument reset&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Autolab.abort"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.abort">[docs]</a>    <span class="k">def</span> <span class="nf">abort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;abort the current procedure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Abort</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;procedure aborted&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Failed to abort, no procedure is loaded&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Autolab.disconnect"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; disconnect from the instrument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Abort</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Disconnect</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Disconnected from Autolab&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Autolab.set_stability"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.set_stability">[docs]</a>    <span class="k">def</span> <span class="nf">set_stability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stability</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set the stability of the instrument.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stability (str): &quot;high&quot;, &quot;low&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">stability</span><span class="o">==</span><span class="s2">&quot;high&quot;</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;setting stability to high&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">Bandwith</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;setting stability to low&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">Bandwith</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="Autolab.load_procedure"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.load_procedure">[docs]</a>    <span class="k">def</span> <span class="nf">load_procedure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;load a procedure.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of the procedure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">LoadProcedure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proceduresd</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;procedure </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> loaded&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Autolab.potential"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.potential">[docs]</a>    <span class="k">def</span> <span class="nf">potential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the current of the instrument vs. reference electrode.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: current pottential.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_potential</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">get_Potential</span><span class="p">())</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current potential vs. reference electrode is </span><span class="si">{</span><span class="n">current_potential</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">current_potential</span></div>
+
+
+<div class="viewcode-block" id="Autolab.applied_potential"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.applied_potential">[docs]</a>    <span class="k">def</span> <span class="nf">applied_potential</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the applied potential of the instrument vs. reference electrode.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            flaot: applied potential.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">applied_potential</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">PotentialApplied</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current applied potential vs. reference electrode is </span><span class="si">{</span><span class="n">applied_potential</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">applied_potential</span></div>
+
+
+<div class="viewcode-block" id="Autolab.current"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.current">[docs]</a>    <span class="k">def</span> <span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the current of the instrument vs. reference electrode.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            current (float): current value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">Current</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;applied current vs. reference electrode is </span><span class="si">{</span><span class="n">current</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">current</span></div>
+
+
+<div class="viewcode-block" id="Autolab.measure_status"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.measure_status">[docs]</a>    <span class="k">def</span> <span class="nf">measure_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;check if the instrument is measuring.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if measuring, False if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">IsMeasuring</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;no procedure is loaded&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Autolab.set_current_range"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.set_current_range">[docs]</a>    <span class="k">def</span> <span class="nf">set_current_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_range</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set the current range of the instrument.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_range (str): set the current range of the instrument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;10A&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;1A&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;100A&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;10mA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;1mA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;100uA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">4</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;10uA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;1uA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">6</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;100nA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span>
+
+        <span class="k">elif</span> <span class="n">current_range</span> <span class="o">==</span> <span class="s2">&quot;10nA&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span> <span class="o">=</span> <span class="o">-</span><span class="mi">8</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current range set to </span><span class="si">{</span><span class="n">current_range</span><span class="si">}</span><span class="se">\</span>
+<span class="s2">                with the value </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">Ei</span><span class="o">.</span><span class="n">CurrentRange</span></div>
+
+
+<div class="viewcode-block" id="Autolab.set_setpoints"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.set_setpoints">[docs]</a>    <span class="k">def</span> <span class="nf">set_setpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">procedure</span><span class="p">,</span> <span class="n">setpoints</span><span class="p">,</span> <span class="n">current_range</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set the setpoints of the procedure.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            procedure (str): name of the procedure.</span>
+<span class="sd">            setpoints (dict): a dictionary of the procedure&#39;s parameters.</span>
+<span class="sd">            current_range (str): the current range of the instrument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">procedure</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_range_procedure_setting</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="c1"># set the current range</span>
+            <span class="n">new_current_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_current_range</span><span class="p">(</span><span class="n">current_range</span><span class="p">)</span>
+
+            <span class="c1"># change current range in the correcponded experiment</span>
+            <span class="n">current_comm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_range_procedure_setting</span><span class="p">[</span><span class="n">procedure</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="n">current_comm</span><span class="p">]</span><span class="o">.</span><span class="n">CommandParameters</span><span class="p">[</span><span class="s2">&quot;WE(1).Current range&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> \
+                                                                                    <span class="n">new_current_range</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;current range set to </span><span class="si">{</span><span class="n">current_range</span><span class="si">}</span><span class="s2"> in procedure </span><span class="si">{</span><span class="n">procedure</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">                        the experment settings are </span><span class="si">{</span><span class="n">setpoints</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span>  <span class="n">setpoints</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">setpoints</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no parameters for </span><span class="si">{</span><span class="n">procedure</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">comm</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">setpoints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="n">comm</span><span class="p">]</span><span class="o">.</span><span class="n">CommandParameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;set </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Autolab.set_ocp_value"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.set_ocp_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_ocp_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">procedure</span><span class="p">,</span> <span class="n">ocp_value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; set the ocp potential or current of the procedure.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            procedure (str): name of the procedure.</span>
+<span class="sd">            ocp_value (float): ocp potential or current value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ocp_command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocp_procedure_setting</span><span class="p">[</span><span class="n">procedure</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="n">ocp_command</span><span class="p">]</span><span class="o">.</span><span class="n">CommandParameters</span><span class="p">[</span><span class="s2">&quot;Setpoint value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="n">ocp_value</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;set the OCP value to </span><span class="si">{</span><span class="n">ocp_value</span><span class="si">}</span><span class="s2"> in procedure </span><span class="si">{</span><span class="n">procedure</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Autolab.get_ocp_on_the_fly"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.get_ocp_on_the_fly">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_ocp_on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the on the fly OCP value as initial point for autolab procedures.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            current (float): current value at ocp.</span>
+<span class="sd">            potential (float): potential value at ocp.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_procedure</span><span class="p">(</span><span class="s2">&quot;ocp&quot;</span><span class="p">)</span>
+        <span class="c1"># measure the procedure for 10 seconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Measure</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+
+        <span class="c1"># extracting the OCP values</span>
+        <span class="n">ocp_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ocp_item</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;WE(1).Current&#39;</span><span class="p">,</span> <span class="s1">&#39;WE(1).Potential&#39;</span><span class="p">]:</span>
+            <span class="n">extracted_values</span> <span class="o">=</span>\
+                <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;recordsignal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">Signals</span><span class="o">.</span><span class="n">get_Item</span><span class="p">(</span><span class="n">ocp_item</span><span class="p">)</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;extracted </span><span class="si">{</span><span class="n">ocp_item</span><span class="si">}</span><span class="s2"> value: </span><span class="si">{</span><span class="n">extracted_values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># due to oscillation, an averaged value is used</span>
+            <span class="n">ocp_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">extracted_values</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:]))</span>
+
+        <span class="c1"># empty the procedure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># first value is the current, second value is the potential</span>
+        <span class="k">return</span> <span class="n">ocp_values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ocp_values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+    <span class="c1"># This function needs to be modified to work with the bokeh visualizer properly</span>
+    <span class="c1"># Todo</span>
+<div class="viewcode-block" id="Autolab.visualize_measurement"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.visualize_measurement">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">visualize_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">measurement_type</span><span class="p">,</span> <span class="n">measurement_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;an async function to run while the instrument is measuring used for the visualizer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            measurement_type (str): the type of measurement for plotting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">())</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">IsMeasuring</span><span class="p">:</span>
+            <span class="n">freq</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># not to cause an exception</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">())</span>
+
+            <span class="n">measure_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">-</span><span class="n">start_time</span>
+
+            <span class="k">if</span> <span class="n">measurement_type</span> <span class="o">==</span> <span class="s1">&#39;impedance&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># get the parameters of the measurement</span>
+                    <span class="n">freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">FraCommands</span><span class="p">[</span><span class="s1">&#39;FIAScan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_FIAMeasurement</span><span class="p">()</span><span class="o">.</span><span class="n">Frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">hreal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">FraCommands</span><span class="p">[</span><span class="s1">&#39;FIAScan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_FIAMeasurement</span><span class="p">()</span><span class="o">.</span><span class="n">H_Real</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">imag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">FraCommands</span><span class="p">[</span><span class="s1">&#39;FIAScan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_FIAMeasurement</span><span class="p">()</span><span class="o">.</span><span class="n">H_Imaginary</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">FraCommands</span><span class="p">[</span><span class="s1">&#39;FIAScan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_FIAMeasurement</span><span class="p">()</span><span class="o">.</span><span class="n">H_Phase</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">modulus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">FraCommands</span><span class="p">[</span><span class="s1">&#39;FIAScan&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_FIAMeasurement</span><span class="p">()</span><span class="o">.</span><span class="n">H_Modulus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;frequency: </span><span class="si">{</span><span class="n">freq</span><span class="si">}</span><span class="s2">, real: </span><span class="si">{</span><span class="n">hreal</span><span class="si">}</span><span class="s2">, imaginary: </span><span class="si">{</span><span class="n">imag</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
+<span class="s2">                                phase: </span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">, modulus: </span><span class="si">{</span><span class="n">modulus</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="n">measure_time</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">hreal</span><span class="p">,</span> <span class="n">imag</span><span class="p">,</span>
+                                          <span class="n">phase</span><span class="p">,</span> <span class="n">modulus</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">measurement_id</span><span class="p">])</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;no measurement yet&quot;</span><span class="p">)</span>
+
+                <span class="c1">#await asyncio.sleep(0.6)</span>
+
+            <span class="k">elif</span> <span class="n">measurement_type</span> <span class="o">==</span> <span class="s1">&#39;tCV&#39;</span><span class="p">:</span>
+
+                <span class="n">measured_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
+                <span class="n">measured_potential</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential</span><span class="p">()</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;time: </span><span class="si">{</span><span class="n">measure_time</span><span class="si">}</span><span class="s2">, measured current: </span><span class="si">{</span><span class="n">measured_current</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
+<span class="s2">                            measured potential: </span><span class="si">{</span><span class="n">measured_potential</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="n">measure_time</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">measured_potential</span><span class="p">,</span>
+                                    <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">measured_current</span><span class="p">,</span> <span class="n">measurement_id</span><span class="p">])</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Autolab.parse_nox"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.parse_nox">[docs]</a>    <span class="k">def</span> <span class="nf">parse_nox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parse_instruction</span><span class="p">,</span> <span class="n">save_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">optional_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;parse the data from the saved nox file</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parse_instruction (str): the instruction for parsing the data.</span>
+<span class="sd">            save_dir (str, optional): save directory. Defaults to None.</span>
+<span class="sd">            optional_name (str, optional): optional file name. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (dict): extracted data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get the saved procedure and parse it</span>
+        <span class="k">if</span> <span class="n">save_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span>
+        <span class="k">if</span> <span class="n">optional_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optional_name</span> <span class="o">=</span> <span class="n">optional_name</span>
+
+        <span class="c1"># load the finished procedure</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loading procedure from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="si">}</span><span class="s2"> with filename </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optional_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finished_procedure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">LoadProcedure</span><span class="p">(</span>
+                                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">optional_name</span><span class="si">}</span><span class="s2">.nox&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># check if the procedure is a list</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parse_instruction</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">parse_instruction</span> <span class="o">=</span> <span class="p">[</span><span class="n">parse_instruction</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">comm</span> <span class="ow">in</span> <span class="n">parse_instruction</span><span class="p">:</span>
+            <span class="c1"># get the procedure&#39;s parameters</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">finished_procedure</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="n">comm</span><span class="p">]</span><span class="o">.</span><span class="n">Signals</span><span class="o">.</span><span class="n">Names</span><span class="p">]</span>
+            <span class="c1"># get the data for each parameter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">comm</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> \
+                                <span class="bp">self</span><span class="o">.</span><span class="n">finished_procedure</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="n">comm</span><span class="p">]</span><span class="o">.</span><span class="n">Signals</span><span class="o">.</span><span class="n">get_Item</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">Value</span><span class="p">]</span> \
+                               <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">}</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">save_data_as_json</span><span class="p">(</span><span class="n">directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> \
+                                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_name</span><span class="p">)</span>
+                                <span class="c1"># self.optional_name.replace(&#39;.nox&#39;, &#39;.json&#39;)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="Autolab.perform_measurement"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.perform_measurement">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">perform_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">procedure</span><span class="p">,</span> <span class="n">plot_type</span><span class="p">,</span>
+                                    <span class="n">parse_instruction</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">,</span>
+                                    <span class="n">setpoints</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">current_range</span> <span class="o">=</span> <span class="s2">&quot;1mA&quot;</span><span class="p">,</span>
+                                    <span class="n">on_off_status</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+                                    <span class="n">optional_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">measure_at_ocp</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                    <span class="n">measurement_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;perform the measurement</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            procedure (str): the procedure to be performed.</span>
+<span class="sd">            plot_type (str): the type of plot.</span>
+<span class="sd">            parse_instruction (list[str]): the instruction for parsing the data.</span>
+<span class="sd">            save_dir (str): save directory.</span>
+<span class="sd">            setpoints (dict): the setpoints of the procedure.</span>
+<span class="sd">            current_range (str): the current range. Defaults to &quot;1mA&quot;.</span>
+<span class="sd">            on_off_status (str): the status of the instrument. Defaults to &quot;off&quot;.</span>
+<span class="sd">            optional_name (str): optional file name. Defaults to None.</span>
+<span class="sd">            measure_at_ocp (bool): whether to measure at ocp. Default is False.</span>
+<span class="sd">            db_procedure (object): the procedure object from the database. Defaults to None.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            data (dict): extracted data from the nox file of the procedure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Add the procedure to a measurement</span>
+        <span class="c1"># Create procedure</span>
+        <span class="n">db_procedure</span> <span class="o">=</span> <span class="n">Procedure</span><span class="p">()</span>
+        <span class="n">db_procedure</span><span class="o">.</span><span class="n">procedure_name</span> <span class="o">=</span> <span class="n">procedure</span>
+        <span class="c1"># assamble_information about the procedure</span>
+        <span class="c1">#proc = {&quot;ocp&quot;: [setpoints[&quot;recordsignal&quot;][&#39;Duration (s)&#39;], 100, 0.0]}</span>
+        <span class="c1">#db_procedure.add_procedure_information(*proc[procedure], db_procedure.measurement_id)</span>
+        <span class="c1"># define a save path for saving th nox files of the measurements</span>
+        <span class="n">save_dir</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_dir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The procedure path is </span><span class="si">{</span><span class="n">save_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># create a file name for the nox file</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">assemble_file_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">optional_name</span><span class="p">)</span> <span class="k">if</span> \
+                <span class="n">optional_name</span> <span class="k">else</span> <span class="n">utils</span><span class="o">.</span><span class="n">assemble_file_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">measure_at_ocp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">procedure</span> <span class="o">==</span> <span class="s2">&quot;cp&quot;</span><span class="p">:</span>
+                <span class="n">ocp_value</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ocp_on_the_fly</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="n">procedure</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ca&quot;</span><span class="p">,</span> <span class="s2">&quot;eis&quot;</span><span class="p">,</span> <span class="s2">&quot;cv_staircase&quot;</span><span class="p">):</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">ocp_value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ocp_on_the_fly</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The procedure is not supported for measuring at OCP&quot;</span><span class="p">)</span>
+
+        <span class="c1"># load the procedure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_procedure</span><span class="p">(</span><span class="n">procedure</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">measure_at_ocp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_ocp_value</span><span class="p">(</span><span class="n">procedure</span><span class="p">,</span> <span class="n">ocp_value</span><span class="p">)</span>
+            <span class="n">ocp_command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ocp_procedure_setting</span><span class="p">[</span><span class="n">procedure</span><span class="p">]</span>
+            <span class="n">setpoints</span><span class="p">[</span><span class="n">ocp_command</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">setpoints</span><span class="p">[</span><span class="n">ocp_command</span><span class="p">][</span><span class="s2">&quot;Setpoint value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ocp_value</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loading the procedure </span><span class="si">{</span><span class="n">procedure</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># set the setpoints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_setpoints</span><span class="p">(</span><span class="n">procedure</span><span class="p">,</span> <span class="n">setpoints</span><span class="p">,</span> <span class="n">current_range</span><span class="p">)</span>
+
+        <span class="c1"># measure the procedure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">Measure</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;measuring the procedure&quot;</span><span class="p">)</span>
+        <span class="c1"># visualize the measurement live while it is being measured</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">visualize_measurement</span><span class="p">(</span><span class="n">plot_type</span><span class="p">,</span> <span class="n">measurement_id</span><span class="o">=</span><span class="n">measurement_id</span><span class="p">)</span>
+        <span class="c1"># Empty the queue</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+        <span class="c1"># cell status after measurement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="n">on_off_status</span><span class="p">)</span>
+
+        <span class="c1"># time required for switching the cell off and save the data</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">SaveAs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.nox&quot;</span><span class="p">))</span>
+
+        <span class="c1"># make a configuration of the procedure</span>
+        <span class="n">procedure_configuration</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">procedure</span> <span class="o">=</span> <span class="n">procedure</span><span class="p">,</span> <span class="n">setpoints</span> <span class="o">=</span> <span class="n">setpoints</span><span class="p">,</span>
+                                    <span class="n">plot_type</span> <span class="o">=</span> <span class="n">plot_type</span><span class="p">,</span> <span class="n">on_off_status</span> <span class="o">=</span> <span class="n">on_off_status</span><span class="p">,</span>
+                                    <span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                                    <span class="n">parse_instructions</span> <span class="o">=</span> <span class="n">parse_instruction</span><span class="p">,</span>
+                                    <span class="n">measure_at_ocp</span> <span class="o">=</span> <span class="n">measure_at_ocp</span><span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">save_data_as_json</span><span class="p">(</span><span class="n">directory</span> <span class="o">=</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">procedure_configuration</span><span class="p">,</span>
+                                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_configuration&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_nox</span><span class="p">(</span><span class="n">parse_instruction</span> <span class="o">=</span> <span class="n">parse_instruction</span><span class="p">,</span>
+                             <span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">optional_name</span> <span class="o">=</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># with open(r&quot;mischbares\tests\test_files\cv_staircase_finalized.json&quot;, &quot;rb&quot;) as f:</span>
+        <span class="c1">#     import json</span>
+        <span class="c1">#     data = json.load(f)</span>
+        <span class="c1"># call madap , do data analysis : processed data</span>
+        <span class="k">if</span> <span class="n">measurement_id</span><span class="p">:</span>
+            <span class="n">analyzed_data</span> <span class="o">=</span> <span class="n">AnalysisDriver</span><span class="p">(</span><span class="n">procedure_configuration</span><span class="o">=</span><span class="n">procedure_configuration</span><span class="p">,</span>
+                            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">parse_instruction</span><span class="o">=</span><span class="n">parse_instruction</span><span class="p">,</span> <span class="n">db_procedure</span><span class="o">=</span><span class="n">db_procedure</span><span class="p">,</span> <span class="n">measurement_id</span><span class="o">=</span><span class="n">measurement_id</span><span class="p">)</span>
+            <span class="c1"># Add the measured data to the database</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_data_for_db</span><span class="p">(</span><span class="n">procedure_configuration</span><span class="p">,</span> <span class="n">analyzed_data</span><span class="o">=</span><span class="n">analyzed_data</span><span class="p">)</span>
+            <span class="n">db_procedure</span><span class="o">.</span><span class="n">add_procedure_information</span><span class="p">(</span><span class="o">*</span><span class="n">info</span><span class="p">,</span> <span class="n">measurement_id</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">procedure</span> <span class="o">==</span> <span class="s2">&quot;cv_staircase&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_cv_cycle_data_to_db</span><span class="p">(</span><span class="n">analyzed_data</span><span class="p">,</span> <span class="n">db_procedure</span><span class="o">=</span><span class="n">db_procedure</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">procedure</span> <span class="o">==</span> <span class="s2">&quot;eis&quot;</span><span class="p">:</span>
+                <span class="n">parse_instruction</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">parse_instruction</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;FIAMeasurement&quot;</span><span class="p">))</span>
+            <span class="n">db_procedure</span><span class="o">.</span><span class="n">add_raw_procedure_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">parse_instruction</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="c1"># get the datetime now up until seconds</span>
+            <span class="n">db_procedure</span><span class="o">.</span><span class="n">procedure_finished</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+            <span class="n">send_to_telegram</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Finished experiment </span><span class="si">{</span><span class="n">analyzed_data</span><span class="o">.</span><span class="n">madap_args</span><span class="o">.</span><span class="n">experiment_id</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                         <span class="n">message_type</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;finished measuring and saving procedure </span><span class="si">{</span><span class="n">procedure</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="Autolab.add_cv_cycle_data_to_db"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.add_cv_cycle_data_to_db">[docs]</a>    <span class="k">def</span> <span class="nf">add_cv_cycle_data_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analyzed_data</span><span class="p">,</span> <span class="n">db_procedure</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">E_half_params</span><span class="p">:</span>
+            <span class="n">cycle_number</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">E_half</span><span class="p">,</span> <span class="n">corrosion_points</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">pair_dict</span> <span class="ow">in</span> <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">E_half_params</span><span class="p">[</span><span class="n">cycle</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">E_half</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pair_dict</span><span class="p">[</span><span class="s2">&quot;E_half&quot;</span><span class="p">],</span> <span class="n">pair_dict</span><span class="p">[</span><span class="s2">&quot;I_half&quot;</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="s2">&quot;corrosion_point&quot;</span> <span class="ow">in</span> <span class="n">pair_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">corrosion_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pair_dict</span><span class="p">[</span><span class="s2">&quot;corrosion_point&quot;</span><span class="p">][</span><span class="s2">&quot;voltage&quot;</span><span class="p">],</span>
+                                            <span class="n">pair_dict</span><span class="p">[</span><span class="s2">&quot;corrosion_point&quot;</span><span class="p">][</span><span class="s2">&quot;current&quot;</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">corrosion_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+            <span class="n">peak_anodic</span><span class="p">,</span> <span class="n">height_anodic</span><span class="p">,</span> <span class="n">D_anodic</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">peak_dict</span> <span class="ow">in</span> <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">anodic_peak_params</span><span class="p">[</span><span class="n">cycle</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">peak_anodic</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">],</span> <span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="s2">&quot;D&quot;</span> <span class="ow">in</span> <span class="n">peak_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">D_anodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">D_anodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="c1"># check if height is in the dictionary</span>
+                <span class="k">if</span> <span class="s2">&quot;height&quot;</span> <span class="ow">in</span> <span class="n">peak_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">height_anodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">height_anodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+            <span class="n">peak_cathodic</span><span class="p">,</span> <span class="n">height_cathodic</span><span class="p">,</span> <span class="n">D_cathodic</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">peak_dict</span> <span class="ow">in</span> <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">cathodic_peak_params</span><span class="p">[</span><span class="n">cycle</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">peak_cathodic</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;voltage&quot;</span><span class="p">],</span> <span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;current&quot;</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="s2">&quot;D&quot;</span> <span class="ow">in</span> <span class="n">peak_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">D_cathodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">D_cathodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;height&quot;</span> <span class="ow">in</span> <span class="n">peak_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">height_cathodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak_dict</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">height_cathodic</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+            <span class="n">db_procedure</span><span class="o">.</span><span class="n">add_cv_cycle_data</span><span class="p">(</span><span class="n">cycle_number</span><span class="p">,</span> <span class="n">peak_anodic</span><span class="p">,</span> <span class="n">peak_cathodic</span><span class="p">,</span> <span class="n">D_anodic</span><span class="p">,</span> <span class="n">D_cathodic</span><span class="p">,</span> <span class="n">E_half</span><span class="p">,</span> <span class="n">height_anodic</span><span class="p">,</span>
+                                        <span class="n">height_cathodic</span><span class="p">,</span> <span class="n">corrosion_points</span><span class="p">,</span> <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span> <span class="n">db_procedure</span><span class="o">.</span><span class="n">procedure_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Autolab.prepare_data_for_db"><a class="viewcode-back" href="../../../mischbares.driver.html#mischbares.driver.autolab_driver.Autolab.prepare_data_for_db">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_data_for_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">procedure_configuration</span><span class="p">,</span> <span class="n">analyzed_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;procedure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ocp&quot;</span><span class="p">:</span>
+            <span class="c1"># Info: duration, interval_time</span>
+            <span class="n">proc_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;recordsignal&quot;</span><span class="p">][</span><span class="s2">&quot;Duration (s)&quot;</span><span class="p">],</span>
+                         <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;recordsignal&quot;</span><span class="p">][</span><span class="s2">&quot;Interval time (s)&quot;</span><span class="p">]]</span>
+            <span class="c1"># raw: current, corrected_time, index, potential, dpotential_dt,power, charge, dpower_dt, dcharge_dt</span>
+            <span class="k">return</span> <span class="n">proc_info</span>
+        <span class="k">if</span> <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;procedure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;cv_staircase&quot;</span><span class="p">:</span>
+            <span class="c1"># Info: start_potential, upper_vertex, lower_vertex, step_size, num_of_stop_crossings, stop_value, scan_rate</span>
+            <span class="n">proc_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHSetSetpointPotential&quot;</span><span class="p">][</span><span class="s2">&quot;Setpoint value&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHCyclicVoltammetry2&quot;</span><span class="p">][</span><span class="s2">&quot;Upper vertex&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHCyclicVoltammetry2&quot;</span><span class="p">][</span><span class="s2">&quot;Lower vertex&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHCyclicVoltammetry2&quot;</span><span class="p">][</span><span class="s2">&quot;Step&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHCyclicVoltammetry2&quot;</span><span class="p">][</span><span class="s2">&quot;NrOfStopCrossings&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHCyclicVoltammetry2&quot;</span><span class="p">][</span><span class="s2">&quot;Stop value&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;FHCyclicVoltammetry2&quot;</span><span class="p">][</span><span class="s2">&quot;Scanrate&quot;</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="n">proc_info</span>
+
+        <span class="k">if</span> <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;procedure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ca&quot;</span><span class="p">:</span>
+            <span class="c1"># Info: duration, applied_potential, interval_time, capacity, diffusion_coefficient</span>
+            <span class="n">proc_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;recordsignal&quot;</span><span class="p">][</span><span class="s2">&quot;Duration (s)&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;applypotential&quot;</span><span class="p">][</span><span class="s2">&quot;Setpoint value&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;recordsignal&quot;</span><span class="p">][</span><span class="s2">&quot;Interval time (s)&quot;</span><span class="p">],</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">np_cumulative_charge</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># capacity (last value of the cumulative charge)</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">diffusion_coefficient</span><span class="p">,</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">reaction_order</span><span class="p">,</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">reaction_rate_constant</span><span class="p">]</span>
+            <span class="c1"># raw: corrected_time, index, charge, current, potential, power, dcharge_dt, dcurrent_dt, dpotential_dt, dpower_dt</span>
+            <span class="k">return</span> <span class="n">proc_info</span>
+        <span class="k">if</span> <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;procedure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;cp&quot;</span><span class="p">:</span>
+            <span class="c1"># Info: duration, applied_current, interval_time, transition_time</span>
+            <span class="n">proc_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;recordsignal&quot;</span><span class="p">][</span><span class="s2">&quot;Duration (s)&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;applycurrent&quot;</span><span class="p">][</span><span class="s2">&quot;Setpoint value&quot;</span><span class="p">],</span>
+                        <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;recordsignal&quot;</span><span class="p">][</span><span class="s2">&quot;Interval time (s)&quot;</span><span class="p">],</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">tao_initial</span><span class="p">,</span> <span class="c1"># intial transition time,</span>
+                        <span class="nb">list</span><span class="p">(</span><span class="n">analyzed_data</span><span class="o">.</span><span class="n">analysis_cls</span><span class="o">.</span><span class="n">stabilization_values</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="c1"># initial stabilization potential</span>
+            <span class="k">return</span> <span class="n">proc_info</span>
+        <span class="k">if</span> <span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;procedure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;eis&quot;</span><span class="p">:</span>
+            <span class="c1"># Info: potential, integration_time, integration_cycle, lower_freuqency, upper_frequency, potential_dc, current_dc, fitted_circuit</span>
+            <span class="n">proc_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">procedure_configuration</span><span class="p">[</span><span class="s2">&quot;setpoints&quot;</span><span class="p">][</span><span class="s2">&quot;Set potential&quot;</span><span class="p">][</span><span class="s2">&quot;Setpoint value&quot;</span><span class="p">],</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">lower_frequency</span><span class="p">,</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">upper_frequency</span><span class="p">,</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">potential_DC</span><span class="p">,</span>
+                        <span class="n">analyzed_data</span><span class="o">.</span><span class="n">current_DC</span><span class="p">]</span>
+            <span class="c1">#analyzed_data.analysis_cls.custom_circuit[&quot;Circuit String&quot;]] # TODO: fitted_circuit are not available in the procedure. Placeholder for MADAP</span>
+            <span class="k">return</span> <span class="n">proc_info</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fuzhan Rahmanian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

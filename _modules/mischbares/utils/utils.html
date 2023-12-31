@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mischbares.utils.utils &mdash; MISCHBARES 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MISCHBARES
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Auto-MISCHBARES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Mischbares</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MISCHBARES</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mischbares.utils.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mischbares.utils.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; This module defines some utility functions for the MISCHBARES project. &quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+
+<span class="kn">from</span> <span class="nn">mischbares.logger</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">mischbares.config.main_config</span> <span class="kn">import</span> <span class="n">config</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;utils&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_dir"><a class="viewcode-back" href="../../../mischbares.utils.html#mischbares.utils.utils.create_dir">[docs]</a><span class="k">def</span> <span class="nf">create_dir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if a directory is present, if not creates one at the given location</span>
+<span class="sd">    Args:</span>
+<span class="sd">        directory (str): Location where the directory should be created</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">directory</span></div>
+
+
+<div class="viewcode-block" id="assemble_file_name"><a class="viewcode-back" href="../../../mischbares.utils.html#mischbares.utils.utils.assemble_file_name">[docs]</a><span class="k">def</span> <span class="nf">assemble_file_name</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assemble a file name from the given arguments</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The assembled file name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S_&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">timestamp</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="save_data_as_json"><a class="viewcode-back" href="../../../mischbares.utils.html#mischbares.utils.utils.save_data_as_json">[docs]</a><span class="k">def</span> <span class="nf">save_data_as_json</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the given data as json</span>
+<span class="sd">    Args:</span>
+<span class="sd">        directory (str): The directory where the data should be saved</span>
+<span class="sd">        data (dict): The data that should be saved</span>
+<span class="sd">        name (str): The name of the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving data in </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> as json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_data_as_json"><a class="viewcode-back" href="../../../mischbares.utils.html#mischbares.utils.utils.load_data_as_json">[docs]</a><span class="k">def</span> <span class="nf">load_data_as_json</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Load the given data as json</span>
+<span class="sd">    Args:</span>
+<span class="sd">        directory (str): The directory where the data should be saved</span>
+<span class="sd">        name (str): The name of the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading data from </span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2"> as json&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="get_nested_value"><a class="viewcode-back" href="../../../mischbares.utils.html#mischbares.utils.utils.get_nested_value">[docs]</a><span class="k">def</span> <span class="nf">get_nested_value</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively get the value from a nested dictionary using a list of keys.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (dict): The dictionary to search in.</span>
+<span class="sd">         keys (list): A list of keys to search for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value corresponding to the given keys.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyError: If the key is not found in the dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Base case: if there&#39;s only one key, return the corresponding value</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">config</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Recursive case: navigate one level deeper in the dictionary</span>
+    <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_nested_value</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key &#39;</span><span class="si">{</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="send_to_telegram"><a class="viewcode-back" href="../../../mischbares.utils.html#mischbares.utils.utils.send_to_telegram">[docs]</a><span class="k">def</span> <span class="nf">send_to_telegram</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">message_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sends a message to a Telegram bot.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        message (str): The message to be sent.</span>
+<span class="sd">        message_type (str): The type of the message (&quot;error&quot; or &quot;info&quot;).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">message_type</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; ‼ ‼ MISCHBARES ALERT ‼ ‼ </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">message</span>
+    <span class="k">if</span> <span class="n">message_type</span> <span class="o">==</span> <span class="s2">&quot;info&quot;</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; ℹ ℹ MISCHBARES INFO ℹ ℹ </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">message</span>
+
+    <span class="n">token</span><span class="p">,</span> <span class="n">chat_id</span> <span class="o">=</span> <span class="n">_check_token</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">chat_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not send message to telegram bot.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://api.telegram.org/bot</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">/sendMessage?chat_id=</span><span class="si">{</span><span class="n">chat_id</span><span class="si">}</span><span class="s2">&amp;text=</span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;ok&#39;</span><span class="p">]:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Message sent to telegram bot.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not send message to telegram bot: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_check_token</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the Telegram API token and chat ID are set either in environment variables or in the config file.</span>
+<span class="sd">    If not set, it logs a warning message.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple containing the Telegram API token and chat ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">load_dotenv</span><span class="p">()</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TELEGRAM_API_TOKEN&quot;</span><span class="p">)</span>
+    <span class="n">chat_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TELEGRAM_CHAT_ID&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Check if the token is set in the config file</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;QC&#39;</span><span class="p">][</span><span class="s1">&#39;telegram&#39;</span><span class="p">][</span><span class="s1">&#39;api_token&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;QC&#39;</span><span class="p">][</span><span class="s1">&#39;telegram&#39;</span><span class="p">][</span><span class="s1">&#39;api_token&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;QC&#39;</span><span class="p">][</span><span class="s1">&#39;telegram&#39;</span><span class="p">][</span><span class="s1">&#39;api_token&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Telegram API token not set in the config_file&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Telegram API token not set in environment variables. Create a .env file and set the token as TELEGRAM_API_TOKEN&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">chat_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;QC&#39;</span><span class="p">][</span><span class="s1">&#39;telegram&#39;</span><span class="p">][</span><span class="s1">&#39;chat_id&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;QC&#39;</span><span class="p">][</span><span class="s1">&#39;telegram&#39;</span><span class="p">][</span><span class="s1">&#39;chat_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">chat_id</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;QC&#39;</span><span class="p">][</span><span class="s1">&#39;telegram&#39;</span><span class="p">][</span><span class="s1">&#39;chat_id&#39;</span><span class="p">]</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Telegram chat id not set in environment variables. Create a .env file and set the chat id as TELEGRAM_CHAT_ID&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">token</span><span class="p">,</span> <span class="n">chat_id</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fuzhan Rahmanian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utils &mdash; MISCHBARES 0.0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Tests" href="mischbares.tests.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MISCHBARES
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Auto-MISCHBARES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Mischbares</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mischbares.html">mischbares package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="mischbares.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="mischbares.action.html">Actions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mischbares.config.html">Configurations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mischbares.driver.html">Drivers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mischbares.logger.html">Logger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mischbares.server.html">Servers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mischbares.tests.html">Tests</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mischbares.html#module-mischbares">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MISCHBARES</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Mischbares</a></li>
+          <li class="breadcrumb-item"><a href="mischbares.html">mischbares package</a></li>
+      <li class="breadcrumb-item active">Utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mischbares.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utils">
+<h1>Utils<a class="headerlink" href="#utils" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-mischbares.utils.orchestrator_utils">
+<span id="mischbares-utils-orchestrator-utils-module"></span><h2>mischbares.utils.orchestrator_utils module<a class="headerlink" href="#module-mischbares.utils.orchestrator_utils" title="Permalink to this headline"></a></h2>
+<p>A collection of functions for working with hdf5 files and generally with orchestrator data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.dict_address">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">dict_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#dict_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.dict_address" title="Permalink to this definition"></a></dt>
+<dd><p>For a string of dict keys seperated by ‘/’, get the value of d under that series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<em>str</em>) – address of value</p></li>
+<li><p><strong>dict_keys</strong> – dictionary to search</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value at address</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.dict_address_set">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">dict_address_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#dict_address_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.dict_address_set" title="Permalink to this definition"></a></dt>
+<dd><p>For a string of dict keys seperated by ‘/’, set the value of dictionary d at that address to val</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<em>str</em>) – address of value</p></li>
+<li><p><strong>dict_keys</strong> (<em>dict</em>) – dictionary to search</p></li>
+<li><p><strong>val</strong> (<em>int</em>) – value to set</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.hdf5_group_to_dict">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">hdf5_group_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#hdf5_group_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.hdf5_group_to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Take a group from somewhere within an hdf5 file, convert it to a dict, and return it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h5file</strong> (<em>str</em>) – hdf5 file to read from</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to group</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if the group is not a dictionary</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dictionary of group</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.highest_name">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">highest_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#highest_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.highest_name" title="Permalink to this definition"></a></dt>
+<dd><p>Tke in a list of strings which differ only by an integer,
+and return the one for which that integer is highest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em>) – list of strings</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>highest name</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.increment_name">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">increment_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#increment_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.increment_name" title="Permalink to this definition"></a></dt>
+<dd><p>Increment the number at the end of a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Incremented name of file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.paths_in_hdf5">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">paths_in_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#paths_in_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.paths_in_hdf5" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the input path or list of paths are valid for the input hdf5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h5path</strong> (<em>str</em>) – path to hdf5 file</p></li>
+<li><p><strong>paths</strong> (<em>str</em><em> or </em><em>list</em>) – path or list of paths to check</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if path is in hdf5, False if not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.recursively_save_dict_contents_to_group">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">recursively_save_dict_contents_to_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#recursively_save_dict_contents_to_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.recursively_save_dict_contents_to_group" title="Permalink to this definition"></a></dt>
+<dd><p>Save a dictionary to an hdf5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h5file</strong> (<em>h5py._hl.files.File</em>) – hdf5 file to save to</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – path to save to</p></li>
+<li><p><strong>dict_keys</strong> (<em>dict</em>) – dictionary to save</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.orchestrator_utils.save_dict_to_hdf5">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.orchestrator_utils.</span></span><span class="sig-name descname"><span class="pre">save_dict_to_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/orchestrator_utils.html#save_dict_to_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.orchestrator_utils.save_dict_to_hdf5" title="Permalink to this definition"></a></dt>
+<dd><p>Save a dictionary to an hdf5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dict</strong> (<em>dict</em>) – dictionary to save</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – name of file</p></li>
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – path where the hdf5 is saved. Defaults to ‘/’.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – mode to open the file. Defaults to ‘w’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mischbares.utils.utils">
+<span id="mischbares-utils-utils-module"></span><h2>mischbares.utils.utils module<a class="headerlink" href="#module-mischbares.utils.utils" title="Permalink to this headline"></a></h2>
+<p>This module defines some utility functions for the MISCHBARES project.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.utils.assemble_file_name">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.utils.</span></span><span class="sig-name descname"><span class="pre">assemble_file_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/utils.html#assemble_file_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.utils.assemble_file_name" title="Permalink to this definition"></a></dt>
+<dd><p>Assemble a file name from the given arguments
+:returns: The assembled file name
+:rtype: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.utils.create_dir">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.utils.</span></span><span class="sig-name descname"><span class="pre">create_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/utils.html#create_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.utils.create_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if a directory is present, if not creates one at the given location
+:param directory: Location where the directory should be created
+:type directory: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.utils.get_nested_value">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.utils.</span></span><span class="sig-name descname"><span class="pre">get_nested_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/utils.html#get_nested_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.utils.get_nested_value" title="Permalink to this definition"></a></dt>
+<dd><p>Recursively get the value from a nested dictionary using a list of keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – The dictionary to search in.
+keys (list): A list of keys to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value corresponding to the given keys.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>KeyError</strong> – If the key is not found in the dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.utils.load_data_as_json">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.utils.</span></span><span class="sig-name descname"><span class="pre">load_data_as_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/utils.html#load_data_as_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.utils.load_data_as_json" title="Permalink to this definition"></a></dt>
+<dd><p>Load the given data as json
+:param directory: The directory where the data should be saved
+:type directory: str
+:param name: The name of the file
+:type name: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.utils.save_data_as_json">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.utils.</span></span><span class="sig-name descname"><span class="pre">save_data_as_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/utils.html#save_data_as_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.utils.save_data_as_json" title="Permalink to this definition"></a></dt>
+<dd><p>Save the given data as json
+:param directory: The directory where the data should be saved
+:type directory: str
+:param data: The data that should be saved
+:type data: dict
+:param name: The name of the file
+:type name: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.utils.utils.send_to_telegram">
+<span class="sig-prename descclassname"><span class="pre">mischbares.utils.utils.</span></span><span class="sig-name descname"><span class="pre">send_to_telegram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/utils/utils.html#send_to_telegram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.utils.utils.send_to_telegram" title="Permalink to this definition"></a></dt>
+<dd><p>Sends a message to a Telegram bot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – The message to be sent.</p></li>
+<li><p><strong>message_type</strong> (<em>str</em>) – The type of the message (“error” or “info”).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mischbares.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mischbares.utils" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mischbares.tests.html" class="btn btn-neutral float-left" title="Tests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fuzhan Rahmanian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

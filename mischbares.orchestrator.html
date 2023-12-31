@@ -82,8 +82,345 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
-<section id="mischbares-orchestrator-orchestrator-module">
-<h2>mischbares.orchestrator.orchestrator module<a class="headerlink" href="#mischbares-orchestrator-orchestrator-module" title="Permalink to this headline"></a></h2>
+<section id="module-mischbares.orchestrator.orchestrator">
+<span id="mischbares-orchestrator-orchestrator-module"></span><h2>mischbares.orchestrator.orchestrator module<a class="headerlink" href="#module-mischbares.orchestrator.orchestrator" title="Permalink to this headline"></a></h2>
+<p>orcestrator, higherst level of the framework</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#Experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<p>validation class</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.meta" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.model_config" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'meta':</span> <span class="pre">FieldInfo(annotation=Union[dict,</span> <span class="pre">NoneType],</span> <span class="pre">required=True),</span> <span class="pre">'params':</span> <span class="pre">FieldInfo(annotation=dict,</span> <span class="pre">required=True),</span> <span class="pre">'soe':</span> <span class="pre">FieldInfo(annotation=list,</span> <span class="pre">required=True)}</span></em><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.model_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.native_command_ordering">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">native_command_ordering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#Experiment.native_command_ordering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.native_command_ordering" title="Permalink to this definition"></a></dt>
+<dd><p>check if the soe is in the right order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>experiments</strong> (<em>list</em>) – list of experiments</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return class with the parameters and the data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>retc (<a class="reference internal" href="mischbares.action.html#mischbares.action.autolab_action.ReturnClass" title="mischbares.action.autolab_action.ReturnClass">ReturnClass</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.parameter_correspondence">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameter_correspondence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#Experiment.parameter_correspondence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.parameter_correspondence" title="Permalink to this definition"></a></dt>
+<dd><p>check if the parameters are in the right order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment</strong> (<em>dict</em>) – dict of experiments</p></li>
+<li><p><strong>experiment_values</strong> (<em>list</em>) – list of experiments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict of experiments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>experiment (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.params">
+<span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.params" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.Experiment.soe">
+<span class="sig-name descname"><span class="pre">soe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#mischbares.orchestrator.orchestrator.Experiment.soe" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.clear">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.clear" title="Permalink to this definition"></a></dt>
+<dd><p>Empty queue for thread, or for all threads if no thread specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thread</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – thread to clear. Defaults to None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.disconnect">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.disconnect" title="Permalink to this definition"></a></dt>
+<dd><p>Disconnect from orchestrator</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.do_measurement">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">do_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#do_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.do_measurement" title="Permalink to this definition"></a></dt>
+<dd><p>Executes a single experiment</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.finish">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.finish" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Ensure tracking variables are appropriately reset at the end of a run,</dt><dd><p>and upload the finished session</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>experiment</strong> (<em>dict</em>) – dictionary containing experiment metadata</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.get_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.get_data" title="Permalink to this definition"></a></dt>
+<dd><p>Get data from the specified addresses</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread</strong> (<em>int</em>) – thread to get data from</p></li>
+<li><p><strong>addresses</strong> (<em>str</em>) – addresses to get data from</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – mode to get data in</p></li>
+<li><p><strong>wait</strong> (<em>float</em><em>, </em><em>optional</em>) – time to wait between requests. Defaults to .01.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – _description_</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>data from the specified addresses</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.get_status">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#get_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.get_status" title="Permalink to this definition"></a></dt>
+<dd><p>Get status of all threads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>status of all threads</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.health_check">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">health_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#health_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.health_check" title="Permalink to this definition"></a></dt>
+<dd><p>health check to see if the server is up and running
+:returns: status
+:rtype: dict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.infl">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">infl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#infl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.infl" title="Permalink to this definition"></a></dt>
+<dd><p>Executes a single thread of experiments</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.kill">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.kill" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Empty queue and cancel current experiment for thread,</dt><dd><p>or for all threads if no thread specified</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thread</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – thread to kill. Defaults to None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.main">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.main" title="Permalink to this definition"></a></dt>
+<dd><p>Main entry point of the application.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.memory">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">memory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.memory" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize memory for orchestrator</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.modify">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">modify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#modify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.modify" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Set undefined values under experiment parameter dict.</dt><dd><p>Values must come from currently running threads</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment</strong> (<em>dict</em>) – dictionary containing experiment metadata</p></li>
+<li><p><strong>addresses</strong> (<em>Union</em><em>[</em><em>str</em><em>,</em><em>list</em><em>]</em>) – within a run, address(es) of the value(s)
+that should be transmitted to parameter(s)</p></li>
+<li><p><strong>pointers</strong> (<em>Union</em><em>[</em><em>str</em><em>,</em><em>list</em><em>]</em>) – within param dict of experiment,
+addresses to transmit values to.
+parameter must have previously been initialized as “?”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary containing experiment</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.pause">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">pause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#pause"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.pause" title="Permalink to this definition"></a></dt>
+<dd><p>Pause current experiment for thread, or for all threads if no thread specified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thread</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – thread to pause. Defaults to None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.process_native_command">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">process_native_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#process_native_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.process_native_command" title="Permalink to this definition"></a></dt>
+<dd><p>process a command that is native to the orchestrator</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.raise_exceptions">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">raise_exceptions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#raise_exceptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.raise_exceptions" title="Permalink to this definition"></a></dt>
+<dd><p>Check for exceptions. If found, print stack trace and cancel the infinite loop
+Error handing within the infinite loop</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.repeat">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">repeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#repeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.repeat" title="Permalink to this definition"></a></dt>
+<dd><p>Submit an experiment identical to the current one to the orchestrator thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment</strong> (<em>dict</em>) – dictionary containing experiment metadata</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – number of times to repeat after 1st experiment,
+or 0 to repeat until forced to stop. Defaults to 0.</p></li>
+<li><p><strong>priority</strong> (<em>int</em><em>, </em><em>optional</em>) – priority of experiment. Defaults to 5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.resume">
+<span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#resume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.resume" title="Permalink to this definition"></a></dt>
+<dd><p>Resume current experiment for thread, or for all threads if no thread specified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thread</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – thread to resume. Defaults to None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.scheduler">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">scheduler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.scheduler" title="Permalink to this definition"></a></dt>
+<dd><p>Receives all experiments, creates new threads, and sends experiments
+to the appropriate thread</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.send_measurement">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">send_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#send_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.send_measurement" title="Permalink to this definition"></a></dt>
+<dd><p>Add sequence of experiment to the queue of the orchestrator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment</strong> (<em>str</em>) – experiment to be added to the queue</p></li>
+<li><p><strong>thread</strong> (<em>int</em>) – thread to which the experiment is added</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – priority of the experiment in the queue</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.start">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collectionkey</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.start" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Ensure appropriate folder, file, and all keys and tracking variables are appropriately</dt><dd><p>initialized at the beginning of a run</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment</strong> (<em>dict</em>) – experiment dictionary</p></li>
+<li><p><strong>collectionkey</strong> (<em>str</em>) – determines folder and file names for session, may correspond to key
+of experiment[‘meta’], in which case name will be indexed by that value.</p></li>
+<li><p><strong>meta</strong> (<em>dict</em><em>, </em><em>optional</em>) – will be placed as metadata under the header of the run set up by
+this command. Defaults to {}.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mischbares.orchestrator.orchestrator.wait">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mischbares.orchestrator.orchestrator.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mischbares/orchestrator/orchestrator.html#wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mischbares.orchestrator.orchestrator.wait" title="Permalink to this definition"></a></dt>
+<dd><p>Pause experiment until given thread(s) complete(s) given action(s)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>experiment</strong> (<em>dict</em>) – dictionary containing experiment metadata</p></li>
+<li><p><strong>addresses</strong> (<em>Union</em><em>[</em><em>str</em><em>,</em><em>list</em><em>]</em>) – path(s) below run to awaited address(es),
+i.e “experiment/action”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary containing experiment metadata</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>experiment</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-mischbares.orchestrator">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mischbares.orchestrator" title="Permalink to this headline"></a></h2>

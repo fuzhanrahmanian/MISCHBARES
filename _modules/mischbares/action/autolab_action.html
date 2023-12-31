@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mischbares.action.autolab_action &mdash; MISCHBARES 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MISCHBARES
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Auto-MISCHBARES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Mischbares</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MISCHBARES</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mischbares.action.autolab_action</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mischbares.action.autolab_action</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; autolab action&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">uvicorn</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">mischbares.config.main_config</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">mischbares.logger</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;autolab_action&quot;</span><span class="p">)</span>
+<span class="n">SERVERKEY</span> <span class="o">=</span> <span class="s2">&quot;autolab&quot;</span>
+<span class="n">SERVER_URL</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Autolab&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Autolab API&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.1.0&quot;</span><span class="p">)</span>
+
+
+<span class="c1">#pylint: disable=R0903</span>
+<div class="viewcode-block" id="ReturnClass"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.ReturnClass">[docs]</a><span class="k">class</span> <span class="nc">ReturnClass</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    define a return class for returning the result with pydantic.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="health_check"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.health_check">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">health_check</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; health check to see if the server is up and running</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;healthy&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="set_cell"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.set_cell">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/cellonoff/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">set_cell</span><span class="p">(</span><span class="n">onoff</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;turn the cell on or off.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        onoff (str): &quot;on&quot; or &quot;off&quot; for the cell.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/cellonoff&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;onoff&#39;</span><span class="p">:</span><span class="n">onoff</span><span class="p">},</span>
+                       <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cellonoff&#39;</span><span class="p">:</span><span class="n">onoff</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set_cell: </span><span class="si">%s</span><span class="s2"> at the action level&quot;</span><span class="p">,</span> <span class="n">onoff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="potential"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.potential">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/potential/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">potential</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get the current potential of the cell.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/potential&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="applied_potential"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.applied_potential">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/appliedpotential/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">applied_potential</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get the current applied potential of the cell vs reference electrode.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/appliedpotential&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="current"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.current">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/current/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">current</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get the current applied potential of the cell vs reference electrode.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/current&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="measure_status"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.measure_status">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/ismeasuring/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">measure_status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;check if the instrument is measuring.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/ismeasuring&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="set_current_range"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.set_current_range">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/setcurrentrange/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">set_current_range</span><span class="p">(</span><span class="n">crange</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;set the current range of the instrument.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        crange (str): current range of the instrument</span>
+<span class="sd">                        (10A, 1A, 100A, 10mA, 1mA, 100uA, 10uA, 1uA, 100nA, 10nA).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        _type_: _description_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/setcurrentrange&quot;</span><span class="p">,</span>
+                        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;crange&#39;</span><span class="p">:</span><span class="n">crange</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span> <span class="p">{</span><span class="s1">&#39;crange&#39;</span><span class="p">:</span> <span class="n">crange</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="measure"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.measure">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/measure/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">measure</span><span class="p">(</span><span class="n">procedure</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plot_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parse_instruction</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">setpoints</span><span class="p">,</span> <span class="n">current_range</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1mA&quot;</span><span class="p">,</span>
+            <span class="n">on_off_status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+            <span class="n">optional_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">measure_at_ocp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">measurement_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;measure the requested procedure.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        procedure (str): procedure to be measured.</span>
+<span class="sd">        plot_type (str): plot type of the procedure.</span>
+<span class="sd">        parse_instruction (str): parse instruction of the procedure.</span>
+<span class="sd">        save_dir (str): save directory of the procedure.</span>
+<span class="sd">        setpoints (str): setpoints of the procedure.</span>
+<span class="sd">        current_range (str, optional): current range of the instrument.</span>
+<span class="sd">        on_off_status (str, optional): on or off status of the cell.</span>
+<span class="sd">        optional_name (str, optional): optional name of the procedure.</span>
+<span class="sd">        measure_at_ocp (bool, optional): measure at ocp or not.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;measure: </span><span class="si">%s</span><span class="s2"> at action level&quot;</span><span class="p">,</span> <span class="n">procedure</span><span class="p">)</span>
+
+    <span class="n">measure_conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">procedure</span> <span class="o">=</span> <span class="n">procedure</span><span class="p">,</span> <span class="n">plot_type</span> <span class="o">=</span> <span class="n">plot_type</span><span class="p">,</span>
+                        <span class="n">parse_instruction</span> <span class="o">=</span> <span class="n">parse_instruction</span><span class="p">,</span>
+                        <span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">setpoints</span> <span class="o">=</span> <span class="n">setpoints</span><span class="p">,</span>
+                        <span class="n">current_range</span> <span class="o">=</span> <span class="n">current_range</span><span class="p">,</span>
+                        <span class="n">on_off_status</span> <span class="o">=</span> <span class="n">on_off_status</span><span class="p">,</span>
+                        <span class="n">optional_name</span> <span class="o">=</span> <span class="n">optional_name</span><span class="p">,</span>
+                        <span class="n">measure_at_ocp</span> <span class="o">=</span> <span class="n">measure_at_ocp</span><span class="p">,</span>
+                        <span class="n">measurement_id</span> <span class="o">=</span> <span class="n">measurement_id</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The procedure parameters at action level is: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">measure_conf</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/measure&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">measure_conf</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">measure_conf</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="retrieve"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.retrieve">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/autolab/retrieve&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">retrieve</span><span class="p">(</span><span class="n">save_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;retrieve the data from the file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        save_dir (str): directory of the file.</span>
+<span class="sd">        file_name (str): name of the file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        retc (ReturnClass): return class with the parameters and the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">safepath</span><span class="o">=</span> <span class="n">save_dir</span><span class="p">,</span><span class="n">filename</span> <span class="o">=</span> <span class="n">file_name</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">SERVER_URL</span><span class="si">}</span><span class="s2">/autolabDriver/retrieve&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">retc</span> <span class="o">=</span> <span class="n">ReturnClass</span><span class="p">(</span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;save_dir&#39;</span><span class="p">:</span><span class="n">save_dir</span><span class="p">,</span><span class="s1">&#39;file_name&#39;</span><span class="p">:</span><span class="n">file_name</span><span class="p">},</span> <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">retc</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../mischbares.action.html#mischbares.action.autolab_action.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;main function to run the action.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">])</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fuzhan Rahmanian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

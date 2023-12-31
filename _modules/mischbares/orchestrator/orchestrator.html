@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mischbares.orchestrator.orchestrator &mdash; MISCHBARES 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MISCHBARES
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">Auto-MISCHBARES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Mischbares</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MISCHBARES</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mischbares.orchestrator.orchestrator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mischbares.orchestrator.orchestrator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;orcestrator, higherst level of the framework&quot;&quot;&quot;</span>
+<span class="c1">#pylint: disable=global-variable-undefined</span>
+<span class="c1">#pylint: disable=global-variable-not-assigned</span>
+<span class="c1">#pylint: disable=no-self-argument</span>
+<span class="c1">#pylint: disable=cell-var-from-loop</span>
+<span class="c1">#pylint: disable=line-too-long</span>
+<span class="c1">#pylint: disable=consider-using-set-comprehension</span>
+<span class="c1">#pylint: disable=consider-iterating-dictionary</span>
+<span class="c1">#pylint: disable=consider-using-dict-items</span>
+<span class="c1">#pylint: disable=use-a-generator</span>
+<span class="c1">#pylint: disable=no-else-break</span>
+<span class="c1">#pyint: disable=use-implicit-booleaness-not-comparison</span>
+<span class="c1">#pylint: disable=too-many-branches</span>
+<span class="c1">#pylint: disable=use-implicit-booleaness-not-comparison</span>
+<span class="c1">#pylint: disable=consider-using-generator</span>
+<span class="c1">#pylint: disable=dangerous-default-value</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span><span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">import</span> <span class="nn">uvicorn</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">WebSocket</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">validator</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+
+<span class="kn">from</span> <span class="nn">mischbares.logger</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">mischbares.utils</span> <span class="kn">import</span> <span class="n">orchestrator_utils</span>
+<span class="kn">from</span> <span class="nn">mischbares.config.main_config</span> <span class="kn">import</span> <span class="n">config</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;orchestrator&quot;</span><span class="p">)</span>
+
+<span class="n">SERVERKEY</span> <span class="o">=</span> <span class="s2">&quot;orchestrator&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Orchestrator&quot;</span><span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Orchestrator for the mischbares framework&quot;</span><span class="p">,</span>
+              <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2.1.0&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; validation class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">soe</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Experiment.native_command_ordering"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.Experiment.native_command_ordering">[docs]</a>    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;soe&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">native_command_ordering</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">experiments</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; check if the soe is in the right order</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            experiments (list): list of experiments</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            retc (ReturnClass): return class with the parameters and the data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;too many underscores in function name&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span> <span class="ow">or</span> <span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;action must consist of a server name and a function name separated by &#39;/&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check inappropriate experiments</span>
+        <span class="n">parsed_v</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">parsed_v</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;orchestrator/start&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot have multiple calls to orchestrator/start in single soe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;orchestrator/start&quot;</span> <span class="ow">in</span> <span class="n">parsed_v</span> <span class="ow">and</span> <span class="n">parsed_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;orchestrator/start&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orchestrator/start must be first action in soe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsed_v</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;orchestrator/finish&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot have multiple calls to orchestrator/finish in single soe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;orchestrator/finish&quot;</span> <span class="ow">in</span> <span class="n">parsed_v</span> <span class="ow">and</span> <span class="n">parsed_v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;orchestrator/finish&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orchestrator/start must be last action in soe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsed_v</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;orchestrator/repeat&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot have multiple calls to orchestrator/repeat in single soe&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;orchestrator/repeat&quot;</span> <span class="ow">in</span> <span class="n">parsed_v</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">parsed_v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;orchestrator/repeat&quot;</span> <span class="ow">or</span>\
+            <span class="n">parsed_v</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;orchestrator/repeat&quot;</span> <span class="ow">and</span> <span class="n">parsed_v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;orchestrator/finish&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orchestrator/repeat can only be followed </span><span class="se">\</span>
+<span class="s2">                by orchestrator/finish in soe&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">experiments</span></div>
+
+
+<div class="viewcode-block" id="Experiment.parameter_correspondence"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.Experiment.parameter_correspondence">[docs]</a>    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;params&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">parameter_correspondence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">experiment</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; check if the parameters are in the right order</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            experiment (dict): dict of experiments</span>
+<span class="sd">            experiment_values (list): list of experiments</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">            experiment (dict): dict of experiments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="s1">&#39;soe&#39;</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;soe and params are not perfectly corresponding. </span><span class="se">\n</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">                must be params entry for every action in soe, and vice-versa&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;soe&#39;</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;duplicate entries in soe&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">experiment</span></div></div>
+
+
+<div class="viewcode-block" id="health_check"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.health_check">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">health_check</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; health check to see if the server is up and running</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;healthy&quot;</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="send_measurement"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.send_measurement">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/orchestrator/addExperiment&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">send_measurement</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Add sequence of experiment to the queue of the orchestrator</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        experiment (str): experiment to be added to the queue</span>
+<span class="sd">        thread (int): thread to which the experiment is added</span>
+<span class="sd">        priority (int): priority of the experiment in the queue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">INDEX</span>
+    <span class="c1"># load experiment and run it through pydantic validation</span>
+    <span class="n">experiment</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Experiment</span><span class="p">(</span><span class="o">**</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">experiment</span><span class="p">)))</span>
+    <span class="k">await</span> <span class="n">SCHEDULER_QUEUE</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">priority</span><span class="p">,</span><span class="n">INDEX</span><span class="p">,</span><span class="n">experiment</span><span class="p">,</span><span class="n">thread</span><span class="p">))</span>
+    <span class="n">INDEX</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="scheduler"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.scheduler">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">scheduler</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Receives all experiments, creates new threads, and sends experiments</span>
+<span class="sd">    to the appropriate thread&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">,</span><span class="n">EXPERIMENT_TASKS</span><span class="p">,</span><span class="n">LOOP</span><span class="p">,</span><span class="n">TRACKING</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">priority</span><span class="p">,</span><span class="n">index</span><span class="p">,</span><span class="n">experiment</span><span class="p">,</span><span class="n">thread</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SCHEDULER_QUEUE</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">thread</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EXPERIMENT_QUEUES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">EXPERIMENT_QUEUES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thread</span><span class="p">:</span><span class="n">asyncio</span><span class="o">.</span><span class="n">PriorityQueue</span><span class="p">()})</span>
+             <span class="c1"># several instances of the infinite loop , one for each thread</span>
+            <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thread</span><span class="p">:</span><span class="n">LOOP</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">infl</span><span class="p">(</span><span class="n">thread</span><span class="p">))})</span>
+            <span class="c1"># get the status that initializing the thread</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;experiment&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>\
+                <span class="s1">&#39;current_action&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;status&#39;</span><span class="p">:</span><span class="s1">&#39;uninitialized&#39;</span><span class="p">,</span><span class="s1">&#39;history&#39;</span><span class="p">:[]}</span>
+        <span class="k">await</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">priority</span><span class="p">,</span><span class="n">index</span><span class="p">,</span><span class="n">experiment</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="infl"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.infl">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">infl</span><span class="p">(</span><span class="n">thread</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Executes a single thread of experiments&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="o">*</span><span class="n">_</span><span class="p">,</span><span class="n">experiment</span> <span class="o">=</span> <span class="k">await</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;clear&#39;</span><span class="p">:</span>
+            <span class="c1">#await update_tracking(thread,&#39;running&#39;,&#39;status&#39;)</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+        <span class="k">await</span> <span class="n">do_measurement</span><span class="p">(</span><span class="n">experiment</span><span class="p">,</span> <span class="n">thread</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">and</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;running&#39;</span><span class="p">:</span>
+            <span class="c1">#await update_tracking(thread,&#39;clear&#39;,&#39;status&#39;)</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;clear&#39;</span></div>
+
+<div class="viewcode-block" id="do_measurement"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.do_measurement">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">do_measurement</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">thread</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Executes a single experiment&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span><span class="p">,</span><span class="n">LOOP</span><span class="p">,</span><span class="n">FILELOCKS</span><span class="p">,</span><span class="n">SERVERLOCKS</span><span class="p">,</span><span class="n">TASK</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;experiment: </span><span class="si">{</span><span class="n">experiment</span><span class="si">}</span><span class="s1"> on thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># add header for new experiment if you already have an initialized, nonempty experiment</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">],</span><span class="nb">int</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;/run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/experiment_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># put thread in experiment for native commands</span>
+    <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;thread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">thread</span>
+
+    <span class="c1"># handling unset-up threads and couple to the thread directly below if it exists</span>
+    <span class="c1"># raise a flag and skip the experiment if it doesn&#39;t</span>
+    <span class="k">if</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;soe&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[]</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> \
+                                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">,</span><span class="s1">&#39;run&#39;</span><span class="p">,</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span><span class="s1">&#39;current_action&#39;</span><span class="p">]])</span>  \
+                                    <span class="ow">and</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;soe&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;orchestrator/start&#39;</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> for experiment </span><span class="si">{</span><span class="n">experiment</span><span class="si">}</span><span class="s2"> has not been set up&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">thread</span><span class="o">-</span><span class="mi">1</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> \
+            <span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">,</span><span class="s1">&#39;run&#39;</span><span class="p">,</span><span class="s1">&#39;experiment&#39;</span><span class="p">,</span><span class="s1">&#39;current_action&#39;</span><span class="p">]]):</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> bound to thread </span><span class="si">{</span><span class="n">thread</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">experiment</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;soe&#39;</span><span class="p">:[],</span><span class="s1">&#39;params&#39;</span><span class="p">:{},</span><span class="s1">&#39;meta&#39;</span><span class="p">:{}}</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;experiment has been blanked&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">action_str</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;soe&#39;</span><span class="p">]:</span>
+         <span class="c1"># example: action is&#39;movement&#39; and the function is &#39;moveToHome_0</span>
+        <span class="n">server</span><span class="p">,</span> <span class="n">fnc</span> <span class="o">=</span> <span class="n">action_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;running&#39;</span> <span class="ow">and</span> <span class="n">server</span> <span class="o">!=</span> <span class="s1">&#39;orchestrator&#39;</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;current_action&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fnc</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">fnc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="n">fnc</span><span class="p">]</span>
+        <span class="n">servertype</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">server</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SERVERLOCKS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">servertype</span> <span class="o">!=</span> <span class="s2">&quot;orchestrator&quot;</span><span class="p">:</span>
+            <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="n">server</span><span class="p">]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="c1"># a placeholder for the appropriate conditional.</span>
+        <span class="k">if</span> <span class="n">servertype</span> <span class="o">!=</span> <span class="s1">&#39;orchestrator&#39;</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="n">server</span><span class="p">]:</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+                    <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1">#ensure that action completed successfully</span>
+                <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Orchestrator has received an invalid response attempting </span><span class="se">\</span>
+<span class="s2">                        action </span><span class="si">{</span><span class="n">action_str</span><span class="si">}</span><span class="s2"> with parameters </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Fix the problem, and press Enter to try the action again.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">servertype</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">servertype</span> <span class="o">==</span> <span class="s1">&#39;orchestrator&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c1"># crash or fail on native command due to an unsafe state.</span>
+            <span class="n">experiment</span> <span class="o">=</span> <span class="k">await</span> <span class="n">process_native_command</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="n">experiment</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">elif</span> <span class="n">servertype</span> <span class="o">==</span> <span class="s1">&#39;analysis&#39;</span><span class="p">:</span>
+            <span class="n">add</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;address&#39;</span><span class="p">,</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">add</span> <span class="o">!=</span> <span class="p">[]:</span>
+                <span class="n">analysis_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">add</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                        <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> \
+                            <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> \
+                                <span class="n">run</span><span class="o">=</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> \
+                                    <span class="n">addresses</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="n">a</span><span class="p">:</span><span class="n">params</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">add</span><span class="p">})),</span> \
+                                        <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>\
+                                <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/receiveData&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">history</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]:</span>
+                        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                            <span class="k">if</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">paths_in_hdf5</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],[</span><span class="n">params</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">add</span><span class="p">]):</span>
+                                <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> \
+                                    <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span>\
+                                        <span class="n">run</span><span class="o">=</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> \
+                                        <span class="n">addresses</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="n">a</span><span class="p">:</span><span class="n">params</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">add</span><span class="p">})),</span> \
+                                            <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> \
+                                        <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/receiveData&quot;</span><span class="p">)</span>
+                                <span class="k">break</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="n">server</span><span class="p">]:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> \
+                    <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> \
+                    <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">servertype</span> <span class="o">==</span> <span class="s1">&#39;ml&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;address&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">analysis_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="n">server</span><span class="p">]:</span>
+                        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                            <span class="k">if</span> <span class="s1">&#39;modelid&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                                <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> \
+                                    <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span>\
+                                        <span class="n">run</span><span class="o">=</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">],</span>\
+                                            <span class="n">address</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">],</span> \
+                                                <span class="n">modelid</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;modelid&#39;</span><span class="p">]),</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> \
+                                    <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/receiveData&quot;</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> \
+                                    <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> \
+                                        <span class="n">run</span><span class="o">=</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">analysis_time</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">],</span><span class="n">address</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">]),</span> \
+                                            <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> \
+                                    <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/receiveData&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">history</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]:</span>
+                        <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="n">server</span><span class="p">]:</span>
+                            <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                                <span class="k">if</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">paths_in_hdf5</span><span class="p">(</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">]):</span>
+                                    <span class="k">if</span> <span class="s1">&#39;modelid&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                                        <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> \
+                                            <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> \
+                                            <span class="n">run</span><span class="o">=</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">],</span><span class="n">address</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">],</span> \
+                                                <span class="n">modelid</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;modelid&#39;</span><span class="p">]),</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> \
+                                            <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/receiveData&quot;</span><span class="p">)</span>
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> \
+                                            <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="n">run</span><span class="o">=</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> \
+                                            <span class="n">address</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">]),</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> \
+                                            <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/receiveData&quot;</span><span class="p">)</span>
+                                    <span class="k">break</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="n">server</span><span class="p">]:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> \
+                    <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> \
+                    <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">server</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">servertype</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;meta&#39;</span><span class="p">:{</span><span class="s1">&#39;measurement_time&#39;</span><span class="p">:</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y, %H:%M:%S&quot;</span><span class="p">)}})</span>
+            <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">({</span><span class="n">fnc</span><span class="p">:</span><span class="n">res</span><span class="p">},</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> \
+                <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/experiment_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+            <span class="c1">#add metadata to experiment</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                <span class="n">session_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;/run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/experiment_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">session_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s1">&#39;meta&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session_list</span><span class="p">:</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">({</span><span class="s1">&#39;meta&#39;</span><span class="p">:</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">]},</span> \
+                                                        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span>\
+                        <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;/run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/experiment_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function </span><span class="si">{</span><span class="n">fnc</span><span class="si">}</span><span class="s2"> in thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> completed at </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function operating in run </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">            in file </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="process_native_command"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.process_native_command">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">process_native_command</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; process a command that is native to the orchestrator &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">,</span><span class="s1">&#39;finish&#39;</span><span class="p">,</span><span class="s1">&#39;modify&#39;</span><span class="p">,</span><span class="s1">&#39;wait&#39;</span><span class="p">,</span><span class="s1">&#39;repeat&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">],</span><span class="n">command</span><span class="p">)(</span><span class="n">experiment</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;native command not recognized&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="start"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.start">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span><span class="n">collectionkey</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">meta</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="p">{}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Ensure appropriate folder, file, and all keys and tracking variables are appropriately</span>
+<span class="sd">        initialized at the beginning of a run</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        experiment (dict): experiment dictionary</span>
+<span class="sd">        collectionkey (str): determines folder and file names for session, may correspond to key</span>
+<span class="sd">            of experiment[&#39;meta&#39;], in which case name will be indexed by that value.</span>
+<span class="sd">        meta (dict, optional): will be placed as metadata under the header of the run set up by</span>
+<span class="sd">            this command. Defaults to {}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span><span class="p">,</span><span class="n">FILELOCKS</span><span class="p">,</span><span class="n">SERVERLOCKS</span>
+    <span class="n">thread</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;thread&#39;</span><span class="p">]</span>
+    <span class="c1"># give the directory an index if one is provided</span>
+    <span class="k">if</span> <span class="n">collectionkey</span> <span class="ow">in</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">h5dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> \
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">collectionkey</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="n">collectionkey</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># name the directory without an index if not.</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">h5dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">collectionkey</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># ensure that the directory in which this session should be saved exists</span>
+    <span class="n">h5dirlist</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">h5dir</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">h5dirlist</span><span class="p">[:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">h5dirlist</span><span class="p">,</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">h5dirlist</span><span class="p">)))]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+     <span class="c1"># create a session, if there is no current session to load</span>
+    <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">==</span><span class="s1">&#39;.h5&#39;</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">h5dir</span><span class="p">)))</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">h5dir</span><span class="p">,</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;instrument&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">h5dir</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;_session_0.h5&#39;</span><span class="p">)</span>
+        <span class="c1">#add a lock to a file if it does not already exist</span>
+        <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FILELOCKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+            <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">))),</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+
+    <span class="c1"># otherwise grab most recent session in dir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">h5dir</span><span class="p">,</span> \
+        <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">highest_name</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">==</span><span class="s1">&#39;.h5&#39;</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">h5dir</span><span class="p">)))))</span>
+        <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FILELOCKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="c1"># assigns date to this session if necessary, or replaces session if too old</span>
+            <span class="k">if</span> <span class="s1">&#39;meta&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">))),</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s1">&#39;date&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">)),</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/meta/&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;meta/date/&#39;</span><span class="p">][()]</span> <span class="o">!=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;current session is old, saving current session and creating new session&#39;</span><span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s2">&quot;orch_kadi&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SERVERLOCKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="s2">&quot;orch_kadi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="s2">&quot;orch_kadi&quot;</span><span class="p">]:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;kadiurl&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/kadi/uploadhdf5&quot;</span><span class="p">,</span>
+                            <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]),</span> \
+                                <span class="n">filepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])),</span> \
+                                    <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;not connected to kadi4mat and did not upload the session there&#39;</span><span class="p">)</span>
+                <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">h5dir</span><span class="p">,</span> \
+                    <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">increment_name</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])))</span>
+                <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">FILELOCKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                    <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span> \
+                        <span class="nb">dict</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">))),</span>\
+                            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+        <span class="c1">#adds a new run to session to receive incoming data</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;run_0&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">({</span><span class="s2">&quot;run_0&quot;</span><span class="p">:{</span><span class="sa">f</span><span class="s2">&quot;experiment_0:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">},</span> \
+                    <span class="s2">&quot;meta&quot;</span><span class="p">:</span><span class="n">meta</span><span class="p">},</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+                <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">run</span> <span class="o">=</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">increment_name</span><span class="p">(</span><span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">highest_name</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">k</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;run_&quot;</span><span class="p">,</span><span class="nb">list</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">keys</span><span class="p">())))))</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">({</span><span class="n">run</span><span class="p">:{</span><span class="sa">f</span><span class="s2">&quot;experiment_0:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span>\
+                    <span class="s2">&quot;meta&quot;</span><span class="p">:</span><span class="n">meta</span><span class="p">}},</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+                <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">run</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;experiment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">({</span><span class="s1">&#39;meta&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">},</span>\
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;/run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/experiment_0:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">,</span>\
+                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+    <span class="k">return</span> <span class="n">experiment</span></div>
+
+
+<div class="viewcode-block" id="finish"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.finish">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Ensure tracking variables are appropriately reset at the end of a run,</span>
+<span class="sd">            and upload the finished session</span>
+<span class="sd">    Args:</span>
+<span class="sd">     experiment (dict): dictionary containing experiment metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span><span class="p">,</span><span class="n">FILELOCKS</span><span class="p">,</span><span class="n">SERVERLOCKS</span>
+    <span class="n">thread</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;thread&#39;</span><span class="p">]</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s1"> finishing&#39;</span><span class="p">)</span>
+    <span class="c1"># get the number of the threads</span>
+    <span class="n">working_threads</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+    <span class="k">if</span> <span class="n">working_threads</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;attempting to upload session&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;orch_kadi&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SERVERLOCKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="s2">&quot;orch_kadi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">SERVERLOCKS</span><span class="p">[</span><span class="s2">&quot;orch_kadi&quot;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;kadiurl&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/kadi/uploadhdf5&quot;</span><span class="p">,</span>
+                    <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]),</span> \
+                        <span class="n">filepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])),</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;no kadi4mart connection, did not upload the session there&#39;</span><span class="p">)</span>
+
+        <span class="c1"># adds a new hdf5 file which will be used for the next incoming data</span>
+        <span class="n">newpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]),</span> \
+            <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">increment_name</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">])))</span>
+        <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">newpath</span><span class="p">]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+            <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">save_dict_to_hdf5</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span><span class="n">newpath</span><span class="p">)</span>
+
+        <span class="c1"># clear history relating to this file from all threads</span>
+        <span class="k">for</span> <span class="n">tracking</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">tracking_history</span> <span class="ow">in</span> <span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;history&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">tracking_history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TRACKING</span><span class="p">[</span><span class="s1">&#39;thread&#39;</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]:</span>
+                    <span class="k">del</span> <span class="n">tracking_history</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">working_threads</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s1"> threads still operating on </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1">#free up the thread</span>
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;experiment&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span> \
+            <span class="s1">&#39;current_action&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;status&#39;</span><span class="p">:</span><span class="s1">&#39;uninitialized&#39;</span><span class="p">,</span> \
+            <span class="s1">&#39;history&#39;</span><span class="p">:[{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> \
+                <span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]}]</span><span class="o">+</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]}</span>
+    <span class="k">return</span> <span class="n">experiment</span></div>
+
+
+<div class="viewcode-block" id="modify"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.modify">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">addresses</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">list</span><span class="p">],</span> <span class="n">pointers</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">list</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Set undefined values under experiment parameter dict.</span>
+<span class="sd">        Values must come from currently running threads</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        experiment (dict): dictionary containing experiment metadata</span>
+<span class="sd">        addresses (Union[str,list]): within a run, address(es) of the value(s)</span>
+<span class="sd">                    that should be transmitted to parameter(s)</span>
+<span class="sd">        pointers (Union[str,list]): within param dict of experiment,</span>
+<span class="sd">                    addresses to transmit values to.</span>
+<span class="sd">                    parameter must have previously been initialized as &quot;?&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: dictionary containing experiment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span><span class="p">,</span><span class="n">FILELOCKS</span>
+    <span class="n">mainthread</span> <span class="o">=</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;thread&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addresses</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">addresses</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pointers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">pointers</span> <span class="o">=</span> <span class="p">[</span><span class="n">pointers</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">addresses</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">pointers</span><span class="p">)</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">address</span><span class="p">,</span> <span class="n">pointer</span><span class="p">,</span> <span class="n">thread</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">addresses</span><span class="p">,</span> <span class="n">pointers</span><span class="p">,</span> <span class="n">threads</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">dict_address</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pointer </span><span class="si">{</span><span class="n">pointer</span><span class="si">}</span><span class="s2"> is not intended to be written to&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/&#39;</span><span class="o">+</span><span class="n">address</span><span class="p">][()]</span>
+                    <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">dict_address_set</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">],</span><span class="n">val</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pointer </span><span class="si">{</span><span class="n">pointer</span><span class="si">}</span><span class="s1"> in params for experiment </span><span class="se">\</span>
+<span class="s1">                        </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">mainthread</span><span class="p">][</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> in thread </span><span class="si">{</span><span class="n">mainthread</span><span class="si">}</span><span class="s1"> set to </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">history_track</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">history_track</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">history_track</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">history_track</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">history_track</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/&#39;</span><span class="o">+</span><span class="n">address</span><span class="p">][()]</span>
+                            <span class="k">except</span><span class="p">:</span>
+                                <span class="k">continue</span>
+                            <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">dict_address_set</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span> <span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">],</span><span class="n">val</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pointer </span><span class="si">{</span><span class="n">pointer</span><span class="si">}</span><span class="s1"> in params for experiment </span><span class="se">\</span>
+<span class="s1">                                </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">mainthread</span><span class="p">][</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> in thread </span><span class="si">{</span><span class="n">mainthread</span><span class="si">}</span><span class="s1"> </span><span class="se">\</span>
+<span class="s1">                                    set to </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1"> from history&#39;</span><span class="p">)</span>
+                            <span class="k">break</span>
+            <span class="k">if</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">dict_address</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;?&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;modify failed to find address in history&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">experiment</span></div>
+
+
+
+<div class="viewcode-block" id="wait"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.wait">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">addresses</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">list</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Pause experiment until given thread(s) complete(s) given action(s)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        experiment (dict): dictionary containing experiment metadata</span>
+<span class="sd">        addresses (Union[str,list]): path(s) below run to awaited address(es),</span>
+<span class="sd">                    i.e &quot;experiment/action&quot;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        experiment: dictionary containing experiment metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span><span class="p">,</span><span class="n">FILELOCKS</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;waiting on </span><span class="si">{</span><span class="n">addresses</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addresses</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">addresses</span><span class="p">]</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">]</span>
+    <span class="k">while</span> <span class="n">addresses</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+        <span class="n">address_and_thread</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">addresses</span><span class="p">)),</span><span class="n">copy</span><span class="p">(</span><span class="n">addresses</span><span class="p">),</span> <span class="n">copy</span><span class="p">(</span><span class="n">threads</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">address</span><span class="p">,</span><span class="n">thread</span> <span class="ow">in</span> <span class="n">address_and_thread</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                        <span class="n">exp</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">action</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">addresses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2"> found&quot;</span><span class="p">)</span>
+                                <span class="k">del</span> <span class="n">addresses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                                <span class="k">del</span> <span class="n">threads</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                                <span class="k">break</span>
+            <span class="c1"># waiting on the results of a session that already finished,</span>
+            <span class="c1"># check history for path &amp; run</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">exp_history</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">exp_history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]:</span>
+                        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">exp_history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]]:</span>
+                            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">exp_history</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                                <span class="n">exp</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">action</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                                <span class="k">if</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">exp_history</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                                    <span class="k">if</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">exp_history</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">addresses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2"> found in history&quot;</span><span class="p">)</span>
+                                        <span class="k">del</span> <span class="n">addresses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                                        <span class="k">del</span> <span class="n">threads</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">experiment</span></div>
+
+<span class="c1"># submit an experiment identical to the current one to the orchestrator thread.</span>
+<span class="c1"># will have higher-than default priority, and will go before any intervening experiments</span>
+<span class="c1"># that may have been submitted.</span>
+<span class="c1"># an experiment should only have one call of repeat, and it should only be at the end of</span>
+<span class="c1"># the experiment (unless followed by a finish command)</span>
+<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.repeat">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">experiment</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">number_of_repeat</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Submit an experiment identical to the current one to the orchestrator thread.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        experiment (dict): dictionary containing experiment metadata</span>
+<span class="sd">        n (int, optional): number of times to repeat after 1st experiment,</span>
+<span class="sd">                            or 0 to repeat until forced to stop. Defaults to 0.</span>
+<span class="sd">        priority (int, optional): priority of experiment. Defaults to 5.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        _type_: _description_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">INDEX</span>
+    <span class="c1">#copy current experiment</span>
+    <span class="n">new_exp</span> <span class="o">=</span> <span class="n">experiment</span>
+    <span class="k">if</span> <span class="n">number_of_repeat</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1">#if n=1, repeating is finished.</span>
+        <span class="k">del</span> <span class="n">new_exp</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;repeat&#39;</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">new_exp</span><span class="p">[</span><span class="s1">&#39;soe&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">number_of_repeat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">#else, decrement repeats left to go</span>
+        <span class="n">new_exp</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;repeat&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="c1">#and of course, for n==0, we do nothing and it repeats forever</span>
+    <span class="c1">#then the new experiment is added to the appropriate queue with a higher-than-default priority</span>
+    <span class="k">await</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">experiment</span><span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;thread&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">priority</span><span class="p">,</span><span class="n">INDEX</span><span class="p">,</span><span class="n">new_exp</span><span class="p">))</span>
+    <span class="n">INDEX</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">experiment</span></div>
+
+<div class="viewcode-block" id="memory"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.memory">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s2">&quot;startup&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">memory</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Initialize memory for orchestrator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span>
+    <span class="c1"># a dict of useful variables to keep track of</span>
+    <span class="c1"># every single experiment will have a tracking key here.</span>
+    <span class="n">TRACKING</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">global</span> <span class="n">SCHEDULER_QUEUE</span>
+    <span class="n">SCHEDULER_QUEUE</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">PriorityQueue</span><span class="p">()</span>
+    <span class="k">global</span> <span class="n">TASK</span>
+    <span class="n">TASK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">scheduler</span><span class="p">())</span>
+
+    <span class="k">global</span> <span class="n">EXPERIMENT_QUEUES</span>
+    <span class="n">EXPERIMENT_QUEUES</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">global</span> <span class="n">EXPERIMENT_TASKS</span>
+    <span class="n">EXPERIMENT_TASKS</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># two thread can access to the same file and same server at the same time</span>
+    <span class="k">global</span> <span class="n">FILELOCKS</span>
+    <span class="n">FILELOCKS</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">global</span> <span class="n">SERVERLOCKS</span>
+    <span class="n">SERVERLOCKS</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">global</span> <span class="n">LOOP</span>
+    <span class="c1"># for fixing the error handling</span>
+    <span class="n">LOOP</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+    <span class="k">global</span> <span class="n">ERROR</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="n">LOOP</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">raise_exceptions</span><span class="p">())</span>
+
+    <span class="k">global</span> <span class="n">INDEX</span> <span class="c1">#assign a number to each experiment to retain order within priority queues</span>
+    <span class="n">INDEX</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="disconnect"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.disconnect">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">disconnect</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Disconnect from orchestrator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TASK</span><span class="p">,</span> <span class="n">ERROR</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ERROR</span><span class="o">.</span><span class="n">cancelled</span><span class="p">():</span>
+        <span class="n">ERROR</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">TASK</span><span class="o">.</span><span class="n">cancelled</span><span class="p">():</span>
+        <span class="n">TASK</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">exp_task</span> <span class="ow">in</span> <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exp_task</span><span class="o">.</span><span class="n">cancelled</span><span class="p">():</span>
+            <span class="n">exp_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="clear"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.clear">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/orchestrator/clear&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="n">thread</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Empty queue for thread, or for all threads if no thread specified.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        thread (Optional[int], optional): thread to clear. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">EXPERIMENT_QUEUES</span>
+    <span class="k">if</span> <span class="n">thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">EXPERIMENT_QUEUES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">EXPERIMENT_QUEUES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">EXPERIMENT_QUEUES</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
+
+<span class="c1"># TODO add it to thinker having different buttons for each</span>
+<span class="c1"># can not stop the action that is currently running , just after the action is done</span>
+<div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.kill">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/orchestrator/kill&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="n">thread</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Empty queue and cancel current experiment for thread,</span>
+<span class="sd">            or for all threads if no thread specified</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        thread (Optional[int], optional): thread to kill. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">EXPERIMENT_TASKS</span><span class="p">,</span><span class="n">TRACKING</span>
+    <span class="k">global</span> <span class="n">EXPERIMENT_TASKS</span><span class="p">,</span><span class="n">TRACKING</span>
+    <span class="n">clear</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">EXPERIMENT_TASKS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">EXPERIMENT_TASKS</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="n">LOOP</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">infl</span><span class="p">(</span><span class="n">k</span><span class="p">))})</span>
+            <span class="n">exp_history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]}</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;experiment&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;current_action&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;status&#39;</span><span class="p">:</span><span class="s1">&#39;uninitialized&#39;</span><span class="p">,</span><span class="s1">&#39;history&#39;</span><span class="p">:[</span><span class="n">exp_history</span><span class="p">]</span><span class="o">+</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]}</span>
+    <span class="k">elif</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">EXPERIMENT_TASKS</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">EXPERIMENT_TASKS</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span>
+        <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">thread</span><span class="p">:</span><span class="n">LOOP</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">infl</span><span class="p">(</span><span class="n">thread</span><span class="p">))})</span>
+        <span class="n">exp_history</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">],</span><span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]}</span>
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;run&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;experiment&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;current_action&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s1">&#39;status&#39;</span><span class="p">:</span><span class="s1">&#39;uninitialized&#39;</span><span class="p">,</span><span class="s1">&#39;history&#39;</span><span class="p">:[</span><span class="n">exp_history</span><span class="p">]</span><span class="o">+</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">]}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pause"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.pause">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/orchestrator/pause&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="n">thread</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Pause current experiment for thread, or for all threads if no thread specified</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        thread (Optional[int], optional): thread to pause. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span>
+    <span class="k">if</span> <span class="n">thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;running&#39;</span><span class="p">:</span>
+                <span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;paused&#39;</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> paused&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;attempted to pause thread </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">, but status was </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;running&#39;</span><span class="p">:</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;paused&#39;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> paused&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;attempted to pause thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s1">, but status was </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="resume"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.resume">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/orchestrator/resume&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="n">thread</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Resume current experiment for thread, or for all threads if no thread specified</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        thread (Optional[int], optional): thread to resume. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TRACKING</span>
+    <span class="k">if</span> <span class="n">thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;paused&#39;</span><span class="p">:</span>
+                <span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> resumed&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;attempted to resume thread </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">, but status was </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">TRACKING</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;paused&#39;</span><span class="p">:</span>
+            <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> resumed&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;attempted to resume thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s1">, but status was </span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thread </span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_status"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.get_status">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/orchestrator/getStatus&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get status of all threads</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: status of all threads</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">TRACKING</span></div>
+
+
+<div class="viewcode-block" id="raise_exceptions"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.raise_exceptions">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">raise_exceptions</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Check for exceptions. If found, print stack trace and cancel the infinite loop</span>
+<span class="sd">        Error handing within the infinite loop</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">TASK</span><span class="p">,</span><span class="n">EXPERIMENT_TASKS</span><span class="p">,</span><span class="n">ERROR</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># check for errors every second (maybe this should be a different number?)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">TASK</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
+            <span class="n">TASK</span><span class="o">.</span><span class="n">print_stack</span><span class="p">()</span>
+            <span class="k">break</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">task_check</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">print_stack</span><span class="p">()</span>
+                <span class="n">task_check</span> <span class="o">=</span> <span class="n">task</span>
+                <span class="k">break</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">task_check</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
+            <span class="k">break</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="c1">#if an error shows up anywhere, bring the whole house down.</span>
+    <span class="c1"># cancel all tasks</span>
+    <span class="k">for</span> <span class="n">task_value</span> <span class="ow">in</span> <span class="n">EXPERIMENT_TASKS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">task_value</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">TASK</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ERROR</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.get_data">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/orchestrator/getData&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">thread</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">addresses</span><span class="p">:</span><span class="nb">str</span> <span class="p">,</span><span class="n">mode</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">wait_time</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">.01</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Get data from the specified addresses</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        thread (int): thread to get data from</span>
+<span class="sd">        addresses (str): addresses to get data from</span>
+<span class="sd">        mode (str): mode to get data in</span>
+<span class="sd">        wait (float, optional): time to wait between requests. Defaults to .01.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: _description_</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: data from the specified addresses</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">addresses</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">addresses</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">,</span><span class="s1">&#39;group&#39;</span><span class="p">,</span><span class="s1">&#39;next&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;invalid mode for getData&#39;</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="k">if</span> \
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="k">if</span> \
+        <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s1">&#39;history&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">path</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                <span class="n">experiments</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
+                    <span class="n">subdata</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+                        <span class="n">dpath</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s1">/&#39;</span><span class="o">+</span><span class="n">experiment</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">address</span>
+                        <span class="k">if</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">paths_in_hdf5</span><span class="p">(</span><span class="n">session</span><span class="p">,</span><span class="n">dpath</span><span class="p">):</span>
+                            <span class="n">datum</span> <span class="o">=</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">hdf5_group_to_dict</span><span class="p">(</span><span class="n">session</span><span class="p">,</span><span class="n">dpath</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                                <span class="n">datum</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                            <span class="n">subdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1"> not found in file&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">subdata</span> <span class="o">!=</span> <span class="p">[]:</span>
+                        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subdata</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subdata</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">subdata</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">path</span><span class="p">]:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">hdf5_group_to_dict</span><span class="p">(</span><span class="n">session</span><span class="p">,</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;next&#39;</span><span class="p">:</span>
+        <span class="n">new_exp</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;experiment_</span><span class="si">{</span><span class="n">TRACKING</span><span class="p">[</span><span class="n">thread</span><span class="p">][</span><span class="s2">&quot;experiment&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">thread</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;awaiting data at </span><span class="si">{</span><span class="n">new_exp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">present</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">present</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">path</span><span class="p">]:</span>
+                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                    <span class="n">present</span> <span class="o">=</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">paths_in_hdf5</span><span class="p">(</span><span class="n">path</span><span class="p">,[</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">new_exp</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">])</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">FILELOCKS</span><span class="p">[</span><span class="n">path</span><span class="p">]:</span>
+                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                    <span class="n">datum</span> <span class="o">=</span> <span class="n">orchestrator_utils</span><span class="o">.</span><span class="n">hdf5_group_to_dict</span><span class="p">(</span><span class="n">session</span><span class="p">,</span><span class="sa">f</span><span class="s1">&#39;run_</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">new_exp</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">datum</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../mischbares.orchestrator.html#mischbares.orchestrator.orchestrator.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main entry point of the application.&quot;&quot;&quot;</span>
+    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;servers&#39;</span><span class="p">][</span><span class="n">SERVERKEY</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">])</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fuzhan Rahmanian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

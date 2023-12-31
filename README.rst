@@ -64,4 +64,4 @@ Cite this work
 If you use this software in your research, please cite the following paper:
 
 
-For more detailed information, please visit the documentation page: https://fuzhanrahmanian.github.io/MISCHBARES/
+For more detailed information, please visit the `documentation page <https://fuzhanrahmanian.github.io/MISCHBARES>`_

@@ -1,37 +1,67 @@
-==========
-MISCHBARES
-==========
+===============
+Auto-MISCHBARES
+===============
 
+.. image:: logo/mischbares_logo.png
+    :align: center
+    :width: 300px
 
-.. image:: https://img.shields.io/pypi/v/mischbares.svg
-        :target: https://pypi.python.org/pypi/mischbares
-
-.. image:: https://img.shields.io/travis/fuzhanr/mischbares.svg
-        :target: https://travis-ci.com/fuzhanr/mischbares
-
-.. image:: https://readthedocs.org/projects/mischbares/badge/?version=latest
-        :target: https://mischbares.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
-
-
-
-This is a python package for Automatic Scanning Droplet Cell experimentation
-
-
-* Free software: MIT license
-* Documentation: https://mischbares.readthedocs.io.
-
-
-Features
+Overview
 --------
 
-* TODO
+Auto-MISCHBARES, building upon our `HELAO framework <https://github.com/helgestein/helao-pub>`_, is designed for high-throughput electrochemical research. It automates the study different electrolyte and/or electrode materials, different electrochemcial protocols in order to characterize the interphase formations at a millimeter scale, enhancing the efficiency of material discovery. This system's significant feature is its ability to autonoumussly asynchronously orchestrate sequential or parallel experiments, integrated with advanced Quality Control assessments and `MADAP <https://github.com/fuzhanrahmanian/MADAP>`_ for advanced data analysis using AI algorithms. The web interface of Auto-MISCHBARES offers streamlined user control, and its database design adheres to FAIR principles, promoting robust and transparent research in battery material science.
 
-Credits
--------
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+Installation
+------------
+
+Requirements
+~~~~~~~~~~~~
+
+- Python 3.8
+- PostgreSQL
+- Libraries listed in `requirements.txt`
+
+Installation Steps
+~~~~~~~~~~~~~~~~~~
+
+1. Clone the repository::
+
+     git clone https://github.com/fuzhanrahmanian/MISCHBARES.git
+
+2. Navigate to the directory::
+
+     cd MISCHBARES
+
+3. Install the required libraries::
+
+     pip install -r requirements.txt
+
+Starting the Application
+------------------------
+
+Run the application::
+
+    python app.py
+
+Database Setup
+--------------
+
+1. Navigate to the `db` directory::
+
+     cd db
+
+2. Initialize the PostgreSQL database using the schema file::
+
+     psql -U [username] -d [database_name] -a -f mischbares_db.sql
+
+Replace `[username]` and `[database_name]` with your PostgreSQL credentials.
+
+Cite this work
+--------------
+
+If you use this software in your research, please cite the following paper:
+
+
+For more detailed information, please visit the documentation page: https://fuzhanrahmanian.github.io/MISCHBARES/

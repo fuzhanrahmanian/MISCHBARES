@@ -1,0 +1,44 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Auto-MISCHBARES
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Fuzhan
+    family-names: Rahmanian
+    email: fuzhanrahmanian@gmail.com
+    affiliation: Technical University of Munich
+    orcid: 'https://orcid.org/0000-0003-3996-4213'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10446337
+  - type: url
+    value: 'https://github.com/fuzhanrahmanian/MISCHBARES'
+    description: GitHub Repository
+repository-code: 'https://github.com/fuzhanrahmanian/MISCHBARES'
+abstract: >-
+  Auto-MISCHBARES, building upon our HELAO framework, is
+  designed for high-throughput electrochemical research. It
+  automates the study different electrolyte and/or electrode
+  materials, different electrochemcial protocols in order to
+  characterize the interphase formations at a millimeter
+  scale, enhancing the efficiency of material discovery.
+  This system's significant feature is its ability to
+  autonoumussly asynchronously orchestrate sequential or
+  parallel experiments, integrated with advanced Quality
+  Control assessments and MADAP for advanced data analysis
+  using AI algorithms. The web interface of Auto-MISCHBARES
+  offers streamlined user control, and its database design
+  adheres to FAIR principles, promoting robust and
+  transparent research in battery material science.
+keywords:
+  - Automation
+  - Data Analysis
+  - Data Management
+  - Machine Learning
+  - Server Communication
+license: MIT

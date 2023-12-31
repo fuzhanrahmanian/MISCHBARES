@@ -13,9 +13,7 @@ authors:
     email: fuzhanrahmanian@gmail.com
     affiliation: Technical University of Munich
     orcid: 'https://orcid.org/0000-0003-3996-4213'
-identifiers:
-  - type: doi
-    value: 10.5281/zenodo.10446337
+doi: 10.5281/zenodo.10446337
   - type: url
     value: 'https://github.com/fuzhanrahmanian/MISCHBARES'
     description: GitHub Repository
@@ -42,3 +40,6 @@ keywords:
   - Machine Learning
   - Server Communication
 license: MIT
+year: 2023
+month: 12
+

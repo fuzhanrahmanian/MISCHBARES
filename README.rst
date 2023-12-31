@@ -2,7 +2,7 @@
 Auto-MISCHBARES
 ===============
 
-.. image:: logo/mischbares_logo.png
+.. image:: https://github.com/fuzhanrahmanian/MISCHBARES/blob/main/logo/mischbares_logo.png?raw=true
     :align: center
     :width: 300px
 

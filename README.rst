@@ -74,7 +74,8 @@ The data related to this study is available at `<https://doi.org/10.5281/zenodo.
 Cite this work
 --------------
 
-If you use this software in your research, please cite the following paper:
+If you use this software in your research, please cite the following paper: `preprint <https://chemrxiv.org/engage/chemrxiv/article-details/6591d97fe9ebbb4db9250f91>`_
+
 
 
 For more detailed information, please visit the `documentation page <https://fuzhanrahmanian.github.io/MISCHBARES>`_
